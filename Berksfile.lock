@@ -1,0 +1,17 @@
+DEPENDENCIES
+  garcon
+    path: ../../../../git/cookbooks/chef-garcon
+  test_fixtures
+    path: test/fixtures/cookbooks/test_fixtures
+  websphere
+    path: .
+    metadata: true
+
+GRAPH
+  chef_handler (1.1.6)
+  garcon (0.7.3)
+    chef_handler (~> 1.1.6)
+  test_fixtures (0.1.0)
+    chef_handler (~> 1.1.6)
+  websphere (0.0.3)
+    garcon (~> 0.7.3)
