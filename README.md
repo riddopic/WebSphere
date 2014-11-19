@@ -16,7 +16,7 @@ Additional critics can be obtained by adding a subtree as a remote, referred to 
 From the hackers at l00kout!
 
 ```
-   git subtree add --prefix test/support/foodcritic/lookout http://github.com lookout/lookout-foodcritic-rules master --squash
+   git subtree add --prefix test/support/foodcritic/lookout http://github.com/lookout/lookout-foodcritic-rules master --squash
    git remote add -f test/support/foodcritic/lookout http://github.com/lookout/lookout-foodcritic-rules
 ```
 
