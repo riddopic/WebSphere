@@ -13,10 +13,5 @@ AllCops:
     - vendor/**/*
     - debug_shell.rb
 
-SingleSpaceBeforeFirstArg:
-  Exclude:
-    - '**/metadata.rb'
-    - recipes/**/*
-
 LineLength:
   Enabled: false

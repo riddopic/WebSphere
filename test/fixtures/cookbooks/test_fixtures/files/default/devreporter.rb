@@ -39,27 +39,27 @@ class DevReporter < Chef::Handler
       @max_resource = all_resources.max_by{ |r| full_name(r).length}
 
       # print each timing by group, sorting with highest elapsed time first
-      Chef::Log.info
+      Chef::Log.info ''
       Chef::Log.info 'Elapsed_time  Cookbook'
       Chef::Log.info '------------  ---------------- - - - - - - - - - - -  -  -  -  -  -  -  -  -  -'
       cookbooks.sort_by { |_k, v| -v }.each do |cookbook, run_time|
         Chef::Log.info '%12f  %s' % [run_time, cookbook]
       end
-      Chef::Log.info
+      Chef::Log.info ''
       Chef::Log.info 'Elapsed Time  Rec'
       Chef::Log.info '------------  ---------------- - - - - - - - - - - -  -  -  -  -  -  -  -  -  -'
       recipes.sort_by { |_k, v| -v }.each do |recipe, run_time|
         Chef::Log.info '%12f  %s' % [run_time, recipe]
       end
-      Chef::Log.info
+      Chef::Log.info ''
       Chef::Log.info 'Elapsed_time  Resource'
       Chef::Log.info '------------  ---------------- - - - - - - - - - - -  -  -  -  -  -  -  -  -  -'
       resources.sort_by { |_k, v| -v }.each do |resource, run_time|
         Chef::Log.info '%12f  %s' % [run_time, resource]
       end
-      Chef::Log.info
+      Chef::Log.info ''
       Chef::Log.info "Slowest Resource : #{full_name(@max_resource)} (%.6fs)"%[@max_time]
-      Chef::Log.info
+      Chef::Log.info ''
       # exports node data to disk at the end of a successful Chef run
       Chef::Log.info "Writing node information to #{@path}/successful-run-data.json"
       Chef::FileCache.store('successful-run-data.json', Chef::JSONCompat.to_json_pretty(data), 0640)

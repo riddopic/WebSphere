@@ -1,0 +1,78 @@
+# encoding: UTF-8
+#
+# Author: Stefano Harding <sharding@trace3.com>
+# Cookbook Name:: websphere
+# Ohai:: websphere
+#
+
+Ohai.plugin(:WebSphere) do
+  provides 'websphere'
+  %w(appclient ihs pkgutil plg plugclient was wct wps).each do |pkg|
+    provides "websphere/#{pkg}"
+  end
+
+  def create_objects
+    system_packages Mash.new
+    system_packages[:holding] = Array.new
+    system_packages[:insecure] = Array.new
+    system_packages[:upgradeable] = Mash.new
+    system_packages[:installed] = Mash.new
+  end
+
+  # appclient  Application Client for WebSphere Application Server
+  # ihs        IBM HTTP Server for WebSphere Application Server
+  # pkgutil    IBM Packaging Utility
+  # plg        Web Server Plug-ins for WebSphere Application Server
+  # plugclient Pluggable Application Client for WebSphere Application Server
+  # was        IBM WebSphere Application Server
+  # wct        WebSphere Customization Toolbox
+  # wps        IBM WebSphere Portal
+
+  def list_installed_packages(args = 'listinstalledpackages -long')
+    begin
+      require 'chef/mixin/deep_merge'
+    rescue LoadError => e
+      Ohai::Log.warn("Cannot load gem: #{e}.")
+    end
+    cmd = '/opt/IBM/IBM/InstallationManager/eclipse/tools/imcl '
+    cmd << 'listinstalledpackages -long'
+
+    Ohai::Log.debug "list_installed_packages: running #{cmd}"
+    so = shell_out(cmd)
+    lines_attrs = Mash.new
+    if so.exitstatus == 0
+      so.stdout.lines do |line|
+        k, v = line.split(/:/)
+        next if k.nil? || v.nil?
+        k = k.strip
+        v = v.strip
+        key_path = k.split('.')
+        attrs = Mash.new
+        location = key_path.slice(0, key_path.size - 1).reduce(attrs) do |m, o|
+          m[o] ||= {}
+          m[o]
+        end
+        location[key_path.last] = v
+        lines_attrs = Chef::Mixin::DeepMerge.merge(lines_attrs, attrs)
+      end
+    end
+    sys.update lines_attrs
+  end
+
+  collect_data(:default) do
+    websphere Mash.new
+  end
+
+  # :aix, :darwin, :freebsd, :hpux, :linux, :openbsd, :netbsd, :solaris2, :windows
+  #  or any other value from RbConfig::CONFIG['host_os']
+
+  collect_data(:linux) do
+    websphere Mash.new
+    list_installed_packages
+  end
+
+  collect_data(:darwin) do
+    websphere Mash.new
+    list_installed_packages
+  end
+end

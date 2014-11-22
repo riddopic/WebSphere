@@ -6,6 +6,7 @@ metadata
 
 group :integration do
   cookbook 'test_fixtures', path: 'test/fixtures/cookbooks/test_fixtures'
+  cookbook 'sudo', '~> 2.7.1'
 end
 
-cookbook 'garcon', path: '~/git/cookbooks/chef-garcon'
+cookbook 'garcon', git: 'git://github.com/riddopic/garcon.git'
