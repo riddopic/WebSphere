@@ -92,14 +92,14 @@ default[:websphere][:pkgutil] = {
 
   file: {
     # Zip file that contains the IBM Installation Manager package.
-    name: 'pu.offering.disk.linux.gtk.x86_64_1.8.0.20140902_1631.zip',
+    name: 'pu.offering.disk.linux.gtk.x86_64_1.8.1000.20141126_2003.zip',
 
     # Local or remote location where the IIM zip file is located. Default
     # is to download from IBM.
-    source: 'http://ibm.co/11JHlgJ',
+    source: 'http://ibm.co/1AoUlEK',
 
     # The SHA-256 checksum of the zip file. Checksum are calculated with:
     # shasum -a 256 /path/to/file | cut -c-12
-    checksum: '69787054dd6a'
+    checksum: '706bc445b372'
   }
 }
