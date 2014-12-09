@@ -26,34 +26,6 @@ module WebSphere
     module ClassMethods
       include WebSphere::Helpers
 
-      # Generate XML response file for IBM Installation Manager silent install.
-      #
-      # @param [Hash] iim
-      #   the contents of the attribute node[:websphere][:iim]
-      # @param [TrueClass, FalseClass] clean
-      #   when true only use repositories and preferences from the response
-      #   file, when false uses repositories and preferences from the response
-      #   file and IIM
-      # @param [TrueClass, FalseClass] temporary
-      #   does not persist preferences or repositories in IIM when true, when
-      #   false will persist preferences and repositories in the IMM.
-      #
-      # @return [XML]
-      #   returns XML response file
-      #
-      def iim_response_file(iim, clean, temporary)
-        @xml = Builder::XmlMarkup.new(indent: 2)
-        header
-        install_dir = ::File.join(iim[:install_location],
-          'InstallationManager/eclipse')
-        @xml.tag!('agent-input', clean: clean, temporary: temporary) do
-          repos(iim[:repositories])
-          profile(iim[:profile], install_dir, iim[:data], 'self')
-          offering(iim[:profile], iim[:id], iim[:version],
-                   iim[:features], iim[:fixes])
-        end
-      end
-
       # Generate XML response file for silent install of various WebSphere
       # application. You can bundle multiple applications together, for example
       # you can install IHS and WAS together.
@@ -70,10 +42,21 @@ module WebSphere
         @xml = Builder::XmlMarkup.new(indent: 2)
         header
         @xml.tag!('agent-input') do
-          shared_location(node[:websphere][:shared_location])
-          repos(repos)
+          @xml.tag!('variables') do
+            variable('sharedLocation', node[:websphere][:shared_dir])
+
+            pkg.each do |p|
+              name = "installLocation.#{p[:profile].tr(' |-', '_')}"
+              value = p[:install_location]
+              comment "Installation location for #{p[:profile]}"
+              variable(name, value)
+            end
+          end
+
+          repos('http://repo.mudbox.dev/ibm/repositorymanager')
           pkg.each do |p|
-            profile(p[:id], p[:install_location], p[:data])
+            dir = "${installLocation.#{p[:profile].tr(' |-', '_')}}"
+            profile(p[:profile], dir, p[:data])
             offering(p[:profile], p[:id], p[:version],
                      p[:features], p[:fixes], false)
           end
@@ -112,17 +95,17 @@ module WebSphere
         @xml.tag!('agent-input') { block.call }
       end
 
-      # @param [String] location
-      #   path to the shared directory for all IBM WebSphere applications
+      # @param [String] name
+      #   name of the variable
+      # @param [String] value
+      #   value for variable
       #
       # @return [XML]
-      #   XML representation of `sharedLocation`
+      #   XML representation of `variable`
       #
       # @!visibility private
-      def shared_location(location)
-        @xml.variables do |x|
-          x.variable(name: 'sharedLocation', value: location)
-        end
+      def variable(name, value)
+        @xml.variable(name: name, value: value)
       end
 
       # @param [Array] repos
@@ -134,8 +117,10 @@ module WebSphere
       # @!visibility private
       def repos(repos)
         @xml.server do |x|
-          repos.flatten.uniq.each do |repo|
-            x.repository(location: (repo.is_a?(Proc) ? repo.call : repo))
+          if repos.respond_to?(:each)
+            repos.each { |repo| x.repository(location: repo) }
+          else
+            x.repository(location: repos)
           end
         end
       end
@@ -157,9 +142,9 @@ module WebSphere
         prof = { id: id, installLocation: location }
         prof = { kind: kind }.merge(prof) if kind
         @xml.profile(prof) do
+          comment 'Common Data:'
           data.each do |d|
-            value = d[:value].is_a?(Proc) ? d[:value].call : d[:value]
-            @xml.data(key: d[:key], value: value)
+            @xml.data(key: d[:key], value: d[:value])
           end
         end
       end
@@ -185,6 +170,7 @@ module WebSphere
       def offering(profile, id, version, features, fixes, modify = nil)
         mod = { modify: modify } unless modify.nil?
         @xml.install(mod) do
+          comment profile
           offer = { profile: profile, id: id,
                     features: features, installFixes: fixes }
           offer.merge(version: version) if version
@@ -201,8 +187,7 @@ module WebSphere
       # @!visibility private
       def preferences(preferences)
         preferences.each do |pref|
-          value = pref[:value].is_a?(Proc) ? pref[:value].call : pref[:value]
-          @xml.preference(name: pref[:key], value: value)
+          @xml.preference(name: pref[:key], value: pref[:value])
         end
       end
     end

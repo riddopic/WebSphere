@@ -1,8 +1,7 @@
 # encoding: UTF-8
 
-require 'chef'
-require 'yard'
-require 'open-uri'
+# require 'chef'
+# require 'open-uri'
 
 task default: 'test'
 
@@ -24,10 +23,11 @@ task :readme do
   system(*cmd)
 end
 
-YARD::Config.load_plugin 'redcarpet-ext'
+require 'yard'
 YARD::Rake::YardocTask.new do |t|
-  t.files = ['**/*.rb', '-', 'README.md', 'CHANGELOG.md', 'LICENSE.txt']
-  t.options = ['--markup-provider=redcarpet', '--markup=markdown']
+  additional_docs = %w[ CHANGELOG.md LICENSE.md README.md ]
+  t.files = ['**/*.rb', '-'] + additional_docs
+  t.options = ['--readme=README.md', '--markup=markdown', '--verbose']
 end
 
 # rubocop style checker
@@ -43,7 +43,7 @@ end
 # chefspec unit tests
 require 'rspec/core/rake_task'
 RSpec::Core::RakeTask.new(:chefspec) do |t|
-  t.rspec_opts = '--color --format progress'
+  t.rspec_opts = '--color'
 end
 
 # test-kitchen integration tests

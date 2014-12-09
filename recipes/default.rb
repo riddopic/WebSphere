@@ -5,13 +5,12 @@
 # Recipe:: default
 #
 
-chef_gem('rubyzip') { action :nothing }.run_action(:install)
+chef_gem('hashie')  { action :nothing }.run_action(:install)
 
 single_include 'garcon::default'
 single_include 'chef_handler'
 
-require 'timeout'      unless defined?(Timeout)
-require 'zip'          unless defined?(Zip)
+require 'timeout' unless defined?(Timeout)
 
 # ohai 'reload_was_plugin' do
 #   plugin 'websphere'
@@ -28,17 +27,17 @@ require 'zip'          unless defined?(Zip)
 # include_recipe 'ohai::default'
 
 user = Concurrent::Promise.execute do
-  group node[:websphere][:group] do
-    not_if { node[:websphere][:group] == 'root' }
+  group node[:websphere][:user][:group] do
+    not_if { node[:websphere][:user][:group] == 'root' }
     action :create
   end
 
-  user node[:websphere][:user] do
-    comment 'Websphere Application Server'
-    gid node[:websphere][:group]
-    home node[:websphere][:home].call
-    system true
-    not_if { node[:websphere][:user] == 'root' }
+  user node[:websphere][:user][:name] do
+    comment  node[:websphere][:user][:comment]
+    gid      node[:websphere][:user][:group]
+    home     node[:websphere][:user][:home]
+    system   node[:websphere][:user][:system]
+    not_if { node[:websphere][:user][:username] == 'root' }
     action :create
   end
 
@@ -70,7 +69,7 @@ end
 iim = Concurrent::Promise.execute { single_include 'websphere::iim' }
 
 pkgs = Concurrent::Promise.execute do
-  %w(gtk2-engines).each { |pkg| package pkg }
+  %w(gtk2-engines lynx).each { |pkg| package pkg }
 
   multiarch = %w(gtk2 libgcc glibc)
 
@@ -107,22 +106,4 @@ rescue Timeout::Error
   fail 'Failure due to Timeout::Error waiting on threads.'
 ensure
   timers.cancel
-end
-
-creds = node[:websphere][:credential]
-
-node[:websphere][:apps].each do |app|
-  websphere app.to_sym do
-    master_password_file creds[:master_password_file].call
-    secure_storage_file creds[:secure_storage_file].call
-    apps [app.to_sym]
-    action :install
-  end
-end
-
-websphere 'splines.reticulate' do
-  master_password_file creds[:master_password_file].call
-  secure_storage_file creds[:secure_storage_file].call
-  apps node[:websphere][:apps]
-  action :install
 end

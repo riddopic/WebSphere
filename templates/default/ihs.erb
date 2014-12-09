@@ -1,0 +1,39 @@
+#!/bin/bash
+# SERVICENAME should match this filename
+SERVICENAME=$(basename $0)
+LOCKFILE="/var/lock/subsys/${SERVICENAME}"
+APACHECTL=<%= ::File.join(node[:websphere][:ihs][:install_location], 'bin/apachectl') %>
+
+# The next lines are for chkconfig on RedHat systems.
+# chkconfig: 2345 98 02
+# description: Starts and stops IHS
+
+# The next lines are for chkconfig on SuSE systems.
+### BEGIN INIT INFO
+# Provides: IHS_61.1
+# Required-Start: $network $syslog
+# Required-Stop:
+# Default-Start: 2 3 4 5
+# Default-Stop: 0 6
+# Short-Description: Starts and stops IHS
+# Description: Starts and stops IHS
+### END INIT INFO
+
+
+case "$1" in
+  start)
+    touch $LOCKFILE
+    ;;
+
+  stop)
+    rm -f $LOCKFILE
+    ;;
+
+  *)
+    echo "Usage: $0 {start|stop|status|restart}"
+    exit 1
+    ;;
+esac
+
+$APACHECTL "$@"
+

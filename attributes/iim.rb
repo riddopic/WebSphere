@@ -5,6 +5,8 @@
 # Attributes:: iim
 #
 
+include_attribute 'websphere::default'
+
 # ========================== IBM Installation Manager ==========================
 #
 default[:websphere][:iim] = {
@@ -13,8 +15,9 @@ default[:websphere][:iim] = {
 
   # Specify the repositories that are used during the installation. Use a URL
   # or UNC path to specify the remote repositories. Or use directory paths to
-  # specify the local repositories.
-  repositories: ['.'],
+  # specify the local repositories. If none is specified it will default to
+  # using `node[:websphere][:repositories][:local]`, default is nil.
+  repositories: nil,
 
   # Use the install and uninstall commands to inform Installation Manager of the
   # installation packages to install or uninstall.
@@ -65,8 +68,9 @@ default[:websphere][:iim] = {
 
   # The installation directory for IBM Installation Manager (IIM).
   # NOTE: The installation will append `/InstallationManager/eclipse` to the
-  # path. Default is `/opt/IBM/IBM/InstallationManager/eclipse`.
-  install_location: '/opt/IBM',
+  # path. Default is `/opt/IBM/InstallationManager/eclipse`.
+  install_location: ::File.join(
+    node[:websphere][:base_dir], 'InstallationManager/eclipse'),
 
   # Installation Manager can be installed along with the Packaging Utility
   # providing access to the Packaging Utility toolset to manage and query
@@ -75,11 +79,7 @@ default[:websphere][:iim] = {
   # Packaging Utility with IIM. The default value is `:with_pkgutil`.
   install_type: :with_pkgutil,
 
-  data: [
-    # The eclipseLocation data key should use the same directory path to
-    # Installation Manager as the `install_location` attribute.
-    { key:   'eclipseLocation',
-      value: lambda { node[:websphere][:iim][:install_location] } }],
+  data: [],
 
   file: {
     standalone: {
@@ -87,12 +87,13 @@ default[:websphere][:iim] = {
       name: 'agent.installer.linux.gtk.x86_64_1.8.1000.20141126_2002.zip',
 
       # Local or remote location where the IIM zip file is located. Default is
-      # to download from IBM.
+      # to download from IBM. You can use a URL shortner for convince, the
+      # and the cookbook will expand t the correct path.
       source: 'http://ibm.co/1zr8L6q',
 
       # The SHA-256 checksum of the zip file. Checksum are calculated with:
-      # shasum -a 256 /path/to/file | cut -c-12
-      checksum: 'c9af97d4d953'
+      # shasum /path/to/file
+      checksum: '41fbdc7837edb4a86332c892c3224410203fc761'
     },
 
     with_pkgutil: {
@@ -100,16 +101,14 @@ default[:websphere][:iim] = {
       # Packaging Utility bundle.
       name: 'pu.offering.disk.linux.gtk.x86_64_1.8.1000.20141126_2003.zip',
 
-      # Unlike the standalone IIM utility this zip file creates subdirectories.
-      work_dir: 'disk_linux.gtk.x86_64/InstallerImage_linux.gtk.x86_64',
-
       # Local or remote location where the IIM/Packaging Utility zip file is
-      # located. Default is to download from IBM.
+      # located. Default is to download from IBM. You can use a URL shortner
+      # for convince, the and the cookbook will expand t the correct path.
       source: 'http://ibm.co/1AoUlEK',
 
-      # The SHA-256 checksum of the zip file. Checksum are calculated with:
-      # shasum -a 256 /path/to/file | cut -c-12
-      checksum: '706bc445b372'
+      # The SHA-1 checksum of the zip file. Checksum are calculated with:
+      # shasum /path/to/file
+      checksum: 'b37aeb1a87ce0c67d411d6f1197048531144245d'
     }
   }
 }

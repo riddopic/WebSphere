@@ -22,8 +22,8 @@ Use this cookbook to install and configure any of the following components:
  * WebSphere Customization Toolbox
  * All product prerequisites, including WebSphere Application Server ND V8.5.5
 
-The cookbook also creates a user account to manage the components, and creates 
-and configures all the components that are required for a running WebSphere 
+The cookbook also creates a user account to manage the components, and creates
+and configures all the components that are required for a running WebSphere
 Application Server instance.
 
 ## Requirements
@@ -58,6 +58,12 @@ the specific version numbers):
   Distribute and enable Chef Exception and Report handlers.
 * [garcon](comming soon to a supermarket near you) - Provides handy hipster,
   hoodie ninja cool awesome methods and features.
+* [ohai](https://supermarket.chef.io/cookbooks/ohai) - Creates a configured
+  plugin path for distributing custom Ohai plugins, and reloads them via Ohai
+  within the context of a Chef Client run during the compile phase (if needed)
+* [sudo](https://supermarket.chef.io/cookbooks/sudo) - The Chef sudo cookbook 
+  installs the sudo package and configures the /etc/sudoers file. Require for
+  local development only.
 
 #### Limitations
 
@@ -66,6 +72,8 @@ various sub-components, focusing on getting WebSphere onto the system and
 running, not to deploy and configure applications within the Application Server
 itself. Configuration and deployment of applications within the WebSphere
 Application Server and Portal Server will be handled by Urban Code.
+
+Talk to your IBM representative for additional information about Urban Code, or try a copy out yourself at any of our Blue is You store locations.  
 
 ### Development Requirements
 
@@ -78,7 +86,7 @@ installed.
 * [ChefSpec][]
 * [Foodcritic][]
 
-It is recommended for you to use the Chef Developer Kit (ChefDK). You can get 
+It is recommended for you to use the Chef Developer Kit (ChefDK). You can get
 the [latest release of ChefDK from the downloads page][ChefDK].
 
 On Mac OS X, you can also use [homebrew-cask](http://caskroom.io) to install
@@ -106,7 +114,7 @@ VirtualBox or VMware.
 
 ## Usage
 
-Ah, the good stuff....
+Ah, the good stuff.... Need to fill this in...
 
 ## Attributes
 
@@ -120,21 +128,49 @@ values set, where possible or appropriate, the default values from IBM are used.
 General attributes can be found in the `default.rb` file, application specific
 attributes are located in their respective attributes file.
 
-* `node[:websphere][:user]`: The user to run WebSphere applications. The
-  cookbook will create a system account for the user if it does not exist. The
-  default is `wasadm`.
+* `node[:websphere][:base_dir]`: [String] The base directory where all of the
+  WebSphere products will reside. The default value is `/opt/IBM`. Note: When
+  installing with a non-root account software will be installed in this
+  directory and also the users home directory that runs the installs.
 
-* `node[:websphere][:group]`: The group to run WebSphere applications. The
-  cookbook will create a local group if it does not exist. The default is
-  `wasadm`.
+* `node[:websphere][:data_dir]`: [String] The path to the shared directory for
+  IBM products. Default is `/opt/IBM/DataLocation`
 
-* `node[:websphere][:home]`: The home directory attribute for the `:user`. The
-  default value is to use the same directory that the Install Manager uses.
+* `node[:websphere][:data_dir]`: [String] The path to the Installation Manager
+  shared data directory. Default is `/opt/IBM/IBM/Shared`.
 
-* `node[:websphere][:apps]`: A list of available WebSphere applications or
-  components available in the the current repository. **Note:** the names should
-  match the namespace; `:was` is WebSphere Application Server, the attribute
-  namespace is `node[:websphere][:was]`.
+* `node[:websphere][:user]`: [String] The user to run WebSphere applications.
+  The cookbook will create a system account for the user if it does not exist.
+  The default is `wasadm`.
+
+* `node[:websphere][:user][:group]`: [String] The group to run WebSphere
+  applications. The cookbook will create a local group if it does not exist.
+  The default is `wasadm`.
+
+* `node[:websphere][:user][:comment]`: [String] The GECOS comment for the user..
+
+* `node[:websphere][:home]`: [String] The home directory attribute for the 
+  `:user`. The default value is to use the same directory that the Install
+  Manager uses.
+  
+* `node[:websphere][:user][:system]`: [TrueClass, FalseClass] Create a system
+  account. A system account is an user with an `UID` between SYSTEM_UID_MIN and 
+  SYSTEM_UID_MAX as  defined  in `/etc/login.defs`, if no UID is specified. 
+  Default is to use a system account.
+
+* `node[:websphere][:user][:uid]`: [Integer] If `system` is set to false then
+  you can select a `UserID` for the account. Default is nil and a system account
+  is used.
+
+* `node[:websphere][:user][:gid]`: [Integer] If `system` is set to false then
+  you can select a `GroupID` for the account. Default is nil and a system 
+  account is used.
+
+* `node[:websphere][:apps]`: [String, Array] A list of available WebSphere 
+  applications or components available in the the current repository. **Note:** 
+  the names must match the namespace; `:was` is WebSphere Application Server, 
+  the attribute namespace is `node[:websphere][:was]`. By default only IIM is 
+  installed.
 
 * `node[:websphere][:repositories][:live]`: The live IBM WebSphere repository.
   This location is regularly updated with hot-patches, services packs and fixes.
@@ -142,7 +178,7 @@ attributes are located in their respective attributes file.
 * `node[:websphere][:repositories][:local]`: The local WebSphere repository,
   must contain a valid `repository.config`. Default is nil.
 
-* `node[:websphere][:repositories][:live]`: [Array, String] Specify the 
+* `node[:websphere][:repositories][:live]`: [Array, String] Specify the
   location of the IBM live online product repository. This location is
   regularly updated with hot-patches, services packs and fixes. Default is to
   use the IBM web-based online repository. **Note:** You should not change
@@ -153,11 +189,6 @@ attributes are located in their respective attributes file.
   or on an internal web or NFS server. Information on how to create your own
   local online product repository can be found later in this document. Default
   is `nil`.
-
-
-
-
-
 
 * `node[:websphere][:credential][:url]`: Repository to authenticate with, if
   you use the IBM service repositories, you can specify the
@@ -183,8 +214,6 @@ attributes are located in their respective attributes file.
   secure storage file Installation Manager should use to access the secure
   storage file, this attribute is optional.
 
-ZIP FILES ? ? ?
-
 * `node[:websphere][:agent_input][:clean]`: The clean and temporary attributes
   specify the repositories and other preferences Installation Manager uses and
   whether those settings should persist after the installation finishes.
@@ -209,7 +238,7 @@ ZIP FILES ? ? ?
   the repository setting that is specified in the response file overrides the
   preferences that were previously set.
 
-* `node[:websphere][:shared_location]`: The path to the shared directory for IBM
+* `node[:websphere][:shared_dir]`: The path to the shared directory for IBM
   products.
 
 * `node[:websphere][::preferences]`: A list of preferences that define the
@@ -217,10 +246,10 @@ ZIP FILES ? ? ?
   file.
 
   * `com.ibm.cic.common.core.preferences.eclipseCache`: This key specifies the
-  location of the shared resources directory. The shared resource directory is
-  specified the first time you install a package. You cannot change this
-  location after you install a package. This preference is set during the
-  installation process when you use the Installation Manager interface.
+    location of the shared resources directory. The shared resource directory
+    is specified the first time you install a package. You cannot change this
+    location after you install a package. This preference is set during the
+    installation process when you use the Installation Manager interface.
 
   * `com.ibm.cic.common.core.preferences.connectTimeout`: The default value is
     30 seconds.
@@ -238,8 +267,8 @@ ZIP FILES ? ? ?
   * `com.ibm.cic.common.core.preferences.ssl.nonsecureMode`: When this key is
     set to true, Nonsecure SSL Mode is enabled and is set as permanent by
     default. When this key is set to false, Nonsecure SSL Mode is disabled. The
-    default value is false. **Note:** You cannot enable Nonsecure SSL Mode with the
-    session setting in a response file.
+    default value is false. **Note:** You cannot enable Nonsecure SSL Mode with
+    the session setting in a response file.
 
   * `com.ibm.cic.common.core.preferences.http.disablePreemptiveAuthentication`:
     The default value is false.
@@ -287,7 +316,7 @@ ZIP FILES ? ? ?
 
   * `com.ibm.cic.common.sharedUI.showNoteLog`: Needs documentation.
 
-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Application Client for WebSphere Application Server
 
 The Application Client provides a variety of stand-alone thin clients, as embeddable JAR files, Java EE clients, ActiveX to EJB Bridge and Pluggable Application Client. These include:
@@ -302,38 +331,29 @@ The Application Client provides a variety of stand-alone thin clients, as embedd
 The namespace `[:websphere][:appclient]` is used for any specific Application
 client attributes.
 
-* `node[:websphere][:appclient][:install]`: [Trueclass, Falseclass] Specify if
-  you would like to install the Application Client. Default value is `true`.
-
 * `node[:websphere][:appclient][:id]`: [String] The Uniq IBM product ID for
   Application Client. Default value is `com.ibm.websphere.APPCLIENT.v85`.
   **Note:** You should not change this attribute.
 
-* `node[:websphere][:appclient][:live_repo]`: [Array, String] Specify the 
-  location of the IBM live online product repository. This location is
-  regularly updated with hot-patches, services packs and fixes. Default is
-  to use the IBM web-based online repository. **Note:** You should not change
-  this attribute.
-
-* `node[:websphere][:appclient][:local_repo]`: [Array, String] The location
+* `node[:websphere][:appclient][:repositories]`: [Array, String] The location
   for a local online product repository. This can be a local copy on the
-  machine, or on an internal web or NFS server. Information on how to create 
-  your own local online product repository can be found later in this document. 
+  machine, or on an internal web or NFS server. Information on how to create
+  your own local online product repository can be found later in this document.
   Default is `nil`.
 
-* `node[:websphere][:appclient][:modify]`: [Trueclass, Falseclass] Use the
-  install and uninstall commands to inform Installation Manager of the 
-  installation packages to install or uninstall. A value of `false` indicates 
-  not to modify an existing install by adding or removing features. A `true` 
-  value indicates to modify an existing install by adding or removing features. 
+* `node[:websphere][:appclient][:modify]`: [TrueClass, FalseClass] Use the
+  install and uninstall commands to inform Installation Manager of the
+  installation packages to install or uninstall. A value of `false` indicates
+  not to modify an existing install by adding or removing features. A `true`
+  value indicates to modify an existing install by adding or removing features.
   The default value is `false`.
 
-* `node[:websphere][:appclient][:version]`: [String] The version attribute is 
-  optional. If a version number is provided, then the offering will be installed 
-  or uninstalled at the version level specified as long as it is available in 
-  the repositories. If the version attribute is not provided, then the default 
-  behavior is to install or uninstall the latest version available in the 
-  repositories. The version number can be found in the repository.xml file in 
+* `node[:websphere][:appclient][:version]`: [String] The version attribute is
+  optional. If a version number is provided, then the offering will be installed
+  or uninstalled at the version level specified as long as it is available in
+  the repositories. If the version attribute is not provided, then the default
+  behavior is to install or uninstall the latest version available in the
+  repositories. The version number can be found in the repository.xml file in
   the repositories. This attribute has no default value.
 
   **Note:** In some cases, a package might be rolled back to an earlier version.
@@ -343,19 +363,20 @@ client attributes.
   package available in the repository is version 1.0.1. When you install the
   package, the installed version of the package is rolled back to version 1.0.1.
 
-* `node[:websphere][:appclient][:profile]`: [String] The profile attribute is 
+* `node[:websphere][:appclient][:profile]`: [String] The profile attribute is
   required and typically is unique to the offering. If modifying or updating an
   existing installation, the profile attribute must match the profile ID of the
   targeted installation of WebSphere Application Server. The default value is
   `Application Client for IBM WebSphere Application Server V8.5`.
 
 * `node[:websphere][:appclient][:features]`: [String] The features attribute is
-  optional. Offerings always have at least one feature; a required core feature 
-  which is installed regardless of whether it is explicitly specified. If other 
-  feature names are provided, then only those features will be installed. 
+  optional. Offerings always have at least one feature; a required core feature
+  which is installed regardless of whether it is explicitly specified. If other
+  feature names are provided, then only those features will be installed.
   Features must be comma delimited without spaces. The default value is
-  `core.feature,pct,zpmt,zmmt`.
-  
+  `javaee.thinclient.core.feature,javaruntime,developerkit,samples,` \
+  `standalonethinclient.resourceadapter.runtime,embeddablecontainer`
+
   The optional feature offering IDs are enclosed:
   * IBM Developer Kit, Java 2 Technology Edition
   * Java 2 Runtime Environment `javaruntime`)
@@ -368,20 +389,16 @@ client attributes.
 
 * `node[:websphere][:appclient][:fixes]`: [String] The fixes attribute is used
   to indicates whether fixes available in repositories are installed with the
-  product. Valid values for `none`, do not install available fixes, 
+  product. Valid values for `none`, do not install available fixes,
   `recommended`, installs all available recommended fixes, or `all`, install
-   all available fixes. The default value is `all`.  
+   all available fixes. The default value is `all`.
 
 * `node[:websphere][:appclient][:install_location]`: [String] The installation
   directory for Application Client. Default is `/opt/IBM/WebSphere/AppClient`.
 
 Additionally the namespace `[:websphere][:appclient][:data]` is used at installation time, these key/value pairs correspond to the hash values created in the installation XML file.
 
-  * `eclipse_location`: [String] The eclipse_location attribute corresponds to
-    the `install_location` attribute and should not be changed. The default 
-    value is a `install_location`.
-  
-  * `user.import.profile`: [Trueclass, Falseclass] Include data keys for product 
+  * `user.import.profile`: [TrueClass, FalseClass] Include data keys for product
     specific profile properties. Default is `false`.
 
   * `user.select.64bit.image,com.ibm.websphere.WCT.v85`: [String] The platform
@@ -396,48 +413,39 @@ Additionally the namespace `[:websphere][:appclient][:data]` is used at installa
 
   * `cic.selector.nl`: [String] Specifies the language pack to be installed
     using ISO-639 language codes. The default value is `en`.
-    
-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### IBM HTTP Server
 
 The IBM HTTP Server is based on Apache HTTP Server 2.2.8, with additional
 fixes. The Apache Web server can be built with many different capabilities and
 configuration options. IBM HTTP Server includes a set of features from the
-available options. The namespace `[:websphere][:ihs]` is used for any specific 
+available options. The namespace `[:websphere][:ihs]` is used for any specific
 HTTP server attributes.
-
-* `node[:websphere][:ihs][:install]`: [Trueclass, Falseclass] Specify if
-  you would like to install the HTTP Server. Default value is `true`.
 
 * `node[:websphere][:ihs][:id]`: [String] The Uniq IBM product ID for
   HTTP Server. Default value is `com.ibm.websphere.IHS.v85`.
   **Note:** You should not change this attribute.
 
-* `node[:websphere][:appclient][:live_repo]`: [Array, String] Specify the 
-  location of the IBM live online product repository. This location is
-  regularly updated with hot-patches, services packs and fixes. Default is
-  to use the IBM web-based online repository. **Note:** You should not change
-  this attribute.
-
-* `node[:websphere][:appclient][:local_repo]`: [Array, String] The location
+* `node[:websphere][:appclient][:repositories]`: [Array, String] The location
   for a local online product repository. This can be a local copy on the
-  machine, or on an internal web or NFS server. Information on how to create 
-  your own local online product repository can be found later in this document. 
+  machine, or on an internal web or NFS server. Information on how to create
+  your own local online product repository can be found later in this document.
   Default is `nil`.
 
-* `node[:websphere][:ihs][:modify]`: [Trueclass, Falseclass] Use the
-  install and uninstall commands to inform Installation Manager of the 
-  installation packages to install or uninstall. A value of `false` indicates 
-  not to modify an existing install by adding or removing features. A `true` 
-  value indicates to modify an existing install by adding or removing features. 
+* `node[:websphere][:ihs][:modify]`: [TrueClass, FalseClass] Use the
+  install and uninstall commands to inform Installation Manager of the
+  installation packages to install or uninstall. A value of `false` indicates
+  not to modify an existing install by adding or removing features. A `true`
+  value indicates to modify an existing install by adding or removing features.
   The default value is `false`.
 
-* `node[:websphere][:ihs][:version]`: [String] The version attribute is 
-  optional. If a version number is provided, then the offering will be installed 
-  or uninstalled at the version level specified as long as it is available in 
-  the repositories. If the version attribute is not provided, then the default 
-  behavior is to install or uninstall the latest version available in the 
-  repositories. The version number can be found in the repository.xml file in 
+* `node[:websphere][:ihs][:version]`: [String] The version attribute is
+  optional. If a version number is provided, then the offering will be installed
+  or uninstalled at the version level specified as long as it is available in
+  the repositories. If the version attribute is not provided, then the default
+  behavior is to install or uninstall the latest version available in the
+  repositories. The version number can be found in the repository.xml file in
   the repositories. This attribute has no default value.
 
   **Note:** In some cases, a package might be rolled back to an earlier version.
@@ -447,66 +455,67 @@ HTTP server attributes.
   package available in the repository is version 1.0.1. When you install the
   package, the installed version of the package is rolled back to version 1.0.1.
 
-* `node[:websphere][:ihs][:profile]`: [String] The profile attribute is 
+* `node[:websphere][:ihs][:profile]`: [String] The profile attribute is
   required and typically is unique to the offering. If modifying or updating an
   existing installation, the profile attribute must match the profile ID of the
   targeted installation of WebSphere Application Server. The default value is
   `IBM HTTP Server V8.5`.
 
 * `node[:websphere][:ihs][:features]`: [String] The features attribute is
-  optional. Offerings always have at least one feature; a required core feature 
-  which is installed regardless of whether it is explicitly specified. If other 
-  feature names are provided, then only those features will be installed. 
+  optional. Offerings always have at least one feature; a required core feature
+  which is installed regardless of whether it is explicitly specified. If other
+  feature names are provided, then only those features will be installed.
   Features must be comma delimited without spaces. The default value is
   `core.feature,arch.64bit`.
 
 * `node[:websphere][:ihs][:fixes]`: [String] The fixes attribute is used
   to indicates whether fixes available in repositories are installed with the
-  product. Valid values for `none`, do not install available fixes, 
+  product. Valid values for `none`, do not install available fixes,
   `recommended`, installs all available recommended fixes, or `all`, install
-   all available fixes. The default value is `all`.  
+   all available fixes. The default value is `all`.
 
-* `node[:websphere][:appclient][:install_location]`: [String] The installation
+* `node[:websphere][:ihs][:install_location]`: [String] The installation
   directory for HTTP Server. Default is `/opt/IBM/HTTPServer`.
 
 Additionally the namespace `[:websphere][:ihs][:data]` is used at installation time, these key/value pairs correspond to the hash values created in the installation XML file.
 
-  * `eclipse_location`: [String] The eclipse_location attribute corresponds to
-    the `install_location` attribute and should not be changed. The default 
-    value is a `install_location`.
-
-  * `user.import.profile`: [Trueclass, Falseclass] Include data keys for product 
+  * `user.import.profile`: [TrueClass, FalseClass] Include data keys for product
     specific profile properties. Default is `false`.
 
   * `cic.selector.os`: [String] Specifies the operating system. Default value
     is `linux`.
-    
+
   * `cic.selector.ws`: [String] Specifies the type of window system. The
     default value is `gtk`.
-  
+
   * `cic.selector.arch`: [String] The platform architecture, **note:** this
     cookbook only supports 64bit architecture. The default value is 'x86_64'.
 
-  * `user.ihs.httpPort`: [Integer] THe HTTP port to bind to. Default is `80`.
-    
-  * `user.ihs.allowNonRootSilentInstall`: [Trueclass, Falseclass] Needs
-    documentation. The default falue is `true`.
-  
+  * `user.ihs.httpPort`: [Integer] The HTTP port to bind to. Default is `80`.
+
+  * `user.ihs.allowNonRootSilentInstall`: [TrueClass, FalseClass] This option
+    indicates whether you accept the limitations associated with installing as
+	  a non-root user. The following installation actions cannot be performed
+	  with installing as a non-root or non-administrative user. Valid values for
+	  `user.ihs.allowNonRootSilentInstall` are true, accepts the limitations.
+	  Will install the product. If set to false, it indicates you do not accept
+	  the limitations and the install will not occur. The default value is `true`.
+
   * `cic.selector.nl`: [String] Specifies the language pack to be installed
     using ISO-639 language codes. The default value is `en`.
 
-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 #### IBM Installation Manager
 
-IBM Installation Manager is a horrible tool that you can use to waste hours of your day trying to install and maintain your software packages. It must be installed in order for you to install any of the additional WebSphere products.
+The IBM Installation Manager (IIM) is a packaging technology that supports a wide range of IBM Software product installations.
 
-* `node[:websphere][:iim][:id]`: The Uniq IBM product ID for Installation
-  Manager, default value is `com.ibm.cic.agent`.
+* `node[:websphere][:iim][:id]`: [String] The Uniq IBM product ID for
+  Installation Manager, default value is `com.ibm.cic.agent`.
 
-* `node[:websphere][:iim][:repositories]`: Specify the repositories that are
-  used during the installation. Use a URL or UNC path to specify the remote
-  repositories. Or use directory paths to specify the local repositories. The
-  default value is to use `node[:websphere][:repositories][:local]`.
+* `node[:websphere][:iim][:repositories]`: [Array, String] Specify the 
+  repositories that are used during the installation. Use a URL or UNC path to
+  specify the remote repositories. Or use directory paths to specify the local
+  repositories. The default value is `nil`.
 
 * `node[:websphere][:iim][:modify]`: Use the install and uninstall commands to
   inform Installation Manager of the installation packages to install or
@@ -550,11 +559,12 @@ IBM Installation Manager is a horrible tool that you can use to waste hours of y
     * `all`:         Installs all available fixes.
 
 * `node[:websphere][:iim][:install_location]`: The installation directory for
-  Application Client. **Note:** the installation will append `/InstallationManager/
-  eclipse` to the specified directory, if you specify a value of `/app/im` the
+  Application Client.
+  **Note:** the installation will append `/IBM/InstallationManager/eclipse` to
+  the specified directory, if you specify a value of `/app/im` the
   actual installation directory will be `/app/im/InstallationManager/eclipse`.
   Default is `/opt/IBM/InstallationManager/eclipse`.
-  
+
 * `node[:websphere][:iim][:install_type]`: [Symbol] Used to specify whether to
   install the Packaging Utility with Installation Manager, or to only install
   Installation Manager standalone. The Packaging Utility provides a toolset to
@@ -563,44 +573,70 @@ IBM Installation Manager is a horrible tool that you can use to waste hours of y
   for `:install_type` are:
     * `:standalone`: Install the Packaging Utility with Installation Manager.
     * `:with_pkgutil`: Installs only Installation Manager.
-    
-* `node[:websphere][:iim][:file][:name]`: Zip file that contains the IBM
-  Installation Manager package. Default value is
-  `agent.installer.linux.gtk.x86_64_1.8.0.20140902_1503.zip`
 
-* `node[:websphere][:iim][:file][:source]`: Where the IIM zip file is located,
-  can be any valid file path or URL. Default value is `http://goo.gl/3nkWV9`.
+    * `node[:websphere][:iim][:file][:standalone][:name]`: Zip file that
+      contains the standalone IBM Installation Manager package. Default value
+      is `agent.installer.linux.gtk.x86_64_1.8.0.20140902_1503.zip`
 
-* `node[:websphere][:iim][:file][:checksum]`: The SHA-256 checksum of the zip
-  file, obtained by using the following command: `shasum -a 256 /path/to/file |
-  cut -c-12`. The default value is `69268b3633cd`.
+    * `node[:websphere][:iim][:file][:standalone][:source]`: Where the IIM zip
+      file is located, can be any valid file path or URL, you can also use a
+      URL shorter and the cookbook will expand it to the correct URL. Default
+      value is `http://ibm.co/1zr8L6q`.
 
-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+    * `node[:websphere][:iim][:file][:standalone][:checksum]`: The SHA-1
+      checksum of the zip file.
+
+    * `node[:websphere][:iim][:file][:with_pkgutil][:name]`: Zip file that
+      contains the IBM Installation Manager and Packaging Utility. The default
+      value is `agent.installer.linux.gtk.x86_64_1.8.0.20140902_1503.zip`
+
+    * `node[:websphere][:iim][:file][:with_pkgutil][:source]`: Where the zip
+      file is located, can be any valid file path or URL, you can also use
+      a URL shorter and the cookbook will expand it to the correct URL. Default
+      value is `http://ibm.co/1zr8L6q`.
+
+    * `node[:websphere][:iim][:file][:with_pkgutil][:checksum]`: The SHA-1
+      checksum of the zip file.
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 #### IBM Packaging Utility
 
-* `node[:websphere][:appclient][:install]`: Specify whether or not to install
-  Packaging Utility, default value is `false`.
+You can use the IBM Packaging Utility to create custom or “enterprise” IBM 
+Installation Manager repositories that contain multiple products and maintenance 
+levels that fit your needs. You can control the content of your enterprise
+repository, which then can serve as the central repository to which your
+organization connects to perform product installations and updates.
 
-* `node[:websphere][:appclient][:id]`: The Uniq IBM product ID for Packaging Utility, default value is `com.ibm.cic.packagingUtility`.
+IBM Packaging Utility essentially copies from a set of source IBM Installation 
+Manager repositories to a target repository and eliminates duplicate artifacts, 
+helping to keep the repository size as small as possible. You can also delete 
+(or “prune”) a repository, removing maintenance levels or products that are no 
+longer needed.
 
-* `node[:websphere][:appclient][:repositories]`: Specify the repositories that
-  are used during the installation. Use a URL or UNC path to specify the remote
-  repositories. Or use directory paths to specify the local repositories. The
-  default value is to use `node[:websphere][:repositories][:local]`.
+* `node[:websphere][:pkgutil][:id]`: [String] The Uniq IBM product ID for the
+  IBM Packaging Utility. Default value is `com.ibm.cic.packagingUtility`.
+  **Note:** You should not change this attribute.
 
-* `node[:websphere][:appclient][:modify]`: Use the install and uninstall
-  commands to inform Installation Manager of the installation packages to
-  install or uninstall. A value of `false` indicates not to modify an existing
-  install by adding or removing features. A `true` value indicates to modify an
-  existing install by adding or removing features. The default value is `false`.
+* `node[:websphere][:pkgutil][:repositories]`: [Array, String] The location
+  for a local online product repository. This can be a local copy on the
+  machine, or on an internal web or NFS server. Information on how to create
+  your own local online product repository can be found later in this document.
+  Default is `nil`.
 
-* `node[:websphere][:appclient][:version]`: The version attribute is optional.
-  If a version number is provided, then the offering will be installed or
-  uninstalled at the version level specified as long as it is available in the
-  repositories. If the version attribute is not provided, then the default
+* `node[:websphere][:pkgutil][:modify]`: [TrueClass, FalseClass] Use the
+  install and uninstall commands to inform Installation Manager of the
+  installation packages to install or uninstall. A value of `false` indicates
+  not to modify an existing install by adding or removing features. A `true`
+  value indicates to modify an existing install by adding or removing features.
+  The default value is `false`.
+
+* `node[:websphere][:pkgutil][:version]`: [String] The version attribute is
+  optional. If a version number is provided, then the offering will be installed
+  or uninstalled at the version level specified as long as it is available in
+  the repositories. If the version attribute is not provided, then the default
   behavior is to install or uninstall the latest version available in the
   repositories. The version number can be found in the repository.xml file in
-  the repositories.
+  the repositories. This attribute has no default value.
 
   **Note:** In some cases, a package might be rolled back to an earlier version.
   This roll back can happen if the version specified is earlier than the
@@ -609,74 +645,76 @@ IBM Installation Manager is a horrible tool that you can use to waste hours of y
   package available in the repository is version 1.0.1. When you install the
   package, the installed version of the package is rolled back to version 1.0.1.
 
-* `node[:websphere][:appclient][:profile]`: The profile attribute is required
-  and typically is unique to the offering. If modifying or updating an existing
-  installation, the profile attribute must match the profile ID of the targeted
-  installation of WebSphere Application Server. The default value is
-  `Application Client for IBM Packaging Utility`.
+* `node[:websphere][:pkgutil][:profile]`: [String] The profile attribute is
+  required and typically is unique to the offering. If modifying or updating an
+  existing installation, the profile attribute must match the profile ID of the
+  targeted installation of WebSphere Application Server. The default value is
+  `IBM Packaging Utility`.
 
-* `node[:websphere][:appclient][:features]`: The features attribute is optional.
-  Offerings always have at least one feature; a required core feature which is
-  installed regardless of whether it is explicitly specified. If other feature
-  names are provided, then only those features will be installed. Features must
-  be comma delimited without spaces. The default value is
+* `node[:websphere][:pkgutil][:features]`: [String] The features attribute is
+  optional. Offerings always have at least one feature; a required core feature
+  which is installed regardless of whether it is explicitly specified. If other
+  feature names are provided, then only those features will be installed.
+  Features must be comma delimited without spaces. The default value is
   `packaging_utility,jre`.
 
-* `node[:websphere][:appclient][:fixes]`: The fixes attribute indicates whether
-  fixes available in repositories are installed with the product. By default,
-  all available fixes will be installed with the offering. Valid values for
-  `node[:websphere][:appclient][:fixes]` are:
-    * `none`:        Do not install available fixes.
-    * `recommended`: Installs all available recommended fixes.
-    * `all`:         Installs all available fixes.
+* `node[:websphere][:pkgutil][:fixes]`: [String] The fixes attribute is used
+  to indicates whether fixes available in repositories are installed with the
+  product. Valid values for `none`, do not install available fixes,
+  `recommended`, installs all available recommended fixes, or `all`, install
+   all available fixes. The default value is `all`.
 
-* `node[:websphere][:appclient][:install_location]`: The installation directory
-  for Packaging Utility. Default is `/opt/IBM/PackagingUtility`.
+* `node[:websphere][:pkgutil][:install_location]`: [String] The installation
+  directory for Packaging Utility. Default is `/opt/IBM/PackagingUtility`.
 
-* `node[:websphere][:appclient][:data]`: Installation specific attributes:
+Additionally the namespace `[:websphere][:pkgutil][:data]` is used at installation time, these key/value pairs correspond to the hash values created in the installation XML file.
 
-  * `eclipseLocation`: The eclipseLocation data key should use the same
-    directory path to Packaging Utility as the `install_location` attribute.
+  * `user.import.profile`: [TrueClass, FalseClass] Include data keys for product
+    specific profile properties. Default is `false`.
 
-  * `user.import.profile`: Include data keys for product specific profile
-    properties. Default is `false`.
+  * `cic.selector.os`: [String] Specifies the operating system. Default value
+    is `linux`.
+  
+  * `cic.selector.ws`: [String] Specifies the type of window system. The
+    default value is `gtk`.
+  
+  * `cic.selector.arch`: [String] The platform architecture, **note:** this
+    cookbook only supports 64bit architecture. The default value is 'x86_64'.
+  
+  * `cic.selector.nl`: [String] Specifies the language pack to be installed
+    using ISO-639 language codes. The default value is `en`.
 
-  * `cic.selector.os`: Specifies the operating system. Default value is `linux`.
-
-  * `cic.selector.ws`: Specifies the type of window system. Default value is
-    `gtk`.
-
-  * `cic.selector.arch`: Specifies the architecture to install: 32-bit or 64-
-    bit. Default value is `x86_64`.
-
-  * `cic.selector.nl`: Specifies the language pack to be installed using ISO-639
-    language codes.
-
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 #### Web Server Plug-ins for WebSphere Application Server
 
-* `node[:websphere][:plg][:install]`: Specify whether or not to install
-  WebSphere Plug-ins, default value is `true`.
+The Web Server Plug-ins connect a IHS Web Server and a WebSphere application
+Server. The primary responsibility of the plug-in is to forward requests to the
+Application server.
 
-* `node[:websphere][:plg][:id]`: The Uniq IBM product ID for WebSphere Plug-ins, default value is `com.ibm.websphere.PLG.v85`.
+* `node[:websphere][:plg][:id]`: [String] The Uniq IBM product ID for the
+  Web Server Plug-ins for WebSphere Application Server. Default value is
+  `com.ibm.websphere.PLG.v85`. **Note:** You should not change this attribute.
 
-* `node[:websphere][:plg][:repositories]`: Specify the repositories that
-  are used during the installation. Use a URL or UNC path to specify the remote
-  repositories. Or use directory paths to specify the local repositories. The
-  default value is to use `node[:websphere][:repositories][:local]`.
+* `node[:websphere][:plg][:repositories]`: [Array, String] The location
+  for a local online product repository. This can be a local copy on the
+  machine, or on an internal web or NFS server. Information on how to create
+  your own local online product repository can be found later in this document.
+  Default is `nil`.
 
-* `node[:websphere][:plg][:modify]`: Use the install and uninstall
-  commands to inform Installation Manager of the installation packages to
-  install or uninstall. A value of `false` indicates not to modify an existing
-  install by adding or removing features. A `true` value indicates to modify an
-  existing install by adding or removing features. The default value is `false`.
+* `node[:websphere][:plg][:modify]`: [TrueClass, FalseClass] Use the
+  install and uninstall commands to inform Installation Manager of the
+  installation packages to install or uninstall. A value of `false` indicates
+  not to modify an existing install by adding or removing features. A `true`
+  value indicates to modify an existing install by adding or removing features.
+  The default value is `false`.
 
-* `node[:websphere][:plg][:version]`: The version attribute is optional.
-  If a version number is provided, then the offering will be installed or
-  uninstalled at the version level specified as long as it is available in the
-  repositories. If the version attribute is not provided, then the default
+* `node[:websphere][:plg][:version]`: [String] The version attribute is
+  optional. If a version number is provided, then the offering will be installed
+  or uninstalled at the version level specified as long as it is available in
+  the repositories. If the version attribute is not provided, then the default
   behavior is to install or uninstall the latest version available in the
   repositories. The version number can be found in the repository.xml file in
-  the repositories.
+  the repositories. This attribute has no default value.
 
   **Note:** In some cases, a package might be rolled back to an earlier version.
   This roll back can happen if the version specified is earlier than the
@@ -685,351 +723,46 @@ IBM Installation Manager is a horrible tool that you can use to waste hours of y
   package available in the repository is version 1.0.1. When you install the
   package, the installed version of the package is rolled back to version 1.0.1.
 
-* `node[:websphere][:plg][:profile]`: The profile attribute is required
-  and typically is unique to the offering. If modifying or updating an existing
-  installation, the profile attribute must match the profile ID of the targeted
-  installation of WebSphere Application Server. The default value is
+* `node[:websphere][:plg][:profile]`: [String] The profile attribute is
+  required and typically is unique to the offering. If modifying or updating an
+  existing installation, the profile attribute must match the profile ID of the
+  targeted installation of WebSphere Application Server. The default value is
   `Web Server Plug-ins for IBM WebSphere Application Server V8.5`.
 
-* `node[:websphere][:plg][:features]`: The features attribute is optional.
-  Offerings always have at least one feature; a required core feature which is
-  installed regardless of whether it is explicitly specified. If other feature
-  names are provided, then only those features will be installed. Features must
-  be comma delimited without spaces. The default value is
+* `node[:websphere][:plg][:features]`: [String] The features attribute is
+  optional. Offerings always have at least one feature; a required core feature
+  which is installed regardless of whether it is explicitly specified. If other
+  feature names are provided, then only those features will be installed.
+  Features must be comma delimited without spaces. The default value is
   `core.feature,com.ibm.jre.6_64bit`.
 
-* `node[:websphere][:plg][:fixes]`: The fixes attribute indicates whether
-  fixes available in repositories are installed with the product. By default,
-  all available fixes will be installed with the offering. Valid values for
-  `node[:websphere][:plg][:fixes]` are:
-    * `none`:        Do not install available fixes.
-    * `recommended`: Installs all available recommended fixes.
-    * `all`:         Installs all available fixes.
+* `node[:websphere][:plg][:fixes]`: [String] The fixes attribute is used
+  to indicates whether fixes available in repositories are installed with the
+  product. Valid values for `none`, do not install available fixes,
+  `recommended`, installs all available recommended fixes, or `all`, install
+   all available fixes. The default value is `all`.
 
-* `node[:websphere][:plg][:install_location]`: The installation directory
-  for WebSphere Plug-ins. Default is `/opt/IBM/WebSphere/Plugins`.
+* `node[:websphere][:plg][:install_location]`: [String] The installation
+  directory for the Web Server Plugins. Default is `/opt/IBM/WebSphere/Plugins`.
 
-* `node[:websphere][:plg][:data]`: Installation specific attributes:
+Additionally the namespace `[:websphere][:plg][:data]` is used at installation time, these key/value pairs correspond to the hash values created in the installation XML file.
 
-  * `eclipseLocation`: The eclipseLocation data key should use the same
-    directory path to WebSphere Plug-ins as the `install_location` attribute.
+  * `user.import.profile`: [TrueClass, FalseClass] Include data keys for product
+    specific profile properties. Default is `false`.
 
-  * `user.import.profile`: Include data keys for product specific profile
-    properties. Default is `false`.
+  * `cic.selector.nl`: [String] Specifies the language pack to be installed
+    using ISO-639 language codes. The default value is `en`.
 
-  * `cic.selector.os`: Specifies the operating system. Default value is `linux`.
-
-  * `cic.selector.ws`: Specifies the type of window system. Default value is
-    `gtk`.
-
-  * `cic.selector.arch`: Specifies the architecture to install: 32-bit or 64-
-    bit. Default value is `x86_64`.
-
-  * `cic.selector.nl`: Specifies the language pack to be installed using ISO-639
-    language codes.
-
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 #### Pluggable Application Client for WebSphere Application Server
 
-* `node[:websphere][:appclient][:install]`: Specify whether or not to install
-  Application Client, default value is `true`.
-
-* `node[:websphere][:appclient][:id]`: The Uniq IBM product ID for Application
-  Client, default value is `com.ibm.websphere.APPCLIENT.v85`.
-
-* `node[:websphere][:appclient][:repositories]`: Specify the repositories that
-  are used during the installation. Use a URL or UNC path to specify the remote
-  repositories. Or use directory paths to specify the local repositories. The
-  default value is to use `node[:websphere][:repositories][:local]`.
-
-* `node[:websphere][:appclient][:modify]`: Use the install and uninstall
-  commands to inform Installation Manager of the installation packages to
-  install or uninstall. A value of `false` indicates not to modify an existing
-  install by adding or removing features. A `true` value indicates to modify an
-  existing install by adding or removing features. The default value is `false`.
-
-* `node[:websphere][:appclient][:version]`: The version attribute is optional.
-  If a version number is provided, then the offering will be installed or
-  uninstalled at the version level specified as long as it is available in the
-  repositories. If the version attribute is not provided, then the default
-  behavior is to install or uninstall the latest version available in the
-  repositories. The version number can be found in the repository.xml file in
-  the repositories.
-
-  **Note:** In some cases, a package might be rolled back to an earlier version.
-  This roll back can happen if the version specified is earlier than the
-  installed version or if a version is not specified. For example, you have
-  version 1.0.2 of a package that is installed and the latest version of the
-  package available in the repository is version 1.0.1. When you install the
-  package, the installed version of the package is rolled back to version 1.0.1.
-
-* `node[:websphere][:appclient][:profile]`: The profile attribute is required
-  and typically is unique to the offering. If modifying or updating an existing
-  installation, the profile attribute must match the profile ID of the targeted
-  installation of WebSphere Application Server. The default value is
-  `Application Client for IBM WebSphere Application Server V8.5`.
-
-* `node[:websphere][:appclient][:features]`: The features attribute is optional.
-  Offerings always have at least one feature; a required core feature which is
-  installed regardless of whether it is explicitly specified. If other feature
-  names are provided, then only those features will be installed. Features must
-  be comma delimited without spaces. The default value is
-  `core.feature,pct,zpmt,zmmt`.
-
-* `node[:websphere][:appclient][:fixes]`: The fixes attribute indicates whether
-  fixes available in repositories are installed with the product. By default,
-  all available fixes will be installed with the offering. Valid values for
-  `node[:websphere][:appclient][:fixes]` are:
-    * `none`:        Do not install available fixes.
-    * `recommended`: Installs all available recommended fixes.
-    * `all`:         Installs all available fixes.
-
-* `node[:websphere][:appclient][:install_location]`: The installation directory
-  for Application Client. Default is `/opt/IBM/WebSphere/AppClient`.
-
-* `node[:websphere][:appclient][:data]`: Installation specific attributes:
-
-  * `eclipseLocation`: The eclipseLocation data key should use the same
-    directory path to Application Client as the `install_location` attribute.
-
-  * `user.import.profile`: Include data keys for product specific profile
-    properties. Default is `false`.
-
-  * `user.select.64bit.image,com.ibm.websphere.WCT.v85`: Needs documentation.
-
-  * `user.appclient.serverHostname`: Needs documentation.
-
-  * `user.appclient.serverPort`: Needs documentation.
-
-  * `cic.selector.nl`: Specifies the language pack to be installed using ISO-639
-    language codes.
-
-#### IBM WebSphere Portal Server
-
-* `node[:websphere][:appclient][:install]`: Specify whether or not to install
-  Application Client, default value is `true`.
-
-* `node[:websphere][:appclient][:id]`: The Uniq IBM product ID for Application
-  Client, default value is `com.ibm.websphere.APPCLIENT.v85`.
-
-* `node[:websphere][:appclient][:repositories]`: Specify the repositories that
-  are used during the installation. Use a URL or UNC path to specify the remote
-  repositories. Or use directory paths to specify the local repositories. The
-  default value is to use `node[:websphere][:repositories][:local]`.
-
-* `node[:websphere][:appclient][:modify]`: Use the install and uninstall
-  commands to inform Installation Manager of the installation packages to
-  install or uninstall. A value of `false` indicates not to modify an existing
-  install by adding or removing features. A `true` value indicates to modify an
-  existing install by adding or removing features. The default value is `false`.
-
-* `node[:websphere][:appclient][:version]`: The version attribute is optional.
-  If a version number is provided, then the offering will be installed or
-  uninstalled at the version level specified as long as it is available in the
-  repositories. If the version attribute is not provided, then the default
-  behavior is to install or uninstall the latest version available in the
-  repositories. The version number can be found in the repository.xml file in
-  the repositories.
-
-  **Note:** In some cases, a package might be rolled back to an earlier version.
-  This roll back can happen if the version specified is earlier than the
-  installed version or if a version is not specified. For example, you have
-  version 1.0.2 of a package that is installed and the latest version of the
-  package available in the repository is version 1.0.1. When you install the
-  package, the installed version of the package is rolled back to version 1.0.1.
-
-* `node[:websphere][:appclient][:profile]`: The profile attribute is required
-  and typically is unique to the offering. If modifying or updating an existing
-  installation, the profile attribute must match the profile ID of the targeted
-  installation of WebSphere Application Server. The default value is
-  `Application Client for IBM WebSphere Application Server V8.5`.
-
-* `node[:websphere][:appclient][:features]`: The features attribute is optional.
-  Offerings always have at least one feature; a required core feature which is
-  installed regardless of whether it is explicitly specified. If other feature
-  names are provided, then only those features will be installed. Features must
-  be comma delimited without spaces. The default value is
-  `core.feature,pct,zpmt,zmmt`.
-
-* `node[:websphere][:appclient][:fixes]`: The fixes attribute indicates whether
-  fixes available in repositories are installed with the product. By default,
-  all available fixes will be installed with the offering. Valid values for
-  `node[:websphere][:appclient][:fixes]` are:
-    * `none`:        Do not install available fixes.
-    * `recommended`: Installs all available recommended fixes.
-    * `all`:         Installs all available fixes.
-
-* `node[:websphere][:appclient][:install_location]`: The installation directory
-  for Application Client. Default is `/opt/IBM/WebSphere/AppClient`.
-
-* `node[:websphere][:appclient][:data]`: Installation specific attributes:
-
-  * `eclipseLocation`: The eclipseLocation data key should use the same
-    directory path to Application Client as the `install_location` attribute.
-
-  * `user.import.profile`: Include data keys for product specific profile
-    properties. Default is `false`.
-
-  * `user.select.64bit.image,com.ibm.websphere.WCT.v85`: Needs documentation.
-
-  * `user.appclient.serverHostname`: Needs documentation.
-
-  * `user.appclient.serverPort`: Needs documentation.
-
-  * `cic.selector.nl`: Specifies the language pack to be installed using ISO-639
-    language codes.
-
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 #### IBM WebSphere Application Server Network Deployment
-Documentation:
-http://www-01.ibm.com/support/knowledgecenter/#!/SSAW57_8.5.5/as_ditamaps/was855_welcome_ndmp.html
 
-* `node[:websphere][:appclient][:install]`: Specify whether or not to install
-  Application Client, default value is `true`.
-
-* `node[:websphere][:appclient][:id]`: The Uniq IBM product ID for Application
-  Client, default value is `com.ibm.websphere.APPCLIENT.v85`.
-
-* `node[:websphere][:appclient][:repositories]`: Specify the repositories that
-  are used during the installation. Use a URL or UNC path to specify the remote
-  repositories. Or use directory paths to specify the local repositories. The
-  default value is to use `node[:websphere][:repositories][:local]`.
-
-* `node[:websphere][:appclient][:modify]`: Use the install and uninstall
-  commands to inform Installation Manager of the installation packages to
-  install or uninstall. A value of `false` indicates not to modify an existing
-  install by adding or removing features. A `true` value indicates to modify an
-  existing install by adding or removing features. The default value is `false`.
-
-* `node[:websphere][:appclient][:version]`: The version attribute is optional.
-  If a version number is provided, then the offering will be installed or
-  uninstalled at the version level specified as long as it is available in the
-  repositories. If the version attribute is not provided, then the default
-  behavior is to install or uninstall the latest version available in the
-  repositories. The version number can be found in the repository.xml file in
-  the repositories.
-
-  **Note:** In some cases, a package might be rolled back to an earlier version.
-  This roll back can happen if the version specified is earlier than the
-  installed version or if a version is not specified. For example, you have
-  version 1.0.2 of a package that is installed and the latest version of the
-  package available in the repository is version 1.0.1. When you install the
-  package, the installed version of the package is rolled back to version 1.0.1.
-
-* `node[:websphere][:appclient][:profile]`: The profile attribute is required
-  and typically is unique to the offering. If modifying or updating an existing
-  installation, the profile attribute must match the profile ID of the targeted
-  installation of WebSphere Application Server. The default value is
-  `Application Client for IBM WebSphere Application Server V8.5`.
-
-* `node[:websphere][:appclient][:features]`: The features attribute is optional.
-  Offerings always have at least one feature; a required core feature which is
-  installed regardless of whether it is explicitly specified. If other feature
-  names are provided, then only those features will be installed. Features must
-  be comma delimited without spaces. The default value is
-  `core.feature,pct,zpmt,zmmt`.
-
-* `node[:websphere][:appclient][:fixes]`: The fixes attribute indicates whether
-  fixes available in repositories are installed with the product. By default,
-  all available fixes will be installed with the offering. Valid values for
-  `node[:websphere][:appclient][:fixes]` are:
-    * `none`:        Do not install available fixes.
-    * `recommended`: Installs all available recommended fixes.
-    * `all`:         Installs all available fixes.
-
-* `node[:websphere][:appclient][:install_location]`: The installation directory
-  for Application Client. Default is `/opt/IBM/WebSphere/AppClient`.
-
-* `node[:websphere][:appclient][:data]`: Installation specific attributes:
-
-  * `eclipseLocation`: The eclipseLocation data key should use the same
-    directory path to Application Client as the `install_location` attribute.
-
-  * `user.import.profile`: Include data keys for product specific profile
-    properties. Default is `false`.
-
-  * `user.select.64bit.image,com.ibm.websphere.WCT.v85`: Needs documentation.
-
-  * `user.appclient.serverHostname`: Needs documentation.
-
-  * `user.appclient.serverPort`: Needs documentation.
-
-  * `cic.selector.nl`: Specifies the language pack to be installed using ISO-639
-    language codes.
-
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 #### WebSphere Customization Toolbox
 
-* `node[:websphere][:appclient][:install]`: Specify whether or not to install
-  Application Client, default value is `true`.
-
-* `node[:websphere][:appclient][:id]`: The Uniq IBM product ID for Application
-  Client, default value is `com.ibm.websphere.APPCLIENT.v85`.
-
-* `node[:websphere][:appclient][:repositories]`: Specify the repositories that
-  are used during the installation. Use a URL or UNC path to specify the remote
-  repositories. Or use directory paths to specify the local repositories. The
-  default value is to use `node[:websphere][:repositories][:local]`.
-
-* `node[:websphere][:appclient][:modify]`: Use the install and uninstall
-  commands to inform Installation Manager of the installation packages to
-  install or uninstall. A value of `false` indicates not to modify an existing
-  install by adding or removing features. A `true` value indicates to modify an
-  existing install by adding or removing features. The default value is `false`.
-
-* `node[:websphere][:appclient][:version]`: The version attribute is optional.
-  If a version number is provided, then the offering will be installed or
-  uninstalled at the version level specified as long as it is available in the
-  repositories. If the version attribute is not provided, then the default
-  behavior is to install or uninstall the latest version available in the
-  repositories. The version number can be found in the repository.xml file in
-  the repositories.
-
-  **Note:** In some cases, a package might be rolled back to an earlier version.
-  This roll back can happen if the version specified is earlier than the
-  installed version or if a version is not specified. For example, you have
-  version 1.0.2 of a package that is installed and the latest version of the
-  package available in the repository is version 1.0.1. When you install the
-  package, the installed version of the package is rolled back to version 1.0.1.
-
-* `node[:websphere][:appclient][:profile]`: The profile attribute is required
-  and typically is unique to the offering. If modifying or updating an existing
-  installation, the profile attribute must match the profile ID of the targeted
-  installation of WebSphere Application Server. The default value is
-  `Application Client for IBM WebSphere Application Server V8.5`.
-
-* `node[:websphere][:appclient][:features]`: The features attribute is optional.
-  Offerings always have at least one feature; a required core feature which is
-  installed regardless of whether it is explicitly specified. If other feature
-  names are provided, then only those features will be installed. Features must
-  be comma delimited without spaces. The default value is
-  `core.feature,pct,zpmt,zmmt`.
-
-* `node[:websphere][:appclient][:fixes]`: The fixes attribute indicates whether
-  fixes available in repositories are installed with the product. By default,
-  all available fixes will be installed with the offering. Valid values for
-  `node[:websphere][:appclient][:fixes]` are:
-    * `none`:        Do not install available fixes.
-    * `recommended`: Installs all available recommended fixes.
-    * `all`:         Installs all available fixes.
-
-* `node[:websphere][:appclient][:install_location]`: The installation directory
-  for Application Client. Default is `/opt/IBM/WebSphere/AppClient`.
-
-* `node[:websphere][:appclient][:data]`: Installation specific attributes:
-
-  * `eclipseLocation`: The eclipseLocation data key should use the same
-    directory path to Application Client as the `install_location` attribute.
-
-  * `user.import.profile`: Include data keys for product specific profile
-    properties. Default is `false`.
-
-  * `user.select.64bit.image,com.ibm.websphere.WCT.v85`: Needs documentation.
-
-  * `user.appclient.serverHostname`: Needs documentation.
-
-  * `user.appclient.serverPort`: Needs documentation.
-
-  * `cic.selector.nl`: Specifies the language pack to be installed using ISO-639
-    language codes.
-
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ## Providers
 
 This cookbook includes LWRPs for managing:
@@ -1073,7 +806,7 @@ This cookbook includes LWRPs for managing:
 Ensure you have all the required prerequisite listed in the Development
 Requirements section. You should have a working Vagrant installation with either VirtualBox or VMware installed. From the parent directory of this cookbook begin by running bundler to ensure you have all the required Gems:
 
-  bundle install
+    bundle install
 
 A ruby environment with Bundler installed is a prerequisite for using the testing harness shipped with this cookbook. At the time of this writing, it works with Ruby 2.1.2 and Bundler 1.6.2. All programs involved, with the exception of Vagrant and VirtualBox, can be installed by cd'ing into the parent directory of this cookbook and running 'bundle install'.
 
@@ -1083,86 +816,71 @@ The installation of Vagrant and VirtualBox is extremely complex and involved. Pl
 
 If you have not yet installed Homebrew do so now:
 
-  `ruby -e "$(curl -fsSL https://raw.github.com/Homebrew/homebrew/go/install)"`
+    ruby -e "$(curl -fsSL https://raw.github.com/Homebrew/homebrew/go/install)"
 
 Next install Homebrew Cask:
 
-  `brew tap phinze/homebrew-cask && brew install brew-cask`
+    brew tap phinze/homebrew-cask && brew install brew-cask
 
 Then, to get Vagrant installed run this command:
 
-  `brew cask install vagrant`
+    brew cask install vagrant
 
 Finally install VirtualBox:
 
-  `brew cask install virtualbox`
+    brew cask install virtualbox
 
 You will also need to get the Berkshelf and Omnibus plugins for Vagrant:
 
-  `vagrant plugin install vagrant-berkshelf --plugin-version 2.0.1`
-  `vagrant plugin install vagrant-omnibus`
+    vagrant plugin install vagrant-berkshelf
+    vagrant plugin install vagrant-omnibus
 
-Yea, who develops on a Mac... ;-)
+Try doing that on Windows.
 
 #### Rakefile
 
 The Rakefile ships with a number of tasks, each of which can be ran individually, or in groups. Typing `rake` by itself will perform style checks with [Rubocop](https://github.com/bbatsov/rubocop) and [Foodcritic](http://www.foodcritic.io), [Chefspec](http://sethvargo.github.io/chefspec/) with rspec, and integration with [Test Kitchen](http://kitchen.ci) using the Vagrant driver by default. Alternatively, integration tests can be ran with Test Kitchen cloud drivers for EC2 are provided.
 
-```Bash
-$ rake -T
-rake integration:cloud        # Run Test Kitchen with cloud plugins
-rake integration:vagrant      # Run Test Kitchen with Vagrant
-rake spec                     # Run ChefSpec unit tests
-rake style                    # Run all style checks
-rake style:chef               # Lint Chef cookbooks
-rake style:ruby               # Run Ruby style checks
-```
-
+    $ rake -T
+    rake all                         # Run all tasks
+    rake chefspec                    # Run RSpec code examples
+    rake doc                         # Build documentation
+    rake foodcritic                  # Lint Chef cookbooks
+    rake kitchen:all                 # Run all test instances
+    rake kitchen:apps-dir-centos-65  # Run apps-dir-centos-65 test instance
+    rake kitchen:default-centos-65   # Run default-centos-65 test instance
+    rake kitchen:ihs-centos-65       # Run ihs-centos-65 test instance
+    rake kitchen:was-centos-65       # Run was-centos-65 test instance
+    rake kitchen:wps-centos-65       # Run wps-centos-65 test instance
+    rake readme                      # Generate README.md from _README.md.erb
+    rake rubocop                     # Run RuboCop
+    rake rubocop:auto_correct        # Auto-correct RuboCop offenses
+    rake test                        # Run all tests except `kitchen` / Run 
+                                     # kitchen integration tests
+    rake yard                        # Generate YARD Documentation
 
 #### Style Testing
 
 Ruby style tests can be performed by Rubocop by issuing either the bundled binary or with the Rake task:
 
-```Bash
-$ bundle exec rubocop
-#      or
-$ rake style:ruby
-```
+    $ bundle exec rubocop
+        or
+    $ rake style:ruby
 
 Chef style tests can be performed with Foodcritic by issuing either:
 
-```Bash
-$ bundle exec foodcritic
-#     or
-$ rake style:chef
-```
-
-### Style Guide
-
-This cookbook requires a style guide for all contributions. Travis will automatically verify that every Pull Request follows the style guide.
-
-1. Install [ChefDK](http://downloads.getchef.com/chef-dk/)
-2. Activate ChefDK's copy of ruby: `eval "$(chef shell-init bash)"`
-3. `bundle install`
-4. `bundle exec rake style`
+    $ bundle exec foodcritic
+        or
+    $ rake style:chef
 
 ### Testing
 
-This cookbook uses Test Kitchen to verify functionality. A Pull Request can't be merged if it causes any of the test configurations to fail.
+This cookbook uses Test Kitchen to verify functionality.
 
 1. Install [ChefDK](http://downloads.getchef.com/chef-dk/)
 2. Activate ChefDK's copy of ruby: `eval "$(chef shell-init bash)"`
 3. `bundle install`
-4. `bundle exec kitchen test aio-debian-74`
-5. `bundle exec kitchen test aio-ubuntu-1204`
-6. `bundle exec kitchen test aio-ubuntu-1404`
-
-
-
-
-
-
-
+4. `bundle exec kitchen test kitchen:default-centos-65`
 
 #### Spec Testing
 
@@ -1177,11 +895,9 @@ ensure that a recipe has accomplished its goal.
 
 Integration tests can be performed on a local workstation using Virtualbox or VMWare. Detailed instructions for setting this up can be found at the [Bento](https://github.com/opscode/bento) project web site. Integration tests using Vagrant can be performed with either:
 
-```Bash
-$ bundle exec kitchen test
-#      or
-$ rake integration:vagrant
-```
+    $ bundle exec kitchen test
+        or
+    $ rake integration:vagrant
 
 #### Integration Testing using EC2 Cloud provider
 
@@ -1189,18 +905,16 @@ Integration tests can be performed on an EC2 providers using Test Kitchen plugin
 
 Examples of environment variables being set in `~/.bash_profile`:
 
-```Bash
-# aws
-export AWS_ACCESS_KEY_ID='your_bits_here'
-export AWS_SECRET_ACCESS_KEY='your_bits_here'
-export AWS_KEYPAIR_NAME='your_bits_here'
-```
+    # aws
+    export AWS_ACCESS_KEY_ID='your_bits_here'
+    export AWS_SECRET_ACCESS_KEY='your_bits_here'
+    export AWS_KEYPAIR_NAME='your_bits_here'
 
 Integration tests using cloud drivers can be performed with either
 
-  $ bundle exec kitchen test
-    or
-  rake integration:cloud
+    $ bundle exec kitchen test
+        or
+    $ rake integration:cloud
 
 ### Guard
 

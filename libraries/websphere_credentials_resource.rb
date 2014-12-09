@@ -5,43 +5,75 @@
 # Library:: websphere_credentials_resource
 #
 
-require 'chef/resource/lwrp_base'
-require_relative 'websphere_credentials_provider'
-
 # For repositories that require authentication this creates a storage file.
 # Once created the use of the -secureStorageFile and -masterPasswordFile
 # options to store and retrieve credentials will be avaliable.
 #
 class Chef::Resource::WebsphereCredentials < Chef::Resource::LWRPBase
-  self.resource_name = 'websphere_credentials'
+  # Chef attributes
+  identity_attr :credentials
+  provides :websphere_credentials
+  state_attrs :stored
 
+  # Set the resource name
+  self.resource_name = :websphere_credentials
+
+  # Actionss
   actions :store
   default_action :store
+
+  attribute :username, kind_of: [String, Symbol], name_attribute: true
 
   # @!attribute [w] name
   #   @return [String] name attribute
   attribute :name,                 kind_of: String,    name_attribute: true
 
-  # @!attribute [w] master_password_file
-  #   @return [String] location of the master password file IIM should use to
-  #   access the secure storage file
-  attribute :master_password_file, kind_of: String,    required: true
+  def owner(arg = nil)
+    from_attributes = run_context.node[:websphere][:user][:name]
+    from_resource_block = self.instance_variable_get('@owner')
 
-  # @!attribute [w] secure_storage_file
-  #   @return [String] location of the secure storage file IIM should use to
-  #   access the repoistory
-  attribute :secure_storage_file,  kind_of: String,    required: true
+    arg = from_resource_block ||= from_attributes if arg == nil
+    set_or_return(:owner, arg, kind_of: String)
+  end
 
-  # @!attribute [w] user
-  #   @return [String] username
-  attribute :user,                 kind_of: String,    required: true
+  def __set_attribute_value__(arg, attribute_name, kind_of)
+    if run_context.node[:websphere].keys.include? attribute_name
+      from_attributes = run_context.node[:websphere][attribute_name]
+    elsif run_context.node[:websphere][:user].keys.include? attribute_name
+      from_attributes = run_context.node[:websphere][:user][attribute_name]
+    else
+      from_attributes = run_context.node[:websphere][:credential][attribute_name]
+    end
+    Chef::Log.debug "Default #{attribute_name} is #{from_attributes}"
 
-  # @!attribute [w] password
-  #   @return [String] password
-  attribute :password,             kind_of: String,    required: true
+    from_resource_block = self.instance_variable_get("@#{attribute_name}")
+    arg = from_resource_block ||= from_attributes if arg == nil
+    Chef::Log.debug "Merged #{attribute_name} is #{arg}"
 
-  # @!attribute [w] url
-  #   @return [String] generic service repository
-  attribute :url,                  kind_of: URI::HTTP, default:
-    'http://www.ibm.com/software/repositorymanager/entitled/repository.xml'
+    set_or_return(attribute_name.to_sym, arg, kind_of: kind_of)
+  end
+
+  def master_password_file(arg = nil)
+     __set_attribute_value__(arg, __method__, String)
+  end
+
+  def secure_storage_file(arg = nil)
+     __set_attribute_value__(arg, __method__, String)
+  end
+
+  def username(arg = nil)
+     __set_attribute_value__(arg, __method__, String)
+  end
+
+  def password(arg = nil)
+     __set_attribute_value__(arg, __method__, String)
+  end
+
+  def group(arg = nil)
+     __set_attribute_value__(arg, __method__, String)
+  end
+
+  def url(arg = nil)
+     __set_attribute_value__(arg, __method__, String)
+  end
 end

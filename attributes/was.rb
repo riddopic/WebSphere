@@ -5,20 +5,19 @@
 # Attributes:: was
 #
 
+include_attribute 'websphere::default'
+
 # ====================== IBM WebSphere Application Server ======================
 #
 default[:websphere][:was] = {
-  # Specify whether or not to install IBM WebSphere Application Server (WAS).
-  install: true,
-
   # The Uniq IBM product ID for IBM WebSphere Application Server.
   id: 'com.ibm.websphere.ND.v85',
 
   # Specify the repositories that are used during the installation. Use a URL
   # or UNC path to specify the remote repositories. Or use directory paths to
-  # specify the local repositories.
-  repositories: ->{
-    'http://repo.mudbox.dev/ibm/repositorymanager/com.ibm.websphere.ND.v85' },
+  # specify the local repositories. If none is specified it will default to
+  # using `node[:websphere][:repositories][:local]`, default is nil.
+  repositories: nil,
 
   # Use the install and uninstall commands to inform Installation Manager of the
   # installation packages to install or uninstall.
@@ -55,8 +54,9 @@ default[:websphere][:was] = {
   # it is explicitly specified. If other feature names are provided, then only
   # those features will be installed. Features must be comma delimited without
   # spaces.
-  features: 'core.feature,ejbdeploy,thinclient,embeddablecontainer,liberty,' \
-            'samples,com.ibm.sdk.6_64bit',
+  features: 'core.feature,ejbdeploy,thinclient,embeddablecontainer,samples,' \
+            'com.ibm.sdk.6_64bit',
+  # ORIG had liberty feature but not entitled? 'liberty,com.ibm.sdk.6_64bit',
 
   # The installFixes attribute indicates whether fixes available in repositories
   # are installed with the product. By default, all available fixes will be
@@ -70,22 +70,19 @@ default[:websphere][:was] = {
 
   # The installation directory for IBM WebSphere Application Server.
   # Default is `/opt/IBM/WebSphere/AppServer`.
-  install_location: '/opt/IBM/WebSphere/AppServer',
+  install_location: ::File.join(
+    node[:websphere][:base_dir], 'WebSphere/AppServer'),
 
   data: [
-    # The eclipseLocation data key should use the same directory path to
-    # WebSphere Application Server as the `install_location` attribute.
-    { key:   'eclipseLocation',
-      value: lambda { node[:websphere][:was][:install_location] } },
     # Include data keys for product specific profile properties.
-    { key:   'user.import.profile', value: false                  },
+    { key:   'user.import.profile', value: false   },
     # Specifies the operating system.
-    { key:   'cic.selector.os',     value: 'linux'                },
+    { key:   'cic.selector.os',     value: 'linux' },
     # Specifies the type of window system.
-    { key:   'cic.selector.ws',    value: 'gtk'                   },
+    { key:   'cic.selector.ws',    value: 'gtk'    },
     # Specifies the architecture to install: 32-bit or 64-bit.
-    { key:   'cic.selector.arch',  value: 'x86_64'                },
+    { key:   'cic.selector.arch',  value: 'x86'    },
     # Specifies the language pack to be installed using ISO-639 language codes.
-    { key:   'cic.selector.nl',    value: 'en'                    }
+    { key:   'cic.selector.nl',    value: 'en'     }
   ]
 }

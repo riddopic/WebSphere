@@ -5,20 +5,19 @@
 # Attributes:: appclient
 #
 
+include_attribute 'websphere::default'
+
 # ============ Application Client for WebSphere Application Server =============
 #
 default[:websphere][:appclient] = {
-  # Specify whether or not to install Application Client (APPCLIENT).
-  install: true,
-
   # The Uniq IBM product ID for Application Client.
   id: 'com.ibm.websphere.APPCLIENT.v85',
 
   # Specify the repositories that are used during the installation. Use a URL
   # or UNC path to specify the remote repositories. Or use directory paths to
-  # specify the local repositories.
-  repositories: ->{
-    'http://repo.mudbox.dev/ibm/repositorymanager/com.ibm.websphere.APPCLIENT.v85' },
+  # specify the local repositories. If none is specified it will default to
+  # using `node[:websphere][:repositories][:local]`, default is nil.
+  repositories: nil,
 
   # Use the install and uninstall commands to inform Installation Manager of the
   # installation packages to install or uninstall.
@@ -55,7 +54,8 @@ default[:websphere][:appclient] = {
   # it is explicitly specified. If other feature names are provided, then only
   # those features will be installed. Features must be comma delimited without
   # spaces.
-  features: 'core.feature,pct,zpmt,zmmt',
+  features: 'javaee.thinclient.core.feature,javaruntime,developerkit,samples,'\
+            'standalonethinclient.resourceadapter.runtime,embeddablecontainer',
 
   # The installFixes attribute indicates whether fixes available in repositories
   # are installed with the product. By default, all available fixes will be
@@ -69,21 +69,17 @@ default[:websphere][:appclient] = {
 
   # The installation directory for Application Client.
   # Default is `/opt/IBM/WebSphere/AppClient`.
-  install_location: '/opt/IBM/WebSphere/AppClient',
+  install_location: ::File.join(
+    node[:websphere][:base_dir], 'WebSphere/AppClient'),
 
   data: [
-    # The eclipseLocation data key should use the same directory path to
-    # WebSphere Application Server as the installationLocation attribute.
-    { key:   'eclipseLocation',
-      value: lambda { node[:websphere][:appclient][:install_location] } },
     # Include data keys for product specific profile properties.
-    { key:   'user.import.profile',           value: false              },
+    { key:   'user.import.profile',           value: false       },
     { key:   'user.select.64bit.image,com.ibm.websphere.WCT.v85',
-      value: 'x86_64'                                                   },
-    { key:   'user.appclient.serverHostname', value: 'localhost'        },
-    { key:   'user.appclient.serverPort',     value: 2809               },
-    { key:   'user.ihs.allowNonRootSilentInstall', value: true    }, #######
+      value: 'x86_64'                                            },
+    { key:   'user.appclient.serverHostname', value: 'localhost' },
+    { key:   'user.appclient.serverPort',     value: 2809        },
     # Specifies the language pack to be installed using ISO-639 language codes.
-    { key:   'cic.selector.nl',               value: 'en'               }
+    { key:   'cic.selector.nl',               value: 'en'        }
   ]
 }

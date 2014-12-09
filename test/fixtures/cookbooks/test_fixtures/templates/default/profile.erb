@@ -1,0 +1,12 @@
+
+export PATH=$PATH:<%= @pkg_util_dir %>:<%= @tools_dir %>
+
+alias installed='imcl listinstalledpackages -long'
+alias ls='ls -Gh --color=auto'
+alias df='df -h'
+alias cls=clear
+set -o vi
+
+export EDITOR=vi
+
+PS1='[\u@\h \W]\$ '

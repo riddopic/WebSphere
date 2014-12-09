@@ -25,3 +25,62 @@ suites:
           passwordless: true
           include_sudoers_d: true
           users: [ 'wasadm', 'kitchen', 'vagrant' ]
+      websphere:
+        apps: [ 'appclient', 'ihs', 'pkgutil', 'plg', 'was', 'wct' ]
+
+  - name: apps_dir
+    run_list:
+      - recipe[sudo::default]
+      - recipe[test_fixtures::devreporter]
+      - recipe[websphere::default]
+    attributes:
+      authorization:
+        sudo:
+          passwordless: true
+          include_sudoers_d: true
+          users: [ 'wasadm', 'kitchen', 'vagrant' ]
+      websphere:
+        apps: [ 'appclient', 'ihs', 'pkgutil', 'plg', 'was', 'wct' ]
+      base_dir: '/apps/IBM'
+
+  - name: ihs
+    run_list:
+      - recipe[sudo::default]
+      - recipe[test_fixtures::devreporter]
+      - recipe[websphere::default]
+    attributes:
+      authorization:
+        sudo:
+          passwordless: true
+          include_sudoers_d: true
+          users: [ 'wasadm', 'kitchen', 'vagrant' ]
+      websphere:
+        apps: [ 'ihs' ]
+
+  - name: was
+    run_list:
+      - recipe[sudo::default]
+      - recipe[test_fixtures::devreporter]
+      - recipe[websphere::default]
+    attributes:
+      authorization:
+        sudo:
+          passwordless: true
+          include_sudoers_d: true
+          users: [ 'wasadm', 'kitchen', 'vagrant' ]
+      websphere:
+        apps: [ 'plg', 'was', 'wct' ]
+
+  - name: wps
+    run_list:
+      - recipe[sudo::default]
+      - recipe[test_fixtures::devreporter]
+      - recipe[websphere::default]
+    attributes:
+      authorization:
+        sudo:
+          passwordless: true
+          include_sudoers_d: true
+          users: [ 'wasadm', 'kitchen', 'vagrant' ]
+      websphere:
+        apps: [ 'wps' ]

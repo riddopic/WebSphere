@@ -13,5 +13,5 @@ version '0.1.0'
 end
 
 depends 'chef_handler', '~> 1.1.6'
-depends 'garcon',       '~> 0.7.4'
+depends 'garcon',       '~> 0.7.8'
 depends 'ohai',         '~> 2.0.1'

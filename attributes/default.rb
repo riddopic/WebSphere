@@ -5,29 +5,41 @@
 # Attributes:: default
 #
 
+default[:websphere] = {
+  # The base directory where all WebSphere products will reside. The default
+  # value is '/opt/IBM'. Note: When installing with a non-root account software
+  # will be installed in /opt/IBM/IBM/PackageName.
+  base_dir:   '/opt/IBM',
+
+  # The path to the shared directory for IBM products. Default is
+  # `/opt/IBM/DataLocation`
+  data_dir:   '/opt/IBM/DataLocation',
+
+  # The path to the Installation Manager shared data directory. Default is
+  # `/opt/IBM/IBM/Shared`.
+  shared_dir: '/opt/IBM/Shared'
+}
+
 # User and Group name under which the server will be installed and running.
-default[:websphere][:user]  = 'wasadm'
-default[:websphere][:group] = 'wasadm'
-default[:websphere][:home] = ->{ node[:websphere][:iim][:install_location] }
+default[:websphere][:user] = {
+  name:    'wasadm',
+  group:   'wasadm',
+  comment: 'Websphere Administrative Account',
+  home:    '/home/wasadm',
+  shell:   '/bin/bash',
+  system:  true,
+  uid:     nil,
+  gid:     nil
+}
 
 # The list of Applications to install.
-default[:websphere][:apps] = [
-  :appclient,  # Application Client for WebSphere Application Server
-  :ihs,        # IBM HTTP Server for WebSphere Application Server
-  :pkgutil,    # IBM Packaging Utility
-  :plg,        # Web Server Plug-ins for WebSphere Application Server
-  :plugclient, # Pluggable Application Client for WebSphere Application Server
-  :was,        # IBM WebSphere Application Server
-  :wct,        # WebSphere Customization Toolbox
-  :wps         # IBM WebSphere Portal
-]
+default[:websphere][:apps] = [ nil ]
 
 # ================================ Repositories ================================
 #
 # Repositories are locations that Installation Manager queries for installable
 # packages. Repositories can be local (on the machine with Installation Manager)
 # or remote (corporate intranet or hosted elsewhere on the internet).
-#
 default[:websphere][:repositories] = {
   # IBM WebSphere Live Update Repositories. Including this repository ensures
   # your system is always built with the most up-to-date patches and hot fixes.
@@ -52,29 +64,12 @@ default[:websphere][:credential] = {
 
   # The location of the master password file IIM should use to access the secure
   # storage file, this attribute is optional.
-  master_password_file: ->{ ::File.join(node[:websphere][:home].call, '.mpf') },
+  master_password_file: ::File.join(node[:websphere][:user][:home], '.mpf'),
 
   # The location of the secure storage file IIM should use to access the
   # repoistory, this attribute is optional.
-  secure_storage_file: ->{ ::File.join(node[:websphere][:home].call, '.ssf') }
+  secure_storage_file: ::File.join(node[:websphere][:user][:home], '.ssf')
 }
-
-# =============================== Zip File Media ===============================
-#
-default[:websphere][:was][:files] = [
-  { name: 'WAS_ND_V8.5_1_OF_3.zip',              checksum: '507777d75ec7' },
-  { name: 'WAS_ND_V8.5_2_OF_3.zip',              checksum: '4ce6f4be42dd' },
-  { name: 'WAS_ND_V8.5_3_OF_3.zip',              checksum: '22de0d24e239' }]
-
-default[:websphere][:suppl][:files] = [
-  { name: 'WAS_V85_SUPPL_1_OF_3.zip',            checksum: '366f8048024a' },
-  { name: 'WAS_V85_SUPPL_2_OF_3.zip',            checksum: '4cfb708b7a0c' },
-  { name: 'WAS_V85_SUPPL_3_OF_3.zip',            checksum: 'ccd68201112c' }]
-
-default[:websphere][:sdk][:files] = [
-  { name: 'WS_SDK_JAVA_TEV7.0_1OF3_WAS_8.5.zip', checksum: '46f41a6164fa' },
-  { name: 'WS_SDK_JAVA_TEV7.0_2OF3_WAS_8.5.zip', checksum: 'a70c63611418' },
-  { name: 'WS_SDK_JAVA_TEV7.0_3OF3_WAS_8.5.zip', checksum: '215ce1e438b7' }]
 
 # =========================== Response File Settings ===========================
 #
@@ -114,12 +109,6 @@ default[:websphere][:agent_input][:clean] = false
 # false = Repositories and other preferences specified in the response file
 #         persist in Installation Manager.
 default[:websphere][:agent_input][:temporary] = true
-
-# The path to the shared directory for IBM products.
-default[:websphere][:shared_location] = '/opt/IBM/IBM/Shared'
-
-# The path to the Installation Manager shared data directory.
-default[:websphere][:data_location] = '/opt/IBM/DataLocation'
 
 default[:websphere][:preferences] = [
   # This key specifies the location of the shared resources directory. The

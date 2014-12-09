@@ -2,16 +2,16 @@
 #
 # Author: Stefano Harding <sharding@trace3.com>
 # Cookbook Name:: websphere
-# Attributes:: wct
+# Attributes:: java
 #
 
 include_attribute 'websphere::default'
 
-# ======================= WebSphere Customization Toolbox ======================
+# ================================= IBM Java SDK ===============================
 #
-default[:websphere][:wct] = {
-  # The Uniq IBM product ID for IBM WebSphere Application Server.
-  id: 'com.ibm.websphere.WCT.v85',
+default[:websphere][:java] = {
+  # The Uniq IBM product ID for IBM Java SDK.
+  id: 'com.ibm.websphere.IBMJAVA.v71',
 
   # Specify the repositories that are used during the installation. Use a URL
   # or UNC path to specify the remote repositories. Or use directory paths to
@@ -41,20 +41,19 @@ default[:websphere][:wct] = {
   # package available in the repository is version 1.0.1. When you install the
   # package, the installed version of the package is rolled back to version
   # 1.0.1.
-  version: '8.5.5003.20140730_1249',
+  version: '7.1.1000.20140723_2109',
 
   # The profile attribute is required and typically is unique to the offering.
   # If modifying or updating an existing installation, the profile attribute
-  # must match the profile ID of the targeted installation of WebSphere
-  # Application Server.
-  profile: 'WebSphere Customization Toolbox V8.5',
+  # must match the profile ID of the targeted installation of IBM Java SDK.
+  profile: 'IBM WebSphere SDK Java Technology Edition',
 
   # The features attribute is optional. Offerings always have at least one
   # feature; a required core feature which is installed regardless of whether
   # it is explicitly specified. If other feature names are provided, then only
   # those features will be installed. Features must be comma delimited without
   # spaces.
-  features: 'core.feature,pct,zmmt,zpmt',
+  features: 'com.ibm.sdk.71',
 
   # The installFixes attribute indicates whether fixes available in repositories
   # are installed with the product. By default, all available fixes will be
@@ -69,10 +68,7 @@ default[:websphere][:wct] = {
   # The installation directory for WebSphere Customization Toolbox.
   # Default is `/opt/IBM/WebSphere/Toolbox`.
   install_location: ::File.join(
-    node[:websphere][:base_dir], 'WebSphere/Toolbox'),
+    node[:websphere][:base_dir], 'WebSphere/SDK'),
 
-  data: [
-    # Specifies the architecture to install: 32-bit or 64-bit.
-    { key:   'cic.selector.arch',  value: 'x86'    }
-  ]
+  data: []
 }

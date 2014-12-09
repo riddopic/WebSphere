@@ -23,8 +23,8 @@ module WebSphere
     module ClassMethods
       # Returns the version of the cookbook in the current run list.
       #
-      # @param [String] cookbook
-      #   name to retrieve version on
+      # @param cookbook [String]
+      #   name of cookbook to retrieve version on
       #
       # @return [Integer]
       #   version of cookbook from metadata
@@ -36,7 +36,7 @@ module WebSphere
       # Return a cleanly join URI/URL segments into a cleanly normalized URL
       # that we can use when constructing URIs. URI.join is pure evil.
       #
-      # @param [Array<String>] paths
+      # @param paths [Array<String>]
       #   the list of parts to join
       #
       # @return [URI]
@@ -49,6 +49,71 @@ module WebSphere
         leadingslash + paths.join('/') + trailingslash
       end
 
+      # Creates a temp directory executing the block provided. When done the
+      # temp directory and all it's contents are garbage collected.
+      #
+      # @param block [Block]
+      #
+      def with_tmp_dir(&block)
+        Dir.mktmpdir(SecureRandom.hex(3)) do |tmp_dir|
+          Dir.chdir(tmp_dir, &block)
+        end
+      end
+
+      # @param procs [Array]
+      #   iterate over a list and return only unique values
+      #
+      # @return [Array]
+      #
+      # @!visibility private
+      def proc_squash_uniq(procs)
+        if procs.respond_to?(:each)
+          procs.flatten.uniq.map { |prok| prok.is_a?(Proc) ? prok.call : prok }
+        else
+          prok.is_a?(Proc) ? prok.call : prok
+        end
+      end
+
+      # Finds a command in $PATH
+      #
+      # @param cmd [String]
+      #   the command to find
+      #
+      # @return [String, nil]
+      #
+      def which(cmd)
+        if Pathname.new(cmd).absolute?
+          File.executable?(cmd) ? cmd : nil
+        else
+          paths = ENV['PATH'].split(::File::PATH_SEPARATOR) + %w(
+            /bin /usr/bin /sbin /usr/sbin)
+
+          paths.each do |path|
+            possible = File.join(path, cmd)
+            return possible if File.executable?(possible)
+          end
+
+          nil
+        end
+      end
+
+      # Boolean method to check if a command line utility is installed.
+      #
+      # @param cmd [String]
+      #   the command to find
+      #
+      # @return [TrueClass, FalseClass]
+      #   true if the command is found in the path, false otherwise
+      #
+      def installed?(cmd)
+        !which(cmd).nil?
+      end
+
+      NotImplementedError = Class.new StandardError
+      class << self
+        attr_reader :node
+      end
+
       # Unshorten a URL.
       #
       # @param url [String] A shortened URL
@@ -57,7 +122,7 @@ module WebSphere
       #   max redirect times
       # @option opts [Integer] :timeout
       #   timeout in seconds, for every request
-      # @option opts [Boolean] :use_cache
+      # @option opts [TrueClass, FalseClass] :use_cache
       #   use cached result if available
       #
       # @return Original url, a url that does not redirects
@@ -65,59 +130,17 @@ module WebSphere
         options = {
           max_level: opts.fetch(:max_level, 10),
           timeout:   opts.fetch(:timeout, 2),
-          use_cache: opts.fetch(:overflow_policy, true)
+          use_cache: opts.fetch(:use_cache, true)
         }
         url = (url =~ /^https?:/i) ? url : "http://#{url}"
         _unshorten_(url, options)
-      end
-
-      def with_tmp_dir(&block)
-        Dir.mktmpdir(SecureRandom.hex(3)) do |tmp_dir|
-          Dir.chdir(tmp_dir, &block)
-        end
-      end
-
-      def safe_require_rubyzip
-        require 'zip' unless defined?(Zip)
-      rescue LoadError
-        chef_gem('rubyzip') { action :nothing }.run_action(:install)
-        require 'zip'
-      end
-
-      def unzip(zip_file, unzip_dir, opts)
-        remove_after = opts.fetch(:remove_after, false)
-        owner        = opts.fetch(:owner, nil)
-        group        = opts.fetch(:group, nil)
-
-        Zip::File.open(zip_file) do |zip|
-          zip.each do |entry|
-            path = ::File.join(unzip_dir, entry.name)
-            FileUtils.mkdir_p(::File.dirname(path))
-            if ::File.exist?(path) && !::File.directory?(path)
-              FileUtils.rm(path)
-            end
-            zip.extract(entry, path)
-            if owner && group
-              FileUtils.chown(owner, group, path)
-            elsif owner
-              FileUtils.chown(owner, nil, path)
-            elsif group
-              FileUtils.chown(nil, group, path)
-            end
-          end
-        end
-        FileUtils.rm(zip_file) if remove_after
-      end
-
-      NotImplementedError = Class.new StandardError
-      class << self
-        attr_reader :node
       end
 
       private #   P R O P R I E T À   P R I V A T A   Vietato L'accesso
 
       @@cache = { }
 
+      # @!visibility private
       def _unshorten_(url, options, level = 0)
         return @@cache[url] if options[:use_cache] && @@cache[url]
         return url if level >= options[:max_level]
