@@ -9,5 +9,4 @@ group :integration do
   cookbook 'sudo', '~> 2.7.1'
 end
 
-# cookbook 'garcon', git: 'git://github.com/riddopic/garcon.git'
-cookbook 'garcon', path: '/Users/sharding/git/cookbooks/garcon'
+cookbook 'garcon', git: 'git://github.com/riddopic/garcon.git'
