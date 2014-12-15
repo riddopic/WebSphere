@@ -53,7 +53,7 @@ module WebSphere
             end
           end
 
-          repos('http://repo.mudbox.dev/ibm/repositorymanager')
+          repos(repos)
           pkg.each do |p|
             dir = "${installLocation.#{p[:profile].tr(' |-', '_')}}"
             profile(p[:profile], dir, p[:data])
