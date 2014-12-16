@@ -66,13 +66,13 @@ class Chef::Provider::WebspherePackage < Chef::Provider::LWRPBase
           if new_resource.pkg.kind_of?(Array)
             new_resource.apps.each do |pkg|
               pkg = node[:websphere][new_resource.pkg.to_sym]
-              repos << pkg[:repositories] || @default_repo
+              repos << repos_for(pkg)
               apps << pkg
             end
           else
             pkg = node[:websphere][new_resource.pkg.to_sym]
+            repos << repos_for(pkg)
             apps << node[:websphere][new_resource.pkg.to_sym]
-            repos << pkg[:repositories] || @default_repo
           end
 
           template response_file('redrum') do
@@ -191,6 +191,10 @@ class Chef::Provider::WebspherePackage < Chef::Provider::LWRPBase
 
   def path_to(dir, file)
     Find.find(dir) { |p| return p if ::File.basename(p) =~ /^#{file}$/ }
+  end
+
+  def repos_for(pkg)
+    pkg[:repositories].nil? ? @default_repo : pkg[:repositories]
   end
 
   def init_service(name)

@@ -37,6 +37,7 @@ user = Concurrent::Promise.execute do
     gid      node[:websphere][:user][:group]
     home     node[:websphere][:user][:home]
     system   node[:websphere][:user][:system]
+    supports manage_home: true
     not_if { node[:websphere][:user][:username] == 'root' }
     action :create
   end
