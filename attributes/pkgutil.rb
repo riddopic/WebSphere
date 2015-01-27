@@ -1,22 +1,37 @@
 # encoding: UTF-8
 #
-# Author: Stefano Harding <sharding@trace3.com>
 # Cookbook Name:: websphere
-# Attributes:: packagingUtility
+# Attributes:: pkgutil
+#
+# Author:    Stefano Harding <riddopic@gmail.com>
+# License:   Apache License, Version 2.0
+# Copyright: (C) 2014-2015 Stefano Harding
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 #
 
 include_attribute 'websphere::default'
 
 # =========================== IBM Packaging Utility ============================
 #
-default[:websphere][:pkgutil] = {
+default[:pkgutil] = {
   # The Uniq IBM product ID for IBM Installation Manager.
   id: 'com.ibm.cic.packagingUtility',
 
   # Specify the repositories that are used during the installation. Use a URL
   # or UNC path to specify the remote repositories. Or use directory paths to
   # specify the local repositories. If none is specified it will default to
-  # using `node[:websphere][:repositories][:local]`, default is nil.
+  # using `node[:wpf][:repositories][:local]`, default is nil.
   repositories: nil,
 
   # Use the install and uninstall commands to inform Installation Manager of the
@@ -41,7 +56,7 @@ default[:websphere][:pkgutil] = {
   # package available in the repository is version 1.0.1. When you install the
   # package, the installed version of the package is rolled back to version
   # 1.0.1.
-  version: '1.8.0.20140902_1631',
+  version: '1.8.1000.20141126_2003',
 
   # The profile attribute is required and typically is unique to the offering.
   # If modifying or updating an existing installation, the profile attribute
@@ -64,13 +79,10 @@ default[:websphere][:pkgutil] = {
   #   none        = Do not install available fixes.
   #   recommended = Installs all available recommended fixes.
   #   all         = Installs all available fixes.
-  fixes: 'none',
+  fixes: :none,
 
   # The installation directory for IBM Packaging Utility.
-  # NOTE: The installation will append `/PackagingUtility` to the
-  # path. Default is `/opt/IBM/PackagingUtility`.
-  install_location: ::File.join(
-    node[:websphere][:base_dir], 'PackagingUtility'),
+  dir: lazy { ::File.join( node[:wpf][:base], 'PackagingUtility') },
 
   data: [
     # Include data keys for product specific profile properties.
@@ -86,16 +98,17 @@ default[:websphere][:pkgutil] = {
   ],
 
   file: {
-    # Zip file that contains the IBM Installation Manager package.
+    # Zip file that contains the IBM Installation Manager package with the
+    # Packaging Utility bundle.
     name: 'pu.offering.disk.linux.gtk.x86_64_1.8.1000.20141126_2003.zip',
 
     # Local or remote location where the IIM/Packaging Utility zip file is
     # located. Default is to download from IBM. You can use a URL shortner
     # for convince, the and the cookbook will expand t the correct path.
-    source: 'http://ibm.co/1AoUlEK',
+    source: 'http://ibm.co/1z91ntT',
 
     # The SHA-256 checksum of the zip file. Checksum are calculated with:
-    # shasum -a 256 /path/to/file | cut -c-12
-    checksum: '706bc445b372'
+    # shasum -a 256 /path/to/file
+    checksum:'706bc445b37276ed0f4b32d2cd01f101eae1fadaacf7a9550c8c01a2e6d8b10f'
   }
 }

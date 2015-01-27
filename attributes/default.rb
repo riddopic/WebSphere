@@ -1,27 +1,46 @@
 # encoding: UTF-8
 #
-# Author: Stefano Harding <sharding@trace3.com>
 # Cookbook Name:: websphere
 # Attributes:: default
 #
+# Author:    Stefano Harding <riddopic@gmail.com>
+# License:   Apache License, Version 2.0
+# Copyright: (C) 2014-2015 Stefano Harding
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
 
-default[:websphere] = {
-  # The base directory where all WebSphere products will reside. The default
-  # value is '/opt/IBM'. Note: When installing with a non-root account software
-  # will be installed in /opt/IBM/IBM/PackageName.
-  base_dir:   '/opt/IBM',
+# Name of a bag where you keep your data and some secrets among other things.
+default[:wpf][:data_bag] = nil
 
-  # The path to the shared directory for IBM products. Default is
-  # `/opt/IBM/DataLocation`
-  data_dir:   '/opt/IBM/DataLocation',
+# The base directory where all WebSphere products will reside. The default
+# value is '/opt/IBM'. Note: When installing with a non-root account software
+# will be installed in /opt/IBM/IBM/PackageName.
+default[:wpf][:base] = '/opt/IBM'
 
-  # The path to the Installation Manager shared data directory. Default is
-  # `/opt/IBM/IBM/Shared`.
-  shared_dir: '/opt/IBM/Shared'
-}
+# Target eclipse directory.
+default[:wpf][:eclipse_dir] = lazy { node[:iim][:dir] }
+
+# The Agent Data Location directory contains the metadata that tracks the
+# history and state of all product installations that the Installation Manager
+# is managing. The default location is `/opt/IBM/DataLocation`.
+default[:wpf][:data_dir] = ::File.join(node[:wpf][:base], 'DataLocation')
+
+# Shared Resources Directory. Default is `/opt/IBM/Shared`
+default[:wpf][:shared_dir] = ::File.join(node[:wpf][:base], 'Shared')
 
 # User and Group name under which the server will be installed and running.
-default[:websphere][:user] = {
+default[:wpf][:user] = {
   name:    'wasadm',
   group:   'wasadm',
   comment: 'Websphere Administrative Account',
@@ -32,24 +51,20 @@ default[:websphere][:user] = {
   gid:     nil
 }
 
-# The list of Applications to install.
-default[:websphere][:apps] = [ nil ]
-
 # ================================ Repositories ================================
 #
 # Repositories are locations that Installation Manager queries for installable
 # packages. Repositories can be local (on the machine with Installation Manager)
 # or remote (corporate intranet or hosted elsewhere on the internet).
-default[:websphere][:repositories] = {
-  # IBM WebSphere Live Update Repositories. Including this repository ensures
-  # your system is always built with the most up-to-date patches and hot fixes.
-  live: 'http://www.ibm.com/software/repositorymanager',
 
-  # Local repository of WebSphere.
-  local: nil
-}
+# IBM WebSphere Live Update Repositories. Including this repository ensures
+# your system is always built with the most up-to-date patches and hot fixes.
+default[:wpf][:online_repo] = 'http://www.ibm.com/software/repositorymanager'
 
-default[:websphere][:credential] = {
+# Local repository of WebSphere.
+default[:wpf][:local_repository] = nil
+
+default[:wpf][:credential] = {
   # Note: If you use the IBM service repositories, you can specify the
   # http://www.ibm.com/software/repositorymanager/entitled/repository.xml
   # value for the `url` attribute. This value is a generic service repository
@@ -64,11 +79,11 @@ default[:websphere][:credential] = {
 
   # The location of the master password file IIM should use to access the secure
   # storage file, this attribute is optional.
-  master_password_file: ::File.join(node[:websphere][:user][:home], '.mpf'),
+  master_passwd:  ::File.join(node[:wpf][:user][:home], '.mpf'),
 
   # The location of the secure storage file IIM should use to access the
   # repoistory, this attribute is optional.
-  secure_storage_file: ::File.join(node[:websphere][:user][:home], '.ssf')
+  secure_storage: ::File.join(node[:wpf][:user][:home], '.ssf')
 }
 
 # =========================== Response File Settings ===========================
@@ -92,7 +107,7 @@ default[:websphere][:credential] = {
 #         the response file.
 # false = Use the repositories and other preferences that are specified in the
 #         response file and Installation Manager.
-default[:websphere][:agent_input][:clean] = false
+default[:wpf][:agent_input][:clean] = false
 
 # The default value is false. When temporary='false', the preferences that are
 # set in your response file persist. When temporary='true', the preferences that
@@ -108,9 +123,9 @@ default[:websphere][:agent_input][:clean] = false
 #         not persist in Installation Manager.
 # false = Repositories and other preferences specified in the response file
 #         persist in Installation Manager.
-default[:websphere][:agent_input][:temporary] = true
+default[:wpf][:agent_input][:temporary] = true
 
-default[:websphere][:preferences] = [
+default[:wpf][:preferences] = [
   # This key specifies the location of the shared resources directory. The
   # shared resource directory is specified the first time you install a package.
   # You cannot change this location after you install a package.

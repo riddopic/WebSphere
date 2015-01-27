@@ -1,22 +1,37 @@
 # encoding: UTF-8
 #
-# Author: Stefano Harding <sharding@trace3.com>
 # Cookbook Name:: websphere
 # Attributes:: wct
+#
+# Author:    Stefano Harding <riddopic@gmail.com>
+# License:   Apache License, Version 2.0
+# Copyright: (C) 2014-2015 Stefano Harding
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 #
 
 include_attribute 'websphere::default'
 
 # ======================= WebSphere Customization Toolbox ======================
 #
-default[:websphere][:wct] = {
+default[:wct] = {
   # The Uniq IBM product ID for IBM WebSphere Application Server.
   id: 'com.ibm.websphere.WCT.v85',
 
   # Specify the repositories that are used during the installation. Use a URL
   # or UNC path to specify the remote repositories. Or use directory paths to
   # specify the local repositories. If none is specified it will default to
-  # using `node[:websphere][:repositories][:local]`, default is nil.
+  # using `node[:wpf][:repositories][:local]`, default is nil.
   repositories: nil,
 
   # Use the install and uninstall commands to inform Installation Manager of the
@@ -64,12 +79,10 @@ default[:websphere][:wct] = {
   #   none        = Do not install available fixes.
   #   recommended = Installs all available recommended fixes.
   #   all         = Installs all available fixes.
-  fixes: 'none',
+  fixes: :none,
 
   # The installation directory for WebSphere Customization Toolbox.
-  # Default is `/opt/IBM/WebSphere/Toolbox`.
-  install_location: ::File.join(
-    node[:websphere][:base_dir], 'WebSphere/Toolbox'),
+  dir: lazy { ::File.join( node[:wpf][:base], 'WebSphere/Toolbox') },
 
   data: [
     # Specifies the architecture to install: 32-bit or 64-bit.

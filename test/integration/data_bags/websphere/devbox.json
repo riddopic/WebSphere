@@ -1,0 +1,27 @@
+{
+  "id": "devbox",
+  "profiles": [
+    {
+      "profile_name":          "Dmgr01",
+      "enable_admin_security": true,
+      "server_type":           "DEPLOYMENT_MANAGER",
+      "template_path":         "management",
+      "node_name":             "Cell01Manager",
+      "cell_name":             "Cell01Manager",
+      "host_name":             "#{node[:fqdn]}",
+      "admin_Password":        "wasadm",
+      "admin_username":        "wasadm"
+    },
+    {
+      "profile_name":          "Cell01Node01",
+      "template_path":         "managed",
+      "node_name":             "Cell01Node01",
+      "host_name":             "#{node[:fqdn]}",
+      "dmgr_host":             "#{node[:fqdn]}",
+      "dmgr_admin_username":   "wasadm",
+      "dmgr_admin_password":   "wasadm",
+      "admin_Password":        "wasadm",
+      "admin_username":        "wasadm"
+    }
+  ]
+}

@@ -1,22 +1,37 @@
 # encoding: UTF-8
 #
-# Author: Stefano Harding <sharding@trace3.com>
 # Cookbook Name:: websphere
 # Attributes:: iim
+#
+# Author:    Stefano Harding <riddopic@gmail.com>
+# License:   Apache License, Version 2.0
+# Copyright: (C) 2014-2015 Stefano Harding
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 #
 
 include_attribute 'websphere::default'
 
 # ========================== IBM Installation Manager ==========================
 #
-default[:websphere][:iim] = {
+default[:iim] = {
   # The Uniq IBM product ID for IBM Installation Manager.
   id: 'com.ibm.cic.agent',
 
   # Specify the repositories that are used during the installation. Use a URL
   # or UNC path to specify the remote repositories. Or use directory paths to
   # specify the local repositories. If none is specified it will default to
-  # using `node[:websphere][:repositories][:local]`, default is nil.
+  # using `node[:wpf][:repositories][:local]`, default is nil.
   repositories: nil,
 
   # Use the install and uninstall commands to inform Installation Manager of the
@@ -41,7 +56,7 @@ default[:websphere][:iim] = {
   # package available in the repository is version 1.0.1. When you install the
   # package, the installed version of the package is rolled back to version
   # 1.0.1.
-  version: '1.8.0.20140902_1503',
+  version: '1.8.1000.20141125_2157',
 
   # The profile attribute is required and typically is unique to the offering.
   # If modifying or updating an existing installation, the profile attribute
@@ -61,27 +76,24 @@ default[:websphere][:iim] = {
   # installed with the offering.
   #
   # Valid values for installFixes:
-  #   none        = Do not install available fixes.
-  #   recommended = Installs all available recommended fixes.
-  #   all         = Installs all available fixes.
-  fixes: 'none',
+  #   :none        = Do not install available fixes.
+  #   :recommended = Installs all available recommended fixes.
+  #   :all         = Installs all available fixes.
+  fixes: :none,
 
   # The installation directory for IBM Installation Manager (IIM).
-  # NOTE: The installation will append `/InstallationManager/eclipse` to the
-  # path. Default is `/opt/IBM/InstallationManager/eclipse`.
-  install_location: ::File.join(
-    node[:websphere][:base_dir], 'InstallationManager/eclipse'),
+  dir: lazy { ::File.join(node[:wpf][:base], 'InstallationManager/eclipse') },
 
   # Installation Manager can be installed along with the Packaging Utility
   # providing access to the Packaging Utility toolset to manage and query
   # installation repositories. Valid values are; `:standalone`, do not install
   # the Packaging Utility and only install IIM. `:with_pkgutil` install the
   # Packaging Utility with IIM. The default value is `:with_pkgutil`.
-  install_type: :with_pkgutil,
+  install_from: :with_pkgutil,
 
   data: [],
 
-  file: {
+  files: {
     standalone: {
       # Zip file that contains the IBM Installation Manager package.
       name: 'agent.installer.linux.gtk.x86_64_1.8.1000.20141126_2002.zip',
@@ -92,8 +104,8 @@ default[:websphere][:iim] = {
       source: 'http://ibm.co/1zr8L6q',
 
       # The SHA-256 checksum of the zip file. Checksum are calculated with:
-      # shasum /path/to/file
-      checksum: '41fbdc7837edb4a86332c892c3224410203fc761'
+      # shasum -a 256 /path/to/file
+      checksum:'c9af97d4d953e0d08b612b208d6807e6ac7ce2d22883698ad20413462bc0499a'
     },
 
     with_pkgutil: {
@@ -104,11 +116,11 @@ default[:websphere][:iim] = {
       # Local or remote location where the IIM/Packaging Utility zip file is
       # located. Default is to download from IBM. You can use a URL shortner
       # for convince, the and the cookbook will expand t the correct path.
-      source: 'http://ibm.co/1AoUlEK',
+      source: 'http://ibm.co/1z91ntT',
 
-      # The SHA-1 checksum of the zip file. Checksum are calculated with:
-      # shasum /path/to/file
-      checksum: 'b37aeb1a87ce0c67d411d6f1197048531144245d'
+      # The SHA-256 checksum of the zip file. Checksum are calculated with:
+      # shasum -a 256 /path/to/file
+      checksum:'706bc445b37276ed0f4b32d2cd01f101eae1fadaacf7a9550c8c01a2e6d8b10f'
     }
   }
 }

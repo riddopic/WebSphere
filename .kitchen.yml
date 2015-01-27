@@ -1,4 +1,5 @@
 # encoding: UTF-8
+#<% require 'kitchen-sync' %>
 ---
 driver:
   name: vagrant
@@ -8,76 +9,50 @@ provisioner:
   require_chef_omnibus: true
 
 platforms:
-  - name: centos-6.5
+  - name: centos-6
+    driver_config:
+      box: opscode-centos-6.6
+      box_url: http://opscode-vm-bento.s3.amazonaws.com/vagrant/virtualbox/opscode_centos-6.6_chef-provisionerless.box
+    environments_path: test/integration/environments
+    data_bag_path: test/integration/data_bags
+    encrypted_data_bag_secret_key_path: test/integration/data_bags/password.txt
 
 suites:
   - name: default
     run_list:
+      - recipe[test_fixtures::default]
       - recipe[sudo::default]
-      - recipe[test_fixtures::devreporter]
-      - recipe[websphere::default]
+      - recipe[websphere::pkgutil]
+      - recipe[websphere::ihs]
+      - recipe[websphere::was]
+      - recipe[websphere::example]
     attributes:
       authorization:
         sudo:
           passwordless: true
           include_sudoers_d: true
           users: [ 'wasadm', 'kitchen', 'vagrant' ]
-      websphere:
-        apps: [ 'appclient', 'ihs', 'pkgutil', 'plg', 'was', 'wct' ]
 
-  - name: apps_dir
+  - name: hardened
     run_list:
+      - recipe[test_fixtures::default]
       - recipe[sudo::default]
-      - recipe[test_fixtures::devreporter]
-      - recipe[websphere::default]
+      - recipe[os-hardening::packages]
+      - recipe[os-hardening::limits]
+      - recipe[os-hardening::login_defs]
+      - recipe[os-hardening::minimize_access]
+      - recipe[os-hardening::pam]
+      - recipe[os-hardening::profile]
+      - recipe[os-hardening::securetty]
+      - recipe[os-hardening::suid_sgid]
+      - recipe[ssh-hardening::default]
+      - recipe[websphere::pkgutil]
+      - recipe[websphere::ihs]
+      - recipe[websphere::was]
+      - recipe[websphere::example]
     attributes:
       authorization:
         sudo:
           passwordless: true
           include_sudoers_d: true
           users: [ 'wasadm', 'kitchen', 'vagrant' ]
-      websphere:
-        apps: [ 'appclient', 'ihs', 'pkgutil', 'plg', 'was', 'wct' ]
-      base_dir: '/apps/IBM'
-
-  - name: ihs
-    run_list:
-      - recipe[sudo::default]
-      - recipe[test_fixtures::devreporter]
-      - recipe[websphere::default]
-    attributes:
-      authorization:
-        sudo:
-          passwordless: true
-          include_sudoers_d: true
-          users: [ 'wasadm', 'kitchen', 'vagrant' ]
-      websphere:
-        apps: [ 'ihs' ]
-
-  - name: was
-    run_list:
-      - recipe[sudo::default]
-      - recipe[test_fixtures::devreporter]
-      - recipe[websphere::default]
-    attributes:
-      authorization:
-        sudo:
-          passwordless: true
-          include_sudoers_d: true
-          users: [ 'wasadm', 'kitchen', 'vagrant' ]
-      websphere:
-        apps: [ 'plg', 'was', 'wct' ]
-
-  - name: wps
-    run_list:
-      - recipe[sudo::default]
-      - recipe[test_fixtures::devreporter]
-      - recipe[websphere::default]
-    attributes:
-      authorization:
-        sudo:
-          passwordless: true
-          include_sudoers_d: true
-          users: [ 'wasadm', 'kitchen', 'vagrant' ]
-      websphere:
-        apps: [ 'wps' ]

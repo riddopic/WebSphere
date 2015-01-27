@@ -8,4 +8,5 @@ description      'Test cookbook for winini'
 long_description 'Test cookbook for test_fixtures'
 version          '0.1.0'
 
-depends 'chef_handler', '~> 1.1.6'
+depends 'chef_handler'
+depends 'garcon'

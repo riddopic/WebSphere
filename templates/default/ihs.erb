@@ -2,7 +2,7 @@
 # SERVICENAME should match this filename
 SERVICENAME=$(basename $0)
 LOCKFILE="/var/lock/subsys/${SERVICENAME}"
-APACHECTL=<%= ::File.join(node[:websphere][:ihs][:install_location], 'bin/apachectl') %>
+APACHECTL=<%= @apachectl %>
 
 # The next lines are for chkconfig on RedHat systems.
 # chkconfig: 2345 98 02
@@ -36,4 +36,3 @@ case "$1" in
 esac
 
 $APACHECTL "$@"
-
