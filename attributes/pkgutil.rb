@@ -79,7 +79,7 @@ default[:pkgutil] = {
   #   none        = Do not install available fixes.
   #   recommended = Installs all available recommended fixes.
   #   all         = Installs all available fixes.
-  fixes: :none,
+  fixes: :all,
 
   # The installation directory for IBM Packaging Utility.
   dir: lazy { ::File.join( node[:wpf][:base], 'PackagingUtility') },

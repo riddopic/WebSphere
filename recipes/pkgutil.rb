@@ -23,6 +23,6 @@
 single_include 'websphere::install'
 
 websphere_package :pkgutil do
-  install_fixes :none
+  install_fixes :all
   action :install
 end

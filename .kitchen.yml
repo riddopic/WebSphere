@@ -38,20 +38,13 @@ suites:
       - recipe[test_fixtures::default]
       - recipe[sudo::default]
       - recipe[websphere::pkgutil]
-      - recipe[websphere::ihs]
-      - recipe[websphere::was]
       - recipe[websphere::wps]
-      - recipe[websphere::example]
     attributes:
       authorization:
         sudo:
           passwordless: true
           include_sudoers_d: true
           users: [ 'wasadm', 'kitchen', 'vagrant' ]
-      was:
-        features: 'core.feature,ejbdeploy,thinclient,embeddablecontainer,samples,com.ibm.sdk.6_32bit'
-      plg:
-        features: 'core.feature,com.ibm.jre.6_32bit'
 
   - name: appserver
     run_list:

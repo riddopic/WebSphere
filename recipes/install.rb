@@ -65,7 +65,7 @@ end
 end
 
 websphere_package :iim do
-  install_fixes :none
+  install_fixes :all
   install_from  :files
   install_files [node[:iim][:files][:with_pkgutil]]
   action :install

@@ -48,7 +48,7 @@ end
 
 [:appclient, :plg, :was, :wct].each do |pkg|
   websphere_package pkg do
-    install_fixes :none
+    install_fixes :all
     action :install
   end
 end

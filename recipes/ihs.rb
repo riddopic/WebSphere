@@ -23,7 +23,7 @@
 single_include 'websphere::install'
 
 websphere_package :ihs do
-  install_fixes :none
+  install_fixes :all
   action :install
 end
 

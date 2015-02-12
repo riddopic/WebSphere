@@ -56,7 +56,7 @@ default[:plugclient] = {
   # package available in the repository is version 1.0.1. When you install the
   # package, the installed version of the package is rolled back to version
   # 1.0.1.
-  version: '8.5.5003.20140730_1249',
+  version: nil,
 
   # The profile attribute is required and typically is unique to the offering.
   # If modifying or updating an existing installation, the profile attribute
@@ -79,7 +79,7 @@ default[:plugclient] = {
   #   none        = Do not install available fixes.
   #   recommended = Installs all available recommended fixes.
   #   all         = Installs all available fixes.
-  fixes: :none,
+  fixes: :all,
 
   # The installation directory for Pluggable Application Client.
   dir: lazy { ::File.join( node[:wpf][:base], 'WebSphere/AppClient') },
