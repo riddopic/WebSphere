@@ -129,9 +129,9 @@ class Chef::Resource::WebspherePackage < Chef::Resource
             kind_of: String,
             default: lazy { node[namespace][:profile] }
 
-  # The full package name with version number
+  # The package ID and version number combined
   #
-  # @param [String] version
+  # @param [String] id_ver
   # @return [String]
   # @api public
   attribute :id_ver,
@@ -150,7 +150,7 @@ class Chef::Resource::WebspherePackage < Chef::Resource
             equal_to: [:files, :repository],
             default: :repository
 
-  # The package installation directory
+  # The target installation directory
   #
   # @param [String] dir
   # @return [String]

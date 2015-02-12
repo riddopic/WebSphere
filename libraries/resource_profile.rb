@@ -147,17 +147,6 @@ class Chef::Resource::WebsphereProfile < Chef::Resource
   attribute :cell_name,
             kind_of: String
 
-  # An optional parameter that specifies the amount of time in years that the
-  # default personal certificate is valid. If you do not specify this parameter
-  # with the `personal_cert_dn` parameter, the default personal certificate is
-  # valid for one year.
-  #
-  # @param [Integer] personal_cert_validity_period
-  # @return [Integer]
-  # @api public
-  attribute :personal_cert_validity_period,
-            kind_of: Integer
-
   # Assigns the default or base port values to the profile. Do not use this
   # parameter when using the `starting_port` or `ports_file` parameter.
   #
@@ -185,17 +174,6 @@ class Chef::Resource::WebsphereProfile < Chef::Resource
   # @return [String]
   # @api public
   attribute :dmgr_admin_password,
-            kind_of: [String]
-
-  # If you are federating a node, specify a valid password for a deployment
-  # manager if administrative security is enabled on the deployment manager.
-  # Use this parameter with the `dmgr_admin_username` parameter and the
-  # `federate_later` parameter.
-  #
-  # @param [String] dmgr_admin_username
-  # @return [String]
-  # @api public
-  attribute :dmgr_admin_username,
             kind_of: [String]
 
   # If you are federating a node, specify a valid password for a deployment
@@ -239,15 +217,15 @@ class Chef::Resource::WebsphereProfile < Chef::Resource
             kind_of: [String]
 
   # Identifies the SOAP port of the deployment manager. Specify this parameter
-  # and the dmgrHost parameter to federate a custom profile as it is created.
+  # and the `dmgrHost` parameter to federate a custom profile as it is created.
   # The deployment manager must be running and accessible. If you have enabled
   # security or changed the default Java Management Extensions (JMX) connector
-  # type, you cannot federate with the manageprofiles command. Use the addNode
-  # command instead.
+  # type, you cannot federate with the `manageprofiles` command. Use the
+  # `addNode` command instead.
   #
   # The default value for this parameter is `8879`. The port that you indicate
   # must be a positive integer and a connection to the deployment manager must
-  # be available in conjunction with the dmgrHost parameter.
+  # be available in conjunction with the `dmgrHost` parameter.
   #
   # @param [String] dmgr_port
   # @return [String]
@@ -277,10 +255,10 @@ class Chef::Resource::WebsphereProfile < Chef::Resource
 
   # Enables the creation of a Linux service. The default value is false. When
   # set to true , the Linux service is created with the profile when the command
-  # is run by the root user. When a non-root user runs the manageprofiles
+  # is run by the root user. When a non-root user runs the `manageprofiles`
   # command, the profile is created, but the Linux service is not. The Linux
   # service is not created because the non-root user does not have sufficient
-  # permission to set up the service. An INSTCONPARTIALSUCCESS result is
+  # permission to set up the service. An `INSTCONPARTIALSUCCESS` result is
   # displayed at the end of the profile creation and the profile creation log
   # `app_server_root/logs/manageprofiles_create_profilename.log` contains a
   # message indicating the current user does not have sufficient permission to
@@ -298,7 +276,7 @@ class Chef::Resource::WebsphereProfile < Chef::Resource
   # parameters do not have values, the default value for this parameter is
   # true. Valid values include true or false.
   #
-  # @param [TrueClass, FalseClass] enable_service
+  # @param [TrueClass, FalseClass] federate_later
   # @return [TrueClass, FalseClass]
   # @api public
   attribute :enable_service,
@@ -426,7 +404,7 @@ class Chef::Resource::WebsphereProfile < Chef::Resource
   # @param [TrueClass, FalseClass]
   # @return [TrueClass, FalseClass]
   # @api public
-  attribute :is_eveloper_server,
+  attribute :is_developer_server,
             kind_of: [TrueClass, FalseClass]
 
   # Specifies the password to use on all keystore files created during profile
@@ -461,6 +439,17 @@ class Chef::Resource::WebsphereProfile < Chef::Resource
   # @api public
   attribute :personal_cert_dn,
             kind_of: String
+
+  # An optional parameter that specifies the amount of time in years that the
+  # default personal certificate is valid. If you do not specify this parameter
+  # with the `personal_cert_dn` parameter, the default personal certificate is
+  # valid for one year.
+  #
+  # @param [Integer] personal_cert_validity_period
+  # @return [Integer]
+  # @api public
+  attribute :personal_cert_validity_period,
+            kind_of: Integer
 
   # An optional parameter that specifies the path to a file that defines port
   # settings for the new profile. Do not use this parameter when using the
@@ -729,7 +718,6 @@ class Chef::Resource::WebsphereProfile < Chef::Resource
   # @api public
   attribute :validate_registry,
             kind_of: String
-
 
   # Indicates if you want to set up web server definitions. The default value
   # for this parameter is false.

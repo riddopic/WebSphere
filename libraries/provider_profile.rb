@@ -119,7 +119,7 @@ class Chef::Provider::WebsphereProfile < Chef::Provider
           new_resource._?(:import_signing_cert_ks_type,
                                                     '-importSigningCertKSType'),
           new_resource._?(:is_default,                            '-isDefault'),
-          new_resource._?(:is_eveloper_server,            '-isDeveloperServer'),
+          new_resource._?(:is_developer_server,            '-isDeveloperServer'),
           new_resource._?(:key_store_password,             '-keyStorePassword'),
           new_resource._?(:node_name,                              '-nodeName'),
           new_resource._?(:personal_cert_dn,                 '-personalCertDN'),

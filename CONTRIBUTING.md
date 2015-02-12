@@ -11,3 +11,18 @@
 8. [Submit a Pull Request using Github](https://help.github.com/articles/creating-a-pull-request).
 
 Please do not hesitate to [open an issue](https://github.com/riddopic/odsee/issues/new) with any questions or problems.
+
+```
+                                 .-.   .-.   .-.   .-.   .-.   .-.   .-.
+                                ( * ) ( : ) ('*.) (: :) (:-:) (:::) ((-))
+         .oooO                   `-'   `-'   `-'   `-'   `-'   `-'   `-'
+         (   )   Oooo.         DPG, bringing the promise of tomorrow, today.
++---------\ (----(   )--------------------------------------------------------->
+           \_)    ) /  Integrated Digital Automated Provisioning Services Group
+                 (_/
+
+
+  .-.     .-.     .-.     .-.     .-.   .-.   .-.   .-.   .-.   .-.   .-.   .-.   
+Digit\al Pres\ence Gr\oup Aut\omation\ ( * ) ( : ) ('*.) (: :) (:-:) (:::) ((-)) 
+'     `-'     `-'     `-'     `-'     ` `-'   `-'   `-'   `-'   `-'   `-'   `-'   
+```

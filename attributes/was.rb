@@ -175,7 +175,7 @@ default[:was] = {
   # for each product located in `PROFILE_HOME/properties/service/productDir`.
   # One of the following cleanup criteria can be used/specified:
   #
-  # * Specify the number of logs to keep from 0-999. EG. WS_CMT_PI_LOGS=10
+  # * Specify the number of logs to keep from 0-999. EG. `WS_CMT_PI_LOGS=10`
   #
   # * Specify the total size the logs should occupy from 0-999. For example:
   #   `WS_CMT_PI_LOGS=10MB` (KB = Kilobytes	MB = Megabytes GB = Gigabytes)

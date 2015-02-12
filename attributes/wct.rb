@@ -79,7 +79,7 @@ default[:wct] = {
   #   none        = Do not install available fixes.
   #   recommended = Installs all available recommended fixes.
   #   all         = Installs all available fixes.
-  fixes: :none,
+  fixes: :all,
 
   # The installation directory for WebSphere Customization Toolbox.
   dir: lazy { ::File.join( node[:wpf][:base], 'WebSphere/Toolbox') },
