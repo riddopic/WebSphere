@@ -26,7 +26,7 @@ include_attribute 'websphere::default'
 #
 default[:wps] = {
   # The Uniq IBM product ID for IBM WebSphere Portal Server.
-  id: 'com.ibm.websphere.PORTAL.EXPRESS.v85',
+  id: 'com.ibm.websphere.PORTAL.SERVER.v80',
 
   # Specify the repositories that are used during the installation. Use a URL
   # or UNC path to specify the remote repositories. Or use directory paths to
@@ -56,20 +56,20 @@ default[:wps] = {
   # package available in the repository is version 1.0.1. When you install the
   # package, the installed version of the package is rolled back to version
   # 1.0.1.
-  version: '8.0.1.20140924_1617',
+  version: '8.0.0.20120421_0828',
 
   # The profile attribute is required and typically is unique to the offering.
   # If modifying or updating an existing installation, the profile attribute
   # must match the profile ID of the targeted installation of WebSphere
   # Application Server.
-  profile: 'IBM WebSphere Portal Server V8.0',
+  profile: 'IBM WebSphere Portal Server V8',
 
   # The features attribute is optional. Offerings always have at least one
   # feature; a required core feature which is installed regardless of whether
   # it is explicitly specified. If other feature names are provided, then only
   # those features will be installed. Features must be comma delimited without
   # spaces.
-  features: '',
+  features: 'ce.install,portal.binary,portal.profile,dmgr.profile',
 
   # The installFixes attribute indicates whether fixes available in repositories
   # are installed with the product. By default, all available fixes will be
@@ -92,7 +92,7 @@ default[:wps] = {
     # Specifies the type of window system.
     { key:   'cic.selector.ws',     value: 'gtk'    },
     # Specifies the architecture to install: 32-bit or 64-bit.
-    { key:   'cic.selector.arch',   value: 'x86_64' },
+    { key:   'cic.selector.arch',   value: 'x86' },
     # Specifies the language pack to be installed using ISO-639 language codes.
     { key:   'cic.selector.nl',     value: 'en'     }
   ]

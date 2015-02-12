@@ -1,7 +1,7 @@
 # encoding: UTF-8
 #
 # Cookbook Name:: websphere
-# Attributes:: java
+# Attributes:: sdk
 #
 # Author:    Stefano Harding <riddopic@gmail.com>
 # License:   Apache License, Version 2.0
@@ -24,7 +24,7 @@ include_attribute 'websphere::default'
 
 # ================================= IBM Java SDK ===============================
 #
-default[:java] = {
+default[:sdk] = {
   # The Uniq IBM product ID for IBM Java SDK.
   id: 'com.ibm.websphere.IBMJAVA.v71',
 

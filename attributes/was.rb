@@ -91,11 +91,11 @@ default[:was] = {
     # Specifies the operating system.
     { key:   'cic.selector.os',     value: 'linux' },
     # Specifies the type of window system.
-    { key:   'cic.selector.ws',    value: 'gtk'    },
+    { key:   'cic.selector.ws',     value: 'gtk'   },
     # Specifies the architecture to install: 32-bit or 64-bit.
-    { key:   'cic.selector.arch',  value: 'x86'    },
+    { key:   'cic.selector.arch',   value: 'x86'   },
     # Specifies the language pack to be installed using ISO-639 language codes.
-    { key:   'cic.selector.nl',    value: 'en'     }
+    { key:   'cic.selector.nl',     value: 'en'    }
   ],
 
   # =========================== Application Settings ==========================
