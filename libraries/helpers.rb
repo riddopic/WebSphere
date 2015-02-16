@@ -21,8 +21,8 @@
 #
 
 require 'tmpdir'
-require 'thread'
-require 'securerandom'
+require 'thread'       unless defined?(Thread)
+require 'securerandom' unless defined?(SecureRandom)
 
 module WebSphere
   # A set of helper methods shared by all resources and providers.
@@ -33,6 +33,7 @@ module WebSphere
     #
     # @param block [Block]
     #
+    # @api public
     def with_tmp_dir(&block)
       Dir.mktmpdir(SecureRandom.hex(3)) do |tmp_dir|
         Dir.chdir(tmp_dir, &block)
@@ -52,6 +53,32 @@ module WebSphere
       path
     rescue
       path.call
+    end
+
+    # Return the repository manager URL based on the service offering name, IBM
+    # Installation Manager repository URLs follow this pattern:
+    # http://www.ibm.com/software/repositorymanager/<offering_name>
+    #
+    # @Note: This location does not contain a web page that you can access
+    # using a web browser.
+    #
+    # @param [String] offering
+    # @return [String, URI::HTTP]
+    # @api private
+    def repository_for(offering, location = nil)
+      case location
+      when :local || :online
+        repos = [uri_join(node[:wpf][location][:repo], offering)]
+      when :both
+        repos = [:local, :online].map do |loc|
+          uri_join(node[:wpf][loc][:repo], offering)
+        end
+      else # nil
+        loc = node[:wpf][:local][:repo].nil? ? :online : :local
+        repos = [uri_join(node[:wpf][loc][:repo], offering)]
+      end
+
+      repos.uniq
     end
 
     # Wait the given number of seconds for the block operation to complete.

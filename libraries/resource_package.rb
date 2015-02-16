@@ -215,7 +215,18 @@ class Chef::Resource::WebspherePackage < Chef::Resource
   # @api public
   attribute :repositories,
             kind_of: String,
-            default: lazy { node[:wpf][:local_repository] }
+            default: lazy { retrieve_repositories }
+
+  # If you want to allow the WebSphere products to update and you trust IBM, if
+  # you do then when you tell a WebSphere offering to update it will search the
+  # offering service repositry for updates also.
+  #
+  # @param [TrueClass, FalseClass] service_repository
+  # @return [TrueClass, FalseClass]
+  # @api public
+  attribute :service_repository,
+            kind_of: [TrueClass, FalseClass],
+            default: true
 
   # A list of Hashes containing the name, source and checksums of the files to
   # use inplace of a repository, not required when `install_from` is set to
@@ -334,4 +345,14 @@ class Chef::Resource::WebspherePackage < Chef::Resource
   attribute :response_file,
             kind_of: [String],
             default: lazy { ::File.join(base_dir, "#{namespace}.xml") }
+
+  private #   P R O P R I E T À   P R I V A T A   Vietato L'accesso
+
+  def retrieve_repositories
+    if node[namespace][:repositories].nil?
+      service_repository ? repository_for(id, :both) : repository_for(id, :local)
+    else
+      node[namespace][:repositories]
+    end
+  end
 end

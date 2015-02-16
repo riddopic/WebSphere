@@ -59,10 +59,10 @@ default[:wpf][:user] = {
 
 # IBM WebSphere Live Update Repositories. Including this repository ensures
 # your system is always built with the most up-to-date patches and hot fixes.
-default[:wpf][:online_repo] = 'http://www.ibm.com/software/repositorymanager'
+default[:wpf][:online][:repo] = 'http://www.ibm.com/software/repositorymanager'
 
 # Local repository of WebSphere.
-default[:wpf][:local_repository] = nil
+default[:wpf][:local][:repo] = nil
 
 default[:wpf][:credential] = {
   # Note: If you use the IBM service repositories, you can specify the
