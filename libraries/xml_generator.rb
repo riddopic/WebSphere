@@ -111,7 +111,7 @@ module WebSphere
     # @api private
     def self.repositories(*repos)
       @xml.server do |xml|
-        repos.map { |repo| xml.repository(location: repo) }
+        repos.flatten.map { |repo| xml.repository(location: repo) }
       end
     end
 
