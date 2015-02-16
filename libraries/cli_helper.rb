@@ -120,7 +120,7 @@ module WebSphere
     #
     # @api public
     def imcl(*args)
-      (run ||= []) << (which('imcl') || path_to(tmpdir, 'imcl'))
+      run  = [(which('imcl') || path_to(tmpdir, 'imcl'))]
       run << args.flatten.join(' ')
       opts = { user: new_resource.owner, group: new_resource.group }
       Chef::Log.info shell_out!(run.flatten.join(' '), opts).stdout
@@ -229,7 +229,7 @@ module WebSphere
     # @api public
     def manageprofiles(*args)
       subcmd = Hoodie::Inflections.dasherize("-#{args.shift.to_s}")
-      (run ||= []) << which('manageprofiles.sh')
+      run  = [which('manageprofiles.sh')]
       run << subcmd << args.flatten.join(' ')
       opts = { user: new_resource.owner, group: new_resource.group }
       Chef::Log.info shell_out!(run.flatten.join(' '), opts).stdout
@@ -291,13 +291,13 @@ module WebSphere
 
     # @api private
     define_method(:start) do
-      (run ||= []) << path_to(new_resource.profile_path, 'startManager.sh')
+      run  = [path_to(new_resource.profile_path, 'startManager.sh')]
       run << new_resource._?(:profile_name, '-profileName')
     end
 
     # @api private
     define_method(:stop) do
-      (run ||= []) << path_to(new_resource.profile_path, 'stopManager.sh')
+      run  = [path_to(new_resource.profile_path, 'stopManager.sh')]
       run << new_resource._?(:admin_username,  '-username')
       run << new_resource._?(:admin_password,  '-password')
       run << new_resource._?(:profile_name, '-profileName')
@@ -305,7 +305,7 @@ module WebSphere
 
     # @api private
     define_method(:status) do
-      (run ||= []) << path_to(new_resource.profile_path, 'serverStatus.sh')
+      run  = [path_to(new_resource.profile_path, 'serverStatus.sh')]
       run << '-all'
       run << new_resource._?(:admin_username,  '-username')
       run << new_resource._?(:admin_password,  '-password')
