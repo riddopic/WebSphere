@@ -20,7 +20,7 @@
 # limitations under the License.
 #
 
-single_include 'websphere::install'
+single_include 'websphere::iim'
 
 file '/etc/profile.d/websphere.sh' do
   owner 'root'

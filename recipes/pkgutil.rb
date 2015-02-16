@@ -20,7 +20,7 @@
 # limitations under the License.
 #
 
-single_include 'websphere::install'
+single_include 'websphere::iim'
 
 websphere_package :pkgutil do
   install_fixes :all

@@ -145,7 +145,7 @@ The cookbook contains five recipes, one for setting up the basic system, one for
     manipulate the IBM repositories, for example to update the local repository
     with the latest patches or to remove old product versions.
 
-  * `websphere::install`: Installs the IBM Installation Manager. This is a
+  * `websphere::iim`: Installs the IBM Installation Manager. This is a
     required component which is automatically included into the run list.
 
 ## Attributes

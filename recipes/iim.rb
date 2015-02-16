@@ -34,7 +34,7 @@ u.supports manage_home: true
 node[:wpf][:user][:system] ? (u.system true) : (u.uid node[:wpf][:user][:uid])
 u.run_action(:create) unless (node[:wpf][:user][:username] == 'root')
 
-concurrent 'WebSphere::Install' do
+concurrent 'websphere::iim' do
   block do
     monitor.synchronize do
       %w(gtk2-engines).each do |pkg|

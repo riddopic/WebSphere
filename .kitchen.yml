@@ -22,6 +22,7 @@ suites:
     run_list:
       - recipe[test_fixtures::default]
       - recipe[sudo::default]
+      - recipe[websphere::iim]
       - recipe[websphere::pkgutil]
       - recipe[websphere::ihs]
       - recipe[websphere::was]
@@ -37,6 +38,7 @@ suites:
     run_list:
       - recipe[test_fixtures::default]
       - recipe[sudo::default]
+      - recipe[websphere::iim]
       - recipe[websphere::pkgutil]
       - recipe[websphere::wps]
     attributes:
@@ -50,6 +52,7 @@ suites:
     run_list:
       - recipe[test_fixtures::default]
       - recipe[sudo::default]
+      - recipe[websphere::iim]
       - recipe[websphere::ihs]
       - recipe[websphere::was]
       - recipe[websphere::example]
@@ -73,6 +76,7 @@ suites:
       - recipe[os-hardening::securetty]
       - recipe[os-hardening::suid_sgid]
       - recipe[ssh-hardening::default]
+      - recipe[websphere::iim]
       - recipe[websphere::pkgutil]
       - recipe[websphere::ihs]
       - recipe[websphere::was]
