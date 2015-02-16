@@ -20,7 +20,10 @@
 # limitations under the License.
 #
 
-require 'find' unless defined?(Find)
+require 'find'         unless defined?(Find)
+require 'base64'       unless defined?(Base64)
+require 'openssl'      unless defined?(OpenSSL)
+require 'securerandom' unless defined?(SecureRandom)
 
 module WebSphere
   # Instance methods that are added when you include WebSphere::CliHelpers
@@ -41,6 +44,22 @@ module WebSphere
     # @api public
     def zip_hash(col1, col2)
       col1.zip(col2).inject({}) { |r, i| r[i[0]] = i[1]; r }
+    end
+
+    # Obfuscate befuddle words discombobulateand returning incomprehensible, or
+    # in less esoteric terms, returns a salted PBKDF2 hash of the password.
+    #
+    # @param [String] befuddle
+    #   the befuddled string you would like to discombobulateand
+    #
+    # @return [String]
+    #   incomprehensible obfuscated password
+    #
+    # @api public
+    def obfuscate(befuddle)
+      salt = SecureRandom.base64(24)
+      pbkdf2 = OpenSSL::PKCS5.pbkdf2_hmac_sha1(befuddle, salt, 1000, 24)
+      Base64.encode64(pbkdf2)
     end
 
     # Recursivly searh a path for a file
@@ -103,7 +122,7 @@ module WebSphere
       end
     end
 
-    # Handler for the `imcl` command line utility
+    # Handler for the `imcl` and `imutilsc` command line utility
     #
     # @param [String, Array] args
     #   additional arguments and/or operand
@@ -119,11 +138,13 @@ module WebSphere
     #   When the command does not complete within timeout (default: 60s)
     #
     # @api public
-    def imcl(*args)
-      run  = [(which('imcl') || path_to(tmpdir, 'imcl'))]
-      run << args.flatten.join(' ')
-      opts = { user: new_resource.owner, group: new_resource.group }
-      Chef::Log.info shell_out!(run.flatten.join(' '), opts).stdout
+    [:imcl, :imutilsc].each do |cmd|
+      define_method(cmd) do |*args|
+        run  = [which(cmd.to_s) || path_to(tmpdir, cmd.to_s)]
+        run << args.flatten.join(' ')
+        opts = { user: new_resource.owner, group: new_resource.group }
+        Chef::Log.info shell_out!(run.flatten.join(' '), opts).stdout
+      end
     end
 
     # Returns an Array of Hashes with currently installed WebSphere
@@ -285,31 +306,6 @@ module WebSphere
     def profile(run_action)
       opts = { user: new_resource.owner, group: new_resource.group }
       shell_out!(run_action.flatten.join(' '), opts).stdout.split("\n")
-    end
-
-    private #   P R O P R I E T À   P R I V A T A   Vietato L'accesso
-
-    # @api private
-    define_method(:start) do
-      run  = [path_to(new_resource.profile_path, 'startManager.sh')]
-      run << new_resource._?(:profile_name, '-profileName')
-    end
-
-    # @api private
-    define_method(:stop) do
-      run  = [path_to(new_resource.profile_path, 'stopManager.sh')]
-      run << new_resource._?(:admin_username,  '-username')
-      run << new_resource._?(:admin_password,  '-password')
-      run << new_resource._?(:profile_name, '-profileName')
-    end
-
-    # @api private
-    define_method(:status) do
-      run  = [path_to(new_resource.profile_path, 'serverStatus.sh')]
-      run << '-all'
-      run << new_resource._?(:admin_username,  '-username')
-      run << new_resource._?(:admin_password,  '-password')
-      run << new_resource._?(:profile_name, '-profileName')
     end
   end
 end

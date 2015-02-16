@@ -62,7 +62,7 @@ class Chef::Resource::WebspherePackage < Chef::Resource
   #
   # @return [Chef::Provider::WebspherePackage]
   # @api public
-  actions :install, :uninstall
+  actions :install, :uninstall, :update
 
   # Sets the default action
   #
@@ -248,23 +248,23 @@ class Chef::Resource::WebspherePackage < Chef::Resource
             equal_to: [:none, :recommended, :all],
             default: lazy { node[namespace][:fixes] }
 
-  # Defines master password file
+  # Defines the path to the master password file
   #
   # @param [String] master_passwd
   # @return [String]
   # @api public
   attribute :master_passwd,
             kind_of: String,
-            default: lazy { node[:wpf][:credential][:master_passwd] }
+            default: lazy { ::File.join(eclipse_dir, 'tools/.__mPF__') }
 
-  # Defines secure storage file
+  # Defines the path to the secure storage file
   #
   # @param [String] secure_storage
   # @return [String]
   # @api public
   attribute :secure_storage,
             kind_of: String,
-            default: lazy { node[:wpf][:credential][:secure_storage] }
+            default: lazy { ::File.join(eclipse_dir, 'tools/.__sSF__') }
 
   # Specify a preference value or a comma-delimited list of preference values
   # to be used

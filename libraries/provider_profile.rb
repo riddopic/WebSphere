@@ -208,4 +208,29 @@ class Chef::Provider::WebsphereProfile < Chef::Provider
     load_new_resource_state
     new_resource.running(false)
   end
+
+  private #   P R O P R I E T À   P R I V A T A   Vietato L'accesso
+
+  # @api private
+  def start
+    (run ||= []) << path_to(new_resource.profile_path, 'startManager.sh')
+    run << new_resource._?(:profile_name, '-profileName')
+  end
+
+  # @api private
+  def stop
+    (run ||= []) << path_to(new_resource.profile_path, 'stopManager.sh')
+    run << new_resource._?(:admin_username,  '-username')
+    run << new_resource._?(:admin_password,  '-password')
+    run << new_resource._?(:profile_name, '-profileName')
+  end
+
+  # @api private
+  def status
+    (run ||= []) << path_to(new_resource.profile_path, 'serverStatus.sh')
+    run << '-all'
+    run << new_resource._?(:admin_username,  '-username')
+    run << new_resource._?(:admin_password,  '-password')
+    run << new_resource._?(:profile_name, '-profileName')
+  end
 end

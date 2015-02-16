@@ -24,7 +24,8 @@ single_include 'garcon::default'
 
 g = Chef::Resource::Group.new(node[:wpf][:user][:group], run_context)
 node[:wpf][:user][:system] ? (g.system true) : (g.gid node[:wpf][:user][:gid])
-g.run_action(:create) unless (node[:wpf][:user][:username] == 'root')
+g.not_if { node[:oam][:user][:username] == 'root' }
+g.run_action(:create)
 
 u = Chef::Resource::User.new(node[:wpf][:user][:name], run_context)
 u.comment  node[:wpf][:user][:comment]
@@ -32,7 +33,8 @@ u.home     node[:wpf][:user][:home]
 u.gid      node[:wpf][:user][:group]
 u.supports manage_home: true
 node[:wpf][:user][:system] ? (u.system true) : (u.uid node[:wpf][:user][:uid])
-u.run_action(:create) unless (node[:wpf][:user][:username] == 'root')
+u.not_if { node[:oam][:user][:username] == 'root' }
+u.run_action(:create)
 
 concurrent 'WebSphere::Install' do
   block do
