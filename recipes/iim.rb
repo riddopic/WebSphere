@@ -37,14 +37,13 @@ u.run_action(:create) unless (node[:wpf][:user][:username] == 'root')
 concurrent 'websphere::iim' do
   block do
     monitor.synchronize do
-      %w(gtk2-engines).each do |pkg|
+      %w(gtk2-engines gtk2 libgcc glibc).each do |pkg|
         package pkg
       end
 
       %w(gtk2 libgcc glibc).each do |pkg|
-        %w(x86_64 i686).each do |arch|
-          yum_package pkg do
-            arch arch
+        yum_package pkg do
+          arch i686
           end
         end
       end
