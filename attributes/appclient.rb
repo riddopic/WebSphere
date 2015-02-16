@@ -69,6 +69,13 @@ default[:appclient] = {
   # it is explicitly specified. If other feature names are provided, then only
   # those features will be installed. Features must be comma delimited without
   # spaces.
+  #
+  # Available features are:
+  #   * developerkit        : IBM 32-bit WebSphere SDK for Java
+  #   * embeddablecontainer : Embeddable EJB container
+  #   * samples             : Samples
+  #   * standalonethinclient.resourceadapter.runtime : Stand-alone thin clients
+  #     and resource adapters
   features: 'javaee.thinclient.core.feature,javaruntime,developerkit,samples,'\
             'standalonethinclient.resourceadapter.runtime,embeddablecontainer',
 

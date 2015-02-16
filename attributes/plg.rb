@@ -69,6 +69,9 @@ default[:plg] = {
   # it is explicitly specified. If other feature names are provided, then only
   # those features will be installed. Features must be comma delimited without
   # spaces.
+  #
+  # Available features are:
+  #   * com.ibm.jre.6_64bit : IBM 64-bit WebSphere Runtime Environment for Java
   features: 'core.feature,com.ibm.jre.6_64bit',
 
   # The installFixes attribute indicates whether fixes available in repositories

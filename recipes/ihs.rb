@@ -23,8 +23,9 @@
 single_include 'websphere::iim'
 
 websphere_package :ihs do
+  service_repository false
   install_fixes :all
-  action :install
+  action [:install, :update]
 end
 
 template '/etc/init.d/ihs' do

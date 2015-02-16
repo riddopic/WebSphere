@@ -69,7 +69,12 @@ default[:wct] = {
   # it is explicitly specified. If other feature names are provided, then only
   # those features will be installed. Features must be comma delimited without
   # spaces.
-  features: 'core.feature,pct,zmmt,zpmt',
+  #
+  # Available features are:
+  #   * pct  : Web Server Plug-ins Configuration Tool
+  #   * zmmt : z/OS Migration Management Tool
+  #   * zpmt : Profile Management Tool (z/OS only)
+  features: 'core.feature,pct',
 
   # The installFixes attribute indicates whether fixes available in repositories
   # are installed with the product. By default, all available fixes will be

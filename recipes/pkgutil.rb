@@ -23,6 +23,7 @@
 single_include 'websphere::iim'
 
 websphere_package :pkgutil do
+  service_repository false
   install_fixes :all
-  action :install
+  action [:install, :update]
 end

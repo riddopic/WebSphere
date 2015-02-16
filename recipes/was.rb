@@ -46,11 +46,18 @@ file '/etc/security/limits.d/websphere.conf' do
   action :create
 end
 
-[:appclient, :plg, :was, :wct].each do |pkg|
+[:appclient, :plg, :wct].each do |pkg|
   websphere_package pkg do
+    service_repository false
     install_fixes :all
-    action :install
+    action [:install, :update]
   end
+end
+
+websphere_package :was do
+  service_repository false
+  install_fixes :all
+  action :install
 end
 
 was_dir = lazypath(node[:was][:dir])

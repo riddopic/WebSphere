@@ -34,7 +34,7 @@ u.supports manage_home: true
 node[:wpf][:user][:system] ? (u.system true) : (u.uid node[:wpf][:user][:uid])
 u.run_action(:create) unless (node[:wpf][:user][:username] == 'root')
 
-concurrent 'websphere::iim' do
+concurrent 'WebSphere::Install' do
   block do
     monitor.synchronize do
       %w(gtk2-engines gtk2 libgcc glibc).each do |pkg|
@@ -44,7 +44,6 @@ concurrent 'websphere::iim' do
       %w(gtk2 libgcc glibc).each do |pkg|
         yum_package pkg do
           arch i686
-          end
         end
       end
     end
@@ -63,9 +62,29 @@ end
   end
 end
 
+# Running Installation Manager version 1.8.1
+# (internal version 1.8.1000.20141125_2157)
+#
 websphere_package :iim do
   install_fixes :all
   install_from  :files
   install_files [node[:iim][:files][:with_pkgutil]]
   action :install
 end
+
+auth = node[:wpf][:authorize]
+repository_auth auth[:username] do
+  authorizing_url auth[:url]
+  password        auth[:password]
+  master_passwd   auth[:master_passwd]
+  secure_storage  auth[:secure_storage]
+  not_if { node[:wpf][:authorize][:username].nil? }
+end
+
+# Updates to 1.8.1000.20141126_2002
+#
+websphere_package :iim do
+  service_repository false
+  action :update
+end
+

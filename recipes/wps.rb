@@ -21,6 +21,7 @@
 #
 
 single_include 'websphere::iim'
+single_include 'websphere::was'
 
 file '/etc/profile.d/websphere.sh' do
   owner 'root'
@@ -46,12 +47,8 @@ file '/etc/security/limits.d/websphere.conf' do
   action :create
 end
 
-# Temp
-node.set[:was][:version]  = '8.0.9.20140530_2152'
-node.set[:was][:features] = 'core.feature,ejbdeploy,thinclient,' \
-                            'embeddablecontainer,samples,com.ibm.sdk.6_32bit'
-
 websphere_package :was do
+  service_repository false
   install_fixes :all
   action :install
 end
@@ -66,6 +63,8 @@ template ::File.join(was_dir, 'properties/wasprofile.properties') do
 end
 
 websphere_package :wps do
+  service_repository false
   install_fixes :all
-  action :install
+  output :debug
+  action [:install, :update]
 end
