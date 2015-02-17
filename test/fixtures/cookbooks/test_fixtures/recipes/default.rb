@@ -8,13 +8,13 @@ template '/etc/motd' do
   owner 'root'
   group 'root'
   mode  00644
-  notifies :create, 'template[profile]'
+  notifies :create, 'template[bash_profile]'
   action :create
 end
 
-template 'profile' do
-  source   'profile.erb'
-  path      ::File.join(node[:wpf][:user][:home], '.profile')
+template 'bash_profile' do
+  source   'bash_profile.erb'
+  path      ::File.join(node[:wpf][:user][:home], '.bash_profile')
   owner     lazy { node[:wpf][:user][:name] }
   group     lazy { node[:wpf][:user][:group] }
   mode      00644

@@ -1,0 +1,22 @@
+# .bash_profile
+
+# Get the aliases and functions
+if [ -f ~/.bashrc ]; then
+	. ~/.bashrc
+fi
+
+# User specific environment and startup programs
+
+PATH=$PATH:$HOME/bin:<%= @path %>
+export PATH
+
+alias installed='imcl listinstalledpackages -long'
+alias ls='ls -Gh --color=auto'
+alias df='df -h'
+alias cls=clear
+set -o vi
+
+export EDITOR=vi
+
+PS1='[\u@\h \W]\$ '
+

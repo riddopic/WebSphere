@@ -55,6 +55,7 @@ suites:
     - recipe[sudo::default]
     - recipe[websphere::iim]
     - recipe[websphere::ihs]
+    - recipe[websphere::was]
     - recipe[websphere::wps]
   attributes:
     authorization:
