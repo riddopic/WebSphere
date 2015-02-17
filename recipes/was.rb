@@ -46,16 +46,8 @@ file '/etc/security/limits.d/websphere.conf' do
   action :create
 end
 
-[:appclient, :plg, :wct].each do |pkg|
-  websphere_package pkg do
-    service_repository false
-    install_fixes :all
-    action [:install, :update]
-  end
-end
-
 websphere_package :was do
-  service_repository false
+  service_repository true
   install_fixes :all
   action :install
 end
@@ -67,4 +59,5 @@ template ::File.join(was_dir, 'properties/wasprofile.properties') do
   group     node[:wpf][:user][:group]
   mode      00644
   variables was: node[:was]
+  action :create
 end

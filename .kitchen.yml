@@ -24,7 +24,10 @@ suites:
     - recipe[sudo::default]
     - recipe[websphere::iim]
     - recipe[websphere::ihs]
+    - recipe[websphere::appclient]
+    - recipe[websphere::plg]
     - recipe[websphere::was]
+    - recipe[websphere::wct]
     - recipe[websphere::example]
   attributes:
     authorization:
@@ -75,7 +78,10 @@ suites:
     - recipe[ssh-hardening::default]
     - recipe[websphere::iim]
     - recipe[websphere::ihs]
+    - recipe[websphere::appclient]
+    - recipe[websphere::plg]
     - recipe[websphere::was]
+    - recipe[websphere::wct]
     - recipe[websphere::example]
   attributes:
     authorization:

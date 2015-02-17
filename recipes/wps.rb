@@ -23,48 +23,9 @@
 single_include 'websphere::iim'
 single_include 'websphere::was'
 
-file '/etc/profile.d/websphere.sh' do
-  owner 'root'
-  group 'root'
-  mode 00755
-  content <<-EOD
-    # Increase the file descriptor limit to support WAS
-    ulimit -n 20480
-  EOD
-  action :create
-end
-
-file '/etc/security/limits.d/websphere.conf' do
-  owner 'root'
-  group 'root'
-  mode 00755
-  content <<-EOD
-    # Increase the limits for the number of open files for the pam_limits
-    # module to support WAS
-    * soft nofile 20480
-    * hard nofile 20480
-  EOD
-  action :create
-end
-
-websphere_package :was do
-  service_repository false
-  install_fixes :all
-  action :install
-end
-
-was_dir = lazypath(node[:was][:dir])
-
-template ::File.join(was_dir, 'properties/wasprofile.properties') do
-  owner     node[:wpf][:user][:name]
-  group     node[:wpf][:user][:group]
-  mode      00644
-  variables was: node[:was]
-end
-
 websphere_package :wps do
-  service_repository false
+  service_repository true
   install_fixes :all
   output :debug
-  action [:install, :update]
+  action :install
 end

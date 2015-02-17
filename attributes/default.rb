@@ -20,9 +20,6 @@
 # limitations under the License.
 #
 
-# Name of a bag where you keep your data and some secrets among other things.
-default[:wpf][:data_bag] = nil
-
 # The base directory where all WebSphere products will reside. The default
 # value is '/opt/IBM'. Note: When installing with a non-root account software
 # will be installed in /opt/IBM/IBM/PackageName.

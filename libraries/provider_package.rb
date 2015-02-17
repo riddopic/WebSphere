@@ -85,7 +85,9 @@ class Chef::Provider::WebspherePackage < Chef::Provider
     load_new_resource_state
     new_resource.installed(true)
   ensure
-    [tmpdir, response_file].map { |f| FileUtils.rm_r(f) if ::File.exist?(f) }
+    [tmpdir, new_resource.response_file].map { |f|
+      FileUtils.rm_r(f) if ::File.exist?(f)
+    }
   end
 
   # Uninstall a WebSphere package specified by package ID
@@ -166,6 +168,7 @@ class Chef::Provider::WebspherePackage < Chef::Provider
   def update_by(service_repository)
     if service_repository
       [new_resource._?(:install_fixes,          '-iF'),
+       new_resource._?(:repositories, '-repositories'),
        valid?(new_resource._?(:secure_storage,'-sSF')),
        valid?(new_resource._?(:master_passwd, '-mPF')),
        base_options]
@@ -199,10 +202,8 @@ class Chef::Provider::WebspherePackage < Chef::Provider
         new_resource._?(:eclipse_dir, '-eclipseLocation'),
         new_resource._?(:repositories,   '-repositories'),
         base_options]
-
     elsif source == :repository
       install_options = [:input, response_file, base_options]
-
     else
       raise "Unknown source, `#{source}` to install with"
     end
@@ -267,6 +268,7 @@ class Chef::Provider::WebspherePackage < Chef::Provider
     zf.group        new_resource.group
     zf.overwrite    true
     zf.remove_after true
+    zf.not_if { @current_resource.installed }
     zf.run_action(:unzip)
   end
 end

@@ -24,7 +24,7 @@ single_include 'garcon::default'
 
 g = Chef::Resource::Group.new(node[:wpf][:user][:group], run_context)
 node[:wpf][:user][:system] ? (g.system true) : (g.gid node[:wpf][:user][:gid])
-g.not_if { node[:oam][:user][:username] == 'root' }
+g.not_if { node[:wpf][:user][:username] == 'root' }
 g.run_action(:create)
 
 u = Chef::Resource::User.new(node[:wpf][:user][:name], run_context)
@@ -33,7 +33,7 @@ u.home     node[:wpf][:user][:home]
 u.gid      node[:wpf][:user][:group]
 u.supports manage_home: true
 node[:wpf][:user][:system] ? (u.system true) : (u.uid node[:wpf][:user][:uid])
-u.not_if { node[:oam][:user][:username] == 'root' }
+u.not_if { node[:wpf][:user][:username] == 'root' }
 u.run_action(:create)
 
 concurrent 'WebSphere::Install' do
@@ -64,9 +64,6 @@ end
   end
 end
 
-# Running Installation Manager version 1.8.1
-# (internal version 1.8.1000.20141125_2157)
-#
 websphere_package :iim do
   install_fixes :all
   install_from  :files
@@ -81,12 +78,5 @@ repository_auth auth[:username] do
   master_passwd   auth[:master_passwd]
   secure_storage  auth[:secure_storage]
   not_if { node[:wpf][:authorize][:username].nil? }
+  action :store
 end
-
-# Updates to 1.8.1000.20141126_2002
-#
-websphere_package :iim do
-  service_repository false
-  action :update
-end
-

@@ -255,7 +255,7 @@ class Chef::Resource::WebspherePackage < Chef::Resource
   # @api public
   attribute :master_passwd,
             kind_of: String,
-            default: lazy { ::File.join(eclipse_dir, 'tools/.__mPF__') }
+            default: lazy { ::File.join(eclipse_dir, 'tools/.mPF') }
 
   # Defines the path to the secure storage file
   #
@@ -264,7 +264,7 @@ class Chef::Resource::WebspherePackage < Chef::Resource
   # @api public
   attribute :secure_storage,
             kind_of: String,
-            default: lazy { ::File.join(eclipse_dir, 'tools/.__sSF__') }
+            default: lazy { ::File.join(eclipse_dir, 'tools/.sSF') }
 
   # Specify a preference value or a comma-delimited list of preference values
   # to be used
@@ -350,7 +350,7 @@ class Chef::Resource::WebspherePackage < Chef::Resource
 
   def retrieve_repositories
     if node[namespace][:repositories].nil?
-      service_repository ? repository_for(id, :both) : repository_for(id, :local)
+      repository_for(id)
     else
       node[namespace][:repositories]
     end

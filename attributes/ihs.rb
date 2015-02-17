@@ -22,7 +22,7 @@
 
 include_attribute 'websphere::default'
 
-# ============================== IBM HTTP Server ===============================
+# ============== IBM HTTP Server for WebSphere Application Server ==============
 #
 default[:ihs] = {
   # The Uniq IBM product ID for IBM HTTP Server .
@@ -56,19 +56,19 @@ default[:ihs] = {
   # package available in the repository is version 1.0.1. When you install the
   # package, the installed version of the package is rolled back to version
   # 1.0.1.
-  version: nil,
+  version: '8.5.0.20120501_1108',
 
   # The profile attribute is required and typically is unique to the offering.
   # If modifying or updating an existing installation, the profile attribute
   # must match the profile ID of the targeted installation.
-  profile: 'IBM HTTP Server V8.5',
+  profile: 'IBM HTTP Server for WebSphere Application Server',
 
   # The features attribute is optional. Offerings always have at least one
   # feature; a required core feature which is installed regardless of
   # whether it is explicitly specified. If other feature names are
   # provided, then only those features will be installed. Features must be
   # comma delimited without spaces.
-  features: 'core.feature,arch.64bit',
+  features: 'core.feature,arch.64bit', # arch.32bit
 
   # The installFixes attribute indicates whether fixes available in
   # repositories are installed with the product. By default, all available

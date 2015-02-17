@@ -62,7 +62,7 @@ default[:wps] = {
   # If modifying or updating an existing installation, the profile attribute
   # must match the profile ID of the targeted installation of WebSphere
   # Application Server.
-  profile: 'IBM WebSphere Portal Server V8',
+  profile: 'IBM WebSphere Portal Server',
 
   # The features attribute is optional. Offerings always have at least one
   # feature; a required core feature which is installed regardless of whether

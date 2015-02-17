@@ -1,7 +1,7 @@
 # encoding: UTF-8
 #
 # Cookbook Name:: websphere
-# Recipe:: ihs
+# Recipe:: plg
 #
 # Author:    Stefano Harding <riddopic@gmail.com>
 # License:   Apache License, Version 2.0
@@ -22,22 +22,8 @@
 
 single_include 'websphere::iim'
 
-websphere_package :ihs do
+websphere_package :plg do
   service_repository true
   install_fixes :all
   action :install
-end
-
-template '/etc/init.d/ihs' do
-  owner     'root'
-  group     'root'
-  mode      00754
-  variables apachectl: ::File.join(lazypath(node[:ihs][:dir]), 'bin/apachectl')
-  notifies  :start, 'service[ihs]'
-  action :create
-end
-
-service 'ihs' do
-  supports status: true, start: true, stop: true, restart: true
-  action [:enable, :start]
 end

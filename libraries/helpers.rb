@@ -55,30 +55,42 @@ module WebSphere
       path.call
     end
 
-    # Return the repository manager URL based on the service offering name, IBM
-    # Installation Manager repository URLs follow this pattern:
+    # Return the repository manager URL based on the service offering name, the
+    # preference is to return a local repository unless the local repository
+    # attribute is nil, if so we point back to IBM's service repository. No
+    # validation is done of the URLs, add it to the todo list.
+    #
+    # @note: For you to use the IBM repository you will need an account that is
+    # entitled to the product offerings or a Passaport Advantage account.
+    #
+    # @note: IBM Installation Manager repository URLs follow this pattern:
     # http://www.ibm.com/software/repositorymanager/<offering_name>
     #
-    # @Note: This location does not contain a web page that you can access
+    # @note: This location does not contain a web page that you can access
     # using a web browser.
     #
     # @param [String] offering
+    #   the IBM offering name or product ID, i.e. `com.ibm.websphere.ND.v85`
+    #
+    # @param [Symbol] location
+    #   specify `:local` to return the value from `node[:wpf][:local][:repo]`
+    #   specify `:online` to return the value from `node[:wpf][:online][:repo]`
+    #   when nothing is specified it will return the local repo if it has been
+    #   sepcified, else it returns the online repo
+    #
     # @return [String, URI::HTTP]
+    #   the URL for the product offering
+    #
     # @api private
     def repository_for(offering, location = nil)
       case location
       when :local || :online
-        repos = [uri_join(node[:wpf][location][:repo], offering)]
-      when :both
-        repos = [:local, :online].map do |loc|
-          uri_join(node[:wpf][loc][:repo], offering)
-        end
+        repos = uri_join(node[:wpf][location][:repo], offering)
       else # nil
         loc = node[:wpf][:local][:repo].nil? ? :online : :local
-        repos = [uri_join(node[:wpf][loc][:repo], offering)]
+        repos = uri_join(node[:wpf][loc][:repo], offering)
       end
-
-      repos.uniq
+      repos
     end
 
     # Wait the given number of seconds for the block operation to complete.

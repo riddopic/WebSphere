@@ -22,7 +22,7 @@
 
 include_attribute 'websphere::default'
 
-# ======= Pluggable Application Client for WebSphere Application Server ========
+# ===== Pluggable Application Client for IBM WebSphere Application Server ======
 #
 default[:plugclient] = {
   # The Uniq IBM product ID for Pluggable Application Client.
@@ -56,13 +56,13 @@ default[:plugclient] = {
   # package available in the repository is version 1.0.1. When you install the
   # package, the installed version of the package is rolled back to version
   # 1.0.1.
-  version: nil,
+  version: '8.5.0.20120501_1108',
 
   # The profile attribute is required and typically is unique to the offering.
   # If modifying or updating an existing installation, the profile attribute
   # must match the profile ID of the targeted installation of WebSphere
   # Application Server.
-  profile: 'Pluggable Application Client for IBM WebSphere Application Server V8.5',
+  profile: 'Pluggable Application Client for IBM WebSphere Application Server',
 
   # The features attribute is optional. Offerings always have at least one
   # feature; a required core feature which is installed regardless of whether
