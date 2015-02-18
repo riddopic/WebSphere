@@ -36,20 +36,45 @@ node[:wpf][:user][:system] ? (u.system true) : (u.uid node[:wpf][:user][:uid])
 u.not_if { node[:wpf][:user][:username] == 'root' }
 u.run_action(:create)
 
-concurrent 'WebSphere::Install' do
+concurrent 'WebSphere Installation Manager' do
   block do
     monitor.synchronize do
       %w(gtk2-engines gtk2 libgcc glibc).each do |pkg|
         package pkg
       end
 
-      %w(gtk2 libgcc glibc).each do |pkg|
+      %w(gtk2-engines.i686 gtk2.i686 libgcc.i686 glibc.i686 libXtst.i686
+         libcanberra-gtk2.i686 PackageKit-gtk-module.i686).each do |pkg|
         yum_package pkg do
           arch i686
         end
       end
     end
   end
+end
+
+file '/etc/profile.d/websphere.sh' do
+  owner 'root'
+  group 'root'
+  mode 00755
+  content <<-EOD
+    # Increase the file descriptor limit to support WAS
+    ulimit -n 20480
+  EOD
+  action :create
+end
+
+file '/etc/security/limits.d/websphere.conf' do
+  owner 'root'
+  group 'root'
+  mode 00755
+  content <<-EOD
+    # Increase the limits for the number of open files for the pam_limits
+    # module to support WAS
+    * soft nofile 20480
+    * hard nofile 20480
+  EOD
+  action :create
 end
 
 [node[:wpf][:base],

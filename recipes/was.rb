@@ -22,30 +22,6 @@
 
 single_include 'websphere::iim'
 
-file '/etc/profile.d/websphere.sh' do
-  owner 'root'
-  group 'root'
-  mode 00755
-  content <<-EOD
-    # Increase the file descriptor limit to support WAS
-    ulimit -n 20480
-  EOD
-  action :create
-end
-
-file '/etc/security/limits.d/websphere.conf' do
-  owner 'root'
-  group 'root'
-  mode 00755
-  content <<-EOD
-    # Increase the limits for the number of open files for the pam_limits
-    # module to support WAS
-    * soft nofile 20480
-    * hard nofile 20480
-  EOD
-  action :create
-end
-
 websphere_package :was do
   service_repository true
   install_fixes :all
