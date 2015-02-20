@@ -96,12 +96,11 @@ websphere_package :iim do
   action :install
 end
 
-auth = node[:wpf][:authorize]
-repository_auth auth[:username] do
-  authorizing_url auth[:url]
-  password        auth[:password]
-  master_passwd   auth[:master_passwd]
-  secure_storage  auth[:secure_storage]
+repository_auth node[:wpf][:authorize][:url] do
+  username        node[:wpf][:authorize][:username]
+  password        node[:wpf][:authorize][:password]
+  master_passwd   node[:wpf][:authorize][:master_passwd]
+  secure_storage  node[:wpf][:authorize][:secure_storage]
   not_if { node[:wpf][:authorize][:username].nil? }
   action :store
 end

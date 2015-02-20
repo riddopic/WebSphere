@@ -78,7 +78,7 @@ class Chef::Resource::WebspherePackage < Chef::Resource
   attribute :installed,
             kind_of: [TrueClass, FalseClass]
 
-  # The ID of the WebSphere package to act on, corresponds to the attribute key
+  # ID of the WebSphere package to act on, corresponds to the attribute key
   #
   # @param [String, Symbol] namespace
   # @return [String, Symbol]
@@ -105,11 +105,11 @@ class Chef::Resource::WebspherePackage < Chef::Resource
             kind_of: String,
             default: lazy { node[namespace][:version] }
 
-  # Each WebSphere package offerings can have multiple features but always have
-  # at least one; a required core feature which is installed regardless of
-  # whether it is explicitly specified. If other feature names are provided,
-  # then only those features will be installed. Features must be comma
-  # delimited without spaces
+  # Each WebSphere package offerings can have multiple features but always
+  # have at least one; a required core feature which is installed regardless
+  # of whether it is explicitly specified. If other feature names are
+  # provided, then only those features will be installed. Features must be
+  # comma delimited without spaces
   #
   # @param [String] features
   # @return [String]
@@ -265,6 +265,15 @@ class Chef::Resource::WebspherePackage < Chef::Resource
   attribute :secure_storage,
             kind_of: String,
             default: lazy { ::File.join(eclipse_dir, 'tools/.sSF') }
+
+  # Specify any additional offering IDS to include in the response file.
+  #
+  # @param [Array, Symbol] offering_ids
+  # @return [Array, Symbol]
+  # @api public
+  attribute :offering_ids,
+            kind_of: [Array, Symbol]
+            alias_method :additional_offering, :offering_ids
 
   # Specify a preference value or a comma-delimited list of preference values
   # to be used

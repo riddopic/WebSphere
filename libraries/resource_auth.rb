@@ -39,7 +39,7 @@ class Chef::Resource::RepositoryAuth < Chef::Resource
   # @return [String]
   #   the value of the identity attribute.
   # @api private
-  identity_attr :username
+  identity_attr :url
 
   # Maps a short_name (and optionally a platform and version) to a
   # Chef::Resource
@@ -70,6 +70,11 @@ class Chef::Resource::RepositoryAuth < Chef::Resource
   # @api private
   default_action :store
 
+  def initialize(name, run_context = nil)
+    super
+    @sensitive = true
+  end
+
   attribute :exists, kind_of: [TrueClass, FalseClass]
 
   # Specify the password for the online product repository access. This allows
@@ -94,7 +99,7 @@ class Chef::Resource::RepositoryAuth < Chef::Resource
   # @api public
   attribute :username,
             kind_of: String,
-            name_attribute: true
+            default: lazy { node[:wpf][:authorize][:username] }
 
   # Specify repositories to be used, can be HTTP URL or file path but it must be
   # a valid IBM reposiotry containing entitlements, not required when
@@ -105,6 +110,7 @@ class Chef::Resource::RepositoryAuth < Chef::Resource
   # @api public
   attribute :authorizing_url,
             kind_of: String,
+            name_attribute: true,
             default: lazy { node[:wpf][:authorize][:url] }
 
   # Defines the path to the master password file
@@ -114,7 +120,7 @@ class Chef::Resource::RepositoryAuth < Chef::Resource
   # @api public
   attribute :master_passwd,
             kind_of: String,
-            default: lazy { ::File.join(eclipse_dir, 'tools/.__mPF__') }
+            default: lazy { ::File.join(eclipse_dir, 'tools/.mPF') }
 
   # Defines the path to the secure storage file
   #
@@ -123,7 +129,7 @@ class Chef::Resource::RepositoryAuth < Chef::Resource
   # @api public
   attribute :secure_storage,
             kind_of: String,
-            default: lazy { ::File.join(eclipse_dir, 'tools/.__sSF__') }
+            default: lazy { ::File.join(eclipse_dir, 'tools/.sSF') }
 
   # A string or ID that identifies the group owner by user name. If this value
   # is not specified, existing owners will remain unchanged and new owner
