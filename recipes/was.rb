@@ -28,7 +28,7 @@ websphere_package :was do
   action :install
 end
 
-was_dir = lazypath(node[:was][:dir])
+was_dir = lazy_evel(node[:was][:dir])
 
 template ::File.join(was_dir, 'properties/wasprofile.properties') do
   owner     node[:wpf][:user][:name]

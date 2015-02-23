@@ -545,7 +545,7 @@ class Chef::Resource::WebsphereProfile < Chef::Resource
   # @api public
   attribute :profile_path,
             kind_of: String,
-    default: lazy { ::File.join(lazypath(node[:was][:dir]), 'profiles', profile_name) }
+    default: lazy { ::File.join(lazy_evel(node[:was][:dir]), 'profiles', profile_name) }
 
   # Accesses all API functions from the command line using the manageprofiles
   # command. The command line interface can be driven by a response file that

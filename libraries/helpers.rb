@@ -40,19 +40,20 @@ module WebSphere
       end
     end
 
-    # Takes a lazy path and returns a less lazy one
+    # Throws water in the face of a lazy attribute, returns the unlazy value,
+    # good for nothing long-haird hippy
     #
-    # @param [Chef::DelayedEvaluator, Proc] path
+    # @param [Chef::DelayedEvaluator, Proc] var
     # @return [String]
     # @api private
-    def lazypath(path)
-      if path && path.is_a?(Chef::DelayedEvaluator)
-        path = path.dup
-        path = instance_eval(&path.call)
+    def lazy_eval(var)
+      if var && var.is_a?(Chef::DelayedEvaluator)
+        var = var.dup
+        var = var(&var.call)
       end
-      path
+      var
     rescue
-      path.call
+      var.call
     end
 
     # Return the repository manager URL based on the service offering name, the

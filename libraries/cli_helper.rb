@@ -92,8 +92,8 @@ module WebSphere
         ::File.executable?(cmd) ? cmd : nil
       else
         paths = %w(/bin /usr/bin /sbin /usr/sbin)
-        paths << ::File.join(lazypath(node[:wpf][:eclipse_dir]), 'tools')
-        paths << ::File.join(lazypath(node[:was][:dir]), 'bin')
+        paths << ::File.join(lazy_evel(node[:wpf][:eclipse_dir]), 'tools')
+        paths << ::File.join(lazy_evel(node[:was][:dir]), 'bin')
         paths << ENV.fetch('PATH').split(::File::PATH_SEPARATOR)
         paths.flatten.uniq.each do |path|
           possible = ::File.join(path, cmd)
