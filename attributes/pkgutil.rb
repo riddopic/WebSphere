@@ -82,7 +82,7 @@ default[:pkgutil] = {
   fixes: :all,
 
   # The installation directory for IBM Packaging Utility.
-  dir: lazy { ::File.join( node[:wpf][:base], 'PackagingUtility') },
+  dir: lazy { ::File.join(node[:wpf][:base], 'PackagingUtility') },
 
   data: [
     # Include data keys for product specific profile properties.
@@ -109,6 +109,6 @@ default[:pkgutil] = {
 
     # The SHA-256 checksum of the zip file. Checksum are calculated with:
     # shasum -a 256 /path/to/file
-    checksum:'706bc445b37276ed0f4b32d2cd01f101eae1fadaacf7a9550c8c01a2e6d8b10f'
+    checksum: '706bc445b37276ed0f4b32d2cd01f101eae1fadaacf7a9550c8c01a2e6d8b10f'
   }
 }

@@ -24,6 +24,8 @@ require 'tmpdir'
 require 'thread'       unless defined?(Thread)
 require 'securerandom' unless defined?(SecureRandom)
 
+# Include hooks to extend with class and instance methods.
+#
 module WebSphere
   # A set of helper methods shared by all resources and providers.
   #
@@ -94,6 +96,15 @@ module WebSphere
       repos
     end
 
+    # Provide a common Monitor to all providers for locking.
+    #
+    # @return [Class<Monitor>]
+    #
+    # @api private
+    def lock
+      @lock ||= Monitor.new
+    end
+
     # Wait the given number of seconds for the block operation to complete.
     # @note This method is intended to be a simpler and more reliable
     # replacement to the Ruby standard library `Timeout::timeout` method.
@@ -146,7 +157,7 @@ module WebSphere
 
     def hash_each(resource, specs, notifications = [], actions = [])
       specs.each do |name, spec|
-        reify resource, spec.merge({name: name}), notifications, actions
+        reify resource, spec.merge(name: name), notifications, actions
       end
     end
 

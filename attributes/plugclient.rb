@@ -82,18 +82,17 @@ default[:plugclient] = {
   fixes: :all,
 
   # The installation directory for Pluggable Application Client.
-  dir: lazy { ::File.join( node[:wpf][:base], 'WebSphere/AppClient') },
+  dir: lazy { ::File.join(node[:wpf][:base], 'WebSphere/AppClient') },
 
   data: [
     # Include data keys for product specific profile properties.
-    { key:   'user.import.profile',           value: false     },
+    { key:   'user.import.profile',           value: false                   },
     { key:   'user.select.64bit.image,com.ibm.websphere.PLUGCLIENT.v85',
       value: false },
-    { key:   'user.appclient.serverHostname', value: 'localhost' },
-    { key:   'user.appclient.serverPort',     value: 2809      },
-    { key:   'user.plugclient.sunJreHome',    value: '/usr/java/jre6' },
+    { key:   'user.appclient.serverHostname', value: 'localhost'             },
+    { key:   'user.appclient.serverPort',     value: 2809                    },
+    { key:   'user.plugclient.sunJreHome',    value: '/usr/java/jre6'        },
     { key:   'user.plugclient.sunJdkHome',    value: '/usr/java/jdk1.6.0_21' },
-    # Specifies the language pack to be installed using ISO-639 language codes.
-    { key:   'cic.selector.nl',               value: 'en'      }
+    { key:   'cic.selector.nl',               value: 'en'                    }
   ]
 }

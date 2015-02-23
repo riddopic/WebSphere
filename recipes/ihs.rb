@@ -32,7 +32,7 @@ template '/etc/init.d/ihs' do
   owner     'root'
   group     'root'
   mode      00754
-  variables apachectl: ::File.join(lazy_evel(node[:ihs][:dir]), 'bin/apachectl')
+  variables apachectl: ::File.join(lazy_eval(node[:ihs][:dir]), 'bin/apachectl')
   notifies  :start, 'service[ihs]'
   action :create
 end

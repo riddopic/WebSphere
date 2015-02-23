@@ -43,7 +43,9 @@ module WebSphere
     #
     # @api public
     def zip_hash(col1, col2)
+      # rubocop:disable Style/EachWithObject, Style/SingleLineBlockParams, Style/Semicolon
       col1.zip(col2).inject({}) { |r, i| r[i[0]] = i[1]; r }
+      # rubocop:enable Style/EachWithObject, Style/SingleLineBlockParams, Style/Semicolon
     end
 
     # Obfuscate befuddle words discombobulateand returning incomprehensible, or
@@ -92,8 +94,8 @@ module WebSphere
         ::File.executable?(cmd) ? cmd : nil
       else
         paths = %w(/bin /usr/bin /sbin /usr/sbin)
-        paths << ::File.join(lazy_evel(node[:wpf][:eclipse_dir]), 'tools')
-        paths << ::File.join(lazy_evel(node[:was][:dir]), 'bin')
+        paths << ::File.join(lazy_eval(node[:wpf][:eclipse_dir]), 'tools')
+        paths << ::File.join(lazy_eval(node[:was][:dir]), 'bin')
         paths << ENV.fetch('PATH').split(::File::PATH_SEPARATOR)
         paths.flatten.uniq.each do |path|
           possible = ::File.join(path, cmd)
@@ -249,7 +251,7 @@ module WebSphere
     #
     # @api public
     def manageprofiles(*args)
-      subcmd = Hoodie::Inflections.dasherize("-#{args.shift.to_s}")
+      subcmd = Hoodie::Inflections.dasherize("-#{args.shift}")
       run  = [which('manageprofiles.sh')]
       run << subcmd << args.flatten.join(' ')
       opts = { user: new_resource.owner, group: new_resource.group }

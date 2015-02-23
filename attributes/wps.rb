@@ -82,7 +82,7 @@ default[:wps] = {
   fixes: :all,
 
   # The installation directory for IBM WebSphere Portal Server.
-  dir: lazy { ::File.join( node[:wpf][:base], 'WebSphere/Portal') },
+  dir: lazy { ::File.join(node[:wpf][:base], 'WebSphere/Portal') },
 
   data: [
     # Include data keys for product specific profile properties.

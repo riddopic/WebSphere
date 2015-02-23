@@ -90,7 +90,7 @@ default[:appclient] = {
   fixes: :all,
 
   # The installation directory for Application Client.
-  dir: lazy { ::File.join( node[:wpf][:base], 'WebSphere/AppClient') },
+  dir: lazy { ::File.join(node[:wpf][:base], 'WebSphere/AppClient') },
 
   data: [
     # Include data keys for product specific profile properties.

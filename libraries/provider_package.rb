@@ -101,7 +101,7 @@ class Chef::Provider::WebspherePackage < Chef::Provider
         imcl :uninstall, new_resource.id,
               new_resource._?(:dir, '-iD'),
               base_options
- 	    end
+      end
       new_resource.updated_by_last_action(true)
     else
       Chef::Log.info "#{new_resource.id_ver} not installed - nothing to do"
@@ -117,7 +117,7 @@ class Chef::Provider::WebspherePackage < Chef::Provider
   # @api public
   def action_update_all
     if @current_resource.installed
-      converge_by "Updated #{installed.map { |h| h[:id_ver] }.join (', ')}" do
+      converge_by 'Updated installed WebSphere packages' do
         imcl :updateAll,
               new_resource._?(:install_fixes,          '-iF'),
               new_resource._?(:repositories, '-repositories'),
@@ -125,7 +125,7 @@ class Chef::Provider::WebspherePackage < Chef::Provider
       end
       new_resource.updated_by_last_action(true)
     else
-      Chef::Log.info "#{new_resource.id_ver} not installed - nothing to do"
+      Chef::Log.info 'No WebSphere packages installed to update - nothing to do'
     end
     load_new_resource_state
     new_resource.installed(true)
@@ -167,18 +167,18 @@ class Chef::Provider::WebspherePackage < Chef::Provider
   # @api private
   def update_by(service_repository)
     if service_repository
-      [new_resource._?(:install_fixes,          '-iF'),
-       new_resource._?(:repositories, '-repositories'),
-       valid?(new_resource._?(:secure_storage,'-sSF')),
-       valid?(new_resource._?(:master_passwd, '-mPF')),
+      [new_resource._?(:install_fixes,           '-iF'),
+       new_resource._?(:repositories,  '-repositories'),
+       valid?(new_resource._?(:secure_storage, '-sSF')),
+       valid?(new_resource._?(:master_passwd,  '-mPF')),
        base_options]
     else
       new_resource.preferences(
-        key:  'offering.service.repositories.areUsed',
-        value: false )
-      [new_resource._?(:install_fixes,          '-iF'),
-       new_resource._?(:repositories, '-repositories'),
-       new_resource._?(:preferences,   '-preferences'),
+        key:   'offering.service.repositories.areUsed',
+        value: false)
+      [new_resource._?(:install_fixes,           '-iF'),
+       new_resource._?(:repositories,  '-repositories'),
+       new_resource._?(:preferences,    '-preferences'),
        base_options]
     end
   end
@@ -233,9 +233,9 @@ class Chef::Provider::WebspherePackage < Chef::Provider
   #   when the file exists returns the Object#call, else undefined
   #
   # @api private
-   def valid?(arg)
-     ::File.exist?(arg.split.last) ? arg : nil
-   end
+  def valid?(arg)
+    ::File.exist?(arg.split.last) ? arg : nil
+  end
 
   # Generates response file from template
   #

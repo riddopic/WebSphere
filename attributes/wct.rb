@@ -87,7 +87,7 @@ default[:wct] = {
   fixes: :all,
 
   # The installation directory for WebSphere Customization Toolbox.
-  dir: lazy { ::File.join( node[:wpf][:base], 'WebSphere/Toolbox') },
+  dir: lazy { ::File.join(node[:wpf][:base], 'WebSphere/Toolbox') },
 
   data: [
     # Specifies the architecture to install: 32-bit or 64-bit.

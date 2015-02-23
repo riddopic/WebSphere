@@ -71,10 +71,9 @@ class Chef::Provider::RepositoryAuth < Chef::Provider
   # @api private
   def action_store
     if @current_resource.exists
-      Chef::Log.debug "#{new_resource.username} is already authorized for " \
-                      "- nothing to do"
+      Chef::Log.debug 'Credentials already stored - nothing to do'
     else
-      converge_by "Saving specified credentials to the secure storage file" do
+      converge_by 'Saving specified credentials to the secure storage file' do
         generate(new_resource.master_passwd, obfuscate(SecureRandom.hex))
         imutilsc :saveCredential,
                   new_resource._?(:authorizing_url, '-url'),

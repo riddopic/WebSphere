@@ -83,7 +83,7 @@ default[:was] = {
   fixes: :all,
 
   # The installation directory for IBM WebSphere Application Server.
-  dir: lazy { ::File.join( node[:wpf][:base], 'WebSphere/AppServer') },
+  dir: lazy { ::File.join(node[:wpf][:base], 'WebSphere/AppServer') },
 
   data: [
     # Include data keys for product specific profile properties.
@@ -189,5 +189,5 @@ default[:was] = {
   #
   # Note that only one criteria can be used at a time. If more than one is
   # specified, the last value specified in this file will be used.
-  cmt_pi_logs: 10,
+  cmt_pi_logs: 10
 }

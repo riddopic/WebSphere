@@ -81,7 +81,7 @@ default[:sdk] = {
   fixes: :all,
 
   # The installation directory for WebSphere Customization Toolbox.
-  dir: lazy { ::File.join( node[:wpf][:base], 'WebSphere/SDK') },
+  dir: lazy { ::File.join(node[:wpf][:base], 'WebSphere/SDK') },
 
   data: []
 }

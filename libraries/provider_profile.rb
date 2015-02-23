@@ -83,7 +83,7 @@ class Chef::Provider::WebsphereProfile < Chef::Provider
   #   are; valid values are `:standard`, `:production`, and `:development`
   #
   # @api public
-  def action_create
+  def action_create # rubocop:disable Metrics/MethodLength
     if @current_resource.created
       Chef::Log.debug "#{new_resource.profile_name} already created"
     else
@@ -91,7 +91,8 @@ class Chef::Provider::WebsphereProfile < Chef::Provider
         manageprofiles :create,
           new_resource._?(:admin_password,                    '-adminPassword'),
           new_resource._?(:admin_username,                    '-adminUserName'),
-          new_resource._?(:apply_perf_tuning_setting,'-applyPerfTuningSetting'),
+          new_resource._?(:apply_perf_tuning_setting,
+                                                     '-applyPerfTuningSetting'),
           new_resource._?(:app_server_node_name,          '-appServerNodeName'),
           new_resource._?(:cell_name,                              '-cellName'),
           new_resource._?(:default_port,                       '-defaultPorts'),
@@ -153,7 +154,7 @@ class Chef::Provider::WebsphereProfile < Chef::Provider
     end
     load_new_resource_state
     new_resource.created(true)
-  end
+  end # rubocop:enable Metrics/MethodLength
 
   # Deletes the WebSphere Application Server profile.
   #

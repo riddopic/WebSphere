@@ -156,6 +156,6 @@ class Chef::Resource::RepositoryAuth < Chef::Resource
   private #   P R O P R I E T À   P R I V A T A   Vietato L'accesso
 
   def eclipse_dir
-    lazy_evel(node[:wpf][:eclipse_dir])
+    lazy_eval(node[:wpf][:eclipse_dir])
   end
 end

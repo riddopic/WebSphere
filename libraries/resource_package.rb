@@ -273,7 +273,7 @@ class Chef::Resource::WebspherePackage < Chef::Resource
   # @api public
   attribute :offering_ids,
             kind_of: [Array, Symbol]
-            alias_method :additional_offering, :offering_ids
+  alias_method :additional_offering, :offering_ids
 
   # Specify a preference value or a comma-delimited list of preference values
   # to be used
@@ -332,9 +332,11 @@ class Chef::Resource::WebspherePackage < Chef::Resource
   # @return [String, Symbol]
   # @api public
   attribute :admin,
-    kind_of: Symbol,
-    equal_to: [:admin, :nonadmin],
-    default: lazy { (node[:wpf][:user][:name] == 'root') ? :admin : :nonadmin }
+            kind_of: Symbol,
+            equal_to: [:admin, :nonadmin],
+            default: lazy {
+              (node[:wpf][:user][:name] == 'root') ? :admin : :nonadmin
+            }
 
   # Show verbose progress from installation
   #

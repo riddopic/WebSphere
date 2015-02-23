@@ -18,6 +18,6 @@ template 'bash_profile' do
   owner     lazy { node[:wpf][:user][:name] }
   group     lazy { node[:wpf][:user][:group] }
   mode      00644
-  variables path: ::File.join(lazy_evel(node[:iim][:dir]), 'tools')
+  variables path: ::File.join(lazy_eval(node[:iim][:dir]), 'tools')
   action :nothing
 end

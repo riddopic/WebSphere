@@ -86,7 +86,7 @@ default[:plg] = {
   fixes: :all,
 
   # The installation directory for Web Server Plug-ins.
-  dir: lazy { ::File.join( node[:wpf][:base], 'WebSphere/Plugins') },
+  dir: lazy { ::File.join(node[:wpf][:base], 'WebSphere/Plugins') },
 
   data: [
     # Include data keys for product specific profile properties.
