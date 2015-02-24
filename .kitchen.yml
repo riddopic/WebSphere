@@ -34,7 +34,7 @@ suites:
       sudo:
         passwordless: true
         include_sudoers_d: true
-        users: [ 'wasadm', 'kitchen', 'vagrant' ]
+        users: ['wasadm', 'kitchen', 'vagrant']
 
 - name: repoman
   run_list:
@@ -47,7 +47,7 @@ suites:
       sudo:
         passwordless: true
         include_sudoers_d: true
-        users: [ 'wasadm', 'kitchen', 'vagrant' ]
+        users: ['wasadm', 'kitchen', 'vagrant']
 
 - name: portal
   run_list:
@@ -62,12 +62,13 @@ suites:
       sudo:
         passwordless: true
         include_sudoers_d: true
-        users: [ 'wasadm', 'kitchen', 'vagrant' ]
+        users: ['wasadm', 'kitchen', 'vagrant']
 
 - name: hardened
   run_list:
     - recipe[test_fixtures::default]
     - recipe[sudo::default]
+    - recipe[ntp::default]
     - recipe[os-hardening::packages]
     - recipe[os-hardening::limits]
     - recipe[os-hardening::login_defs]
@@ -85,8 +86,9 @@ suites:
     - recipe[websphere::wct]
     - recipe[websphere::example]
   attributes:
+    ntp: { servers: ['pool.ntp.org', 'pool.ntp.org'] }
     authorization:
       sudo:
         passwordless: true
         include_sudoers_d: true
-        users: [ 'wasadm', 'kitchen', 'vagrant' ]
+        users: ['wasadm', 'kitchen', 'vagrant']

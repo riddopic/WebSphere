@@ -51,7 +51,7 @@ module WebSphere
     def lazy_eval(var)
       if var && var.is_a?(Chef::DelayedEvaluator)
         var = var.dup
-        var = var(&var.call)
+        var = instance_eval(&var.call)
       end
       var
     rescue

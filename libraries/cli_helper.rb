@@ -43,9 +43,11 @@ module WebSphere
     #
     # @api public
     def zip_hash(col1, col2)
-      # rubocop:disable Style/EachWithObject, Style/SingleLineBlockParams, Style/Semicolon
+      # rubocop:disable Style/EachWithObject, Style/SingleLineBlockParams
+      # rubocop:disable Style/Semicolon
       col1.zip(col2).inject({}) { |r, i| r[i[0]] = i[1]; r }
-      # rubocop:enable Style/EachWithObject, Style/SingleLineBlockParams, Style/Semicolon
+      # rubocop:enable Style/EachWithObject, Style/SingleLineBlockParams
+      # rubocop:enable Style/Semicolon
     end
 
     # Obfuscate befuddle words discombobulateand returning incomprehensible, or

@@ -120,7 +120,7 @@ class Chef::Resource::RepositoryAuth < Chef::Resource
   # @api public
   attribute :master_passwd,
             kind_of: String,
-            default: lazy { ::File.join(eclipse_dir, 'tools/.mPF') }
+            default: lazy { ::File.join(lazy_eval(eclipse_dir), 'tools/.mPF') }
 
   # Defines the path to the secure storage file
   #
@@ -129,7 +129,7 @@ class Chef::Resource::RepositoryAuth < Chef::Resource
   # @api public
   attribute :secure_storage,
             kind_of: String,
-            default: lazy { ::File.join(eclipse_dir, 'tools/.sSF') }
+            default: lazy { ::File.join(lazy_eval(eclipse_dir), 'tools/.sSF') }
 
   # A string or ID that identifies the group owner by user name. If this value
   # is not specified, existing owners will remain unchanged and new owner
