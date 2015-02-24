@@ -56,7 +56,7 @@ default[:iim] = {
   # package available in the repository is version 1.0.1. When you install the
   # package, the installed version of the package is rolled back to version
   # 1.0.1.
-  version: '1.8.1000.20141125_2157',
+  version: '1.8.1000.20141126_2002',
 
   # The profile attribute is required and typically is unique to the offering.
   # If modifying or updating an existing installation, the profile attribute
@@ -105,7 +105,7 @@ default[:iim] = {
 
       # The SHA-256 checksum of the zip file. Checksum are calculated with:
       # shasum -a 256 /path/to/file
-      checksum:'c9af97d4d953e0d08b612b208d6807e6ac7ce2d22883698ad20413462bc0499a'
+      checksum: 'c9af97d4d953e0d08b612b208d6807e6ac7ce2d22883698ad20413462bc0499a'
     },
 
     with_pkgutil: {
@@ -120,7 +120,7 @@ default[:iim] = {
 
       # The SHA-256 checksum of the zip file. Checksum are calculated with:
       # shasum -a 256 /path/to/file
-      checksum:'706bc445b37276ed0f4b32d2cd01f101eae1fadaacf7a9550c8c01a2e6d8b10f'
+      checksum: '706bc445b37276ed0f4b32d2cd01f101eae1fadaacf7a9550c8c01a2e6d8b10f'
     }
   }
 }

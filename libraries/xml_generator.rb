@@ -51,7 +51,7 @@ module WebSphere
         end
         repositories(pkg.repositories)
         profile(profile, "${#{install_location}}", pkg.properties)
-        offering(profile, pkg.id, pkg.version, pkg.features, pkg.install_fixes)
+        offering(profile, pkg.id, pkg.features, pkg.install_fixes, pkg.version)
         preferences(pkg.preferences)
       end
     end
@@ -111,7 +111,7 @@ module WebSphere
     # @api private
     def self.repositories(*repos)
       @xml.server do |xml|
-        repos.map { |repo| xml.repository(location: repo) }
+        repos.flatten.map { |repo| xml.repository(location: repo) }
       end
     end
 
@@ -157,13 +157,15 @@ module WebSphere
     #   offering in XML format
     #
     # @api private
-    def self.offering(profile, id, version, features, fixes, modify = nil)
+    def self.offering(profile, id, features, fixes, version = nil, modify = nil)
       mod = { modify: modify } unless modify.nil?
       @xml.install(mod) do
         comment profile
-        offer = { profile: profile, id: id, features: features,
+        offer = { id: id,
+                  profile: profile,
+                  features: features,
                   installFixes: fixes }
-        offer.merge(version: version) if version
+        offer[:version] = version if version
         @xml.offering(offer)
       end
     end

@@ -22,7 +22,7 @@
 
 include_attribute 'websphere::default'
 
-# ====================== IBM WebSphere Application Server ======================
+# ============ IBM WebSphere Application Server Network Deployment =============
 #
 default[:was] = {
   # The Uniq IBM product ID for IBM WebSphere Application Server.
@@ -56,13 +56,13 @@ default[:was] = {
   # package available in the repository is version 1.0.1. When you install the
   # package, the installed version of the package is rolled back to version
   # 1.0.1.
-  version: nil,
+  version: '8.5.5004.20141119_1746',
 
   # The profile attribute is required and typically is unique to the offering.
   # If modifying or updating an existing installation, the profile attribute
   # must match the profile ID of the targeted installation of WebSphere
   # Application Server.
-  profile: 'IBM WebSphere Application Server V8.5',
+  profile: 'IBM WebSphere Application Server Network Deployment',
 
   # The features attribute is optional. Offerings always have at least one
   # feature; a required core feature which is installed regardless of whether
@@ -70,7 +70,7 @@ default[:was] = {
   # those features will be installed. Features must be comma delimited without
   # spaces.
   features: 'core.feature,ejbdeploy,thinclient,embeddablecontainer,samples,' \
-            'com.ibm.sdk.6_64bit',
+            'com.ibm.sdk.6_64bit', # liberty,com.ibm.sdk.6_32bit
 
   # The installFixes attribute indicates whether fixes available in repositories
   # are installed with the product. By default, all available fixes will be
@@ -83,7 +83,7 @@ default[:was] = {
   fixes: :all,
 
   # The installation directory for IBM WebSphere Application Server.
-  dir: lazy { ::File.join( node[:wpf][:base], 'WebSphere/AppServer') },
+  dir: lazy { ::File.join(node[:wpf][:base], 'WebSphere/AppServer') },
 
   data: [
     # Include data keys for product specific profile properties.
@@ -189,5 +189,5 @@ default[:was] = {
   #
   # Note that only one criteria can be used at a time. If more than one is
   # specified, the last value specified in this file will be used.
-  cmt_pi_logs: 10,
+  cmt_pi_logs: 10
 }

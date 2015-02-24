@@ -68,121 +68,39 @@ class Chef::Provider::WebspherePackage < Chef::Provider
 
   # Install WebSphere package specified by a package ID
   #
-  # @param [String, Symbol] namespace
-  #   package ID to install
-  #
-  # @param [String] id
-  #   the Uniq IBM product ID
-  #
-  # @param [String, Symbol] install_from
-  #   the type of installation to perform, supports `:files` or `:repository`
-  #   default is `:repository`
-  #
-  # @param [String] dir
-  #  the package installation directory
-  #
-  # @param [String] eclipse_dir
-  #   target eclipse directory, default is `/opt/IBM/`
-  #
-  # @param [String] data_dir
-  #   path where to hold internal Installation Manager data, default is
-  #   `/opt/IBM/DataLocation`
-  #
-  # @param [String] shared_dir
-  #   shared resources directory, default is `/opt/IBM/Shared`
-  #
-  # @param [URI::HTTP] passaport_advt
-  #   append the PassportAdvantage repository to the repository list
-  #
-  # @param [Array] repositories
-  #   list of repositories to be used
-  #
-  # @param [Hash] install_files
-  #   Hash containing the name, source and checksums of Zip files to use if
-  #   `install_from` is set to `zipfile`
-  #
-  # @param [Symbol] install_fixes
-  #   install Fixes, can be :none, :recommended or :all
-  #
-  # @param [String] master_passwd
-  #   defines master password file
-  #
-  # @param [Hash] preferences
-  #   specify a list of preference as <key>=<value>, <key>=<value>
-  #
-  # @param [Hash] properties
-  #   properties required for the package install, as <key>=<value>
-  #
-  # @param [String] secure_storage
-  #   defines secure storage file
-  #
-  # @param [TrueClass, FalseClass] accept_license
-  #   indicate acceptance of the license agreement
-  #
-  # @param [Symbol] admin
-  #   define the user as an admin, a nonAdmin or a group, the default is admin
-  #
-  # @param [String] shared_dir
-  #   specify a directory to hold internal Installation Manager data
-  #
-  # @param [String] log_file
-  #   specify a log file that records the result of Installation Manager
-  #   operations. The log file is an XML file.
-  #
-  # @param [String] master_password_file
-  #   defines master password file
-  #
-  # @param [Symbol] language
-  #   specify desired language to be used
-  #
-  # @param [TrueClass, FalseClass] show_progress
-  #   show progress
-  #
-  # @param [TrueClass, FalseClass] show_verbose_progress
-  #   show verbose progress
-  #
-  # @param [TrueClass, FalseClass] silent
-  #   run in silent mode
-  #
-  # @param [String] url
-  #   the URL of a repository
-  #
   # @return [Chef::Provider::WebspherePackage]
   #
-  # @api private
+  # @api public
   def action_install
     if @current_resource.installed
       Chef::Log.debug "#{new_resource.id_ver} already installed"
     else
-      converge_by "Installed #{new_resource.id_ver}" do
+      converge_by "Installed #{new_resource.profile} : #{new_resource.id_ver}" do
         imcl install_by(new_resource.install_from).join(' '),
-          new_resource._?(:dir,                       '-iD'),
-          new_resource._?(:accept_license, '-acceptLicense'),
-          new_resource._?(:admin,                     '-aR'),
-          ((new_resource.output == :silent)  ? '-s'   :
-           (new_resource.output == :verbose) ? '-sP'  :
-           (new_resource.output == :debug)   ? '-sVP' : '-sP')
+              new_resource._?(:dir,   '-iD'),
+              new_resource._?(:admin, '-aR')
       end
       new_resource.updated_by_last_action(true)
     end
     load_new_resource_state
     new_resource.installed(true)
   ensure
-    [tmpdir, response_file].map { |f| FileUtils.rm_r(f) if ::File.exist?(f) }
+    [tmpdir, new_resource.response_file].map { |f|
+      FileUtils.rm_r(f) if ::File.exist?(f)
+    }
   end
 
   # Uninstall a WebSphere package specified by package ID
   #
-  # @param [String] id
-  #   package ID to uninstall
-  #
   # @return [Chef::Provider::WebspherePackage]
   #
-  # @api private
+  # @api public
   def action_uninstall
     if @current_resource.installed
-      converge_by "Removing #{new_resource.id_ver}" do
-        # code...
+      converge_by "Removed #{new_resource.profile} : #{new_resource.id_ver}" do
+        imcl :uninstall, new_resource.id,
+              new_resource._?(:dir, '-iD'),
+              base_options
       end
       new_resource.updated_by_last_action(true)
     else
@@ -192,7 +110,78 @@ class Chef::Provider::WebspherePackage < Chef::Provider
     new_resource.installed(false)
   end
 
+  # Update all WebSphere packages from the service repository
+  #
+  # @return [Chef::Provider::WebspherePackage]
+  #
+  # @api public
+  def action_update_all
+    if @current_resource.installed
+      converge_by 'Updated installed WebSphere packages' do
+        imcl :updateAll,
+              new_resource._?(:install_fixes,          '-iF'),
+              new_resource._?(:repositories, '-repositories'),
+              base_options
+      end
+      new_resource.updated_by_last_action(true)
+    else
+      Chef::Log.info 'No WebSphere packages installed to update - nothing to do'
+    end
+    load_new_resource_state
+    new_resource.installed(true)
+  end
+
+  # Update a WebSphere packages from the service repository using the product ID
+  #
+  # @return [Chef::Provider::WebspherePackage]
+  #
+  # @api public
+  def action_update
+    if @current_resource.installed
+      converge_by "Updated #{new_resource.id}" do
+        imcl :install, new_resource.id,
+              update_by(new_resource.service_repository).join(' '),
+              base_options
+      end
+      new_resource.updated_by_last_action(true)
+    else
+      Chef::Log.info "#{new_resource.id_ver} not installed - nothing to do"
+    end
+    load_new_resource_state
+    new_resource.installed(true)
+  end
+
   private #   P R O P R I E T À   P R I V A T A   Vietato L'accesso
+
+  # Return correct set of update options based on the service_repository
+  # settings, in simple terms, whether or not we update from IBM, can they
+  # really be trusted?
+  #
+  # @param [TrueClass, FalseClass] service_repository
+  #   when true we use the offerings service repository, when false we only
+  #   use the local repository
+  #
+  # @return [Array]
+  #   installation options for source
+  #
+  # @api private
+  def update_by(service_repository)
+    if service_repository
+      [new_resource._?(:install_fixes,           '-iF'),
+       new_resource._?(:repositories,  '-repositories'),
+       valid?(new_resource._?(:secure_storage, '-sSF')),
+       valid?(new_resource._?(:master_passwd,  '-mPF')),
+       base_options]
+    else
+      new_resource.preferences(
+        key:   'offering.service.repositories.areUsed',
+        value: false)
+      [new_resource._?(:install_fixes,           '-iF'),
+       new_resource._?(:repositories,  '-repositories'),
+       new_resource._?(:preferences,    '-preferences'),
+       base_options]
+    end
+  end
 
   # Return correct set of install options for the different install sources
   #
@@ -211,15 +200,41 @@ class Chef::Provider::WebspherePackage < Chef::Provider
         new_resource._?(:data_dir,                 '-dL'),
         new_resource._?(:shared_dir,              '-sRD'),
         new_resource._?(:eclipse_dir, '-eclipseLocation'),
-        new_resource._?(:repositories,   '-repositories')]
-
+        new_resource._?(:repositories,   '-repositories'),
+        base_options]
     elsif source == :repository
-      install_options = [:input, response_file]
-
+      install_options = [:input, response_file, base_options]
     else
-      raise "Unknown install from source, `#{source}`"
+      raise "Unknown source, `#{source}` to install with"
     end
     install_options
+  end
+
+  # Base set of options common to all `imcl` commands
+  #
+  # @return [Array]
+  # @api private
+  def base_options
+    [valid?(new_resource._?(:secure_storage,   '-sSF')),
+     valid?(new_resource._?(:master_passwd,    '-mPF')),
+     new_resource._?(:accept_license, '-acceptLicense'),
+     ((new_resource.output == :silent)  ? '-s'   :
+      (new_resource.output == :verbose) ? '-sP'  :
+      (new_resource.output == :debug)   ? '-sVP' : '-sP')]
+  end
+
+  # Checks if the argument is valid by the presence of the file, when the file
+  # exists returns the value object supplied, else undefined
+  #
+  # @param [Array<String, Symbol, #read>] arg
+  #   method or object that responds to #call to validate
+  #
+  # @return [Object, undefined]
+  #   when the file exists returns the Object#call, else undefined
+  #
+  # @api private
+  def valid?(arg)
+    ::File.exist?(arg.split.last) ? arg : nil
   end
 
   # Generates response file from template
@@ -234,7 +249,10 @@ class Chef::Provider::WebspherePackage < Chef::Provider
     t.group     new_resource.group
     t.mode      00644
     t.variables data: XML.generate(new_resource)
-    t.run_action(:create) unless @current_resource.installed
+    t.not_if  {
+      @current_resource.installed || new_resource.install_from == :files
+    }
+    t.run_action(:create)
     new_resource.response_file
   end
 
@@ -250,6 +268,7 @@ class Chef::Provider::WebspherePackage < Chef::Provider
     zf.group        new_resource.group
     zf.overwrite    true
     zf.remove_after true
+    zf.not_if { @current_resource.installed }
     zf.run_action(:unzip)
   end
 end

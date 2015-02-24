@@ -20,44 +20,20 @@
 # limitations under the License.
 #
 
-single_include 'websphere::install'
+single_include 'websphere::iim'
 
-file '/etc/profile.d/websphere.sh' do
-  owner 'root'
-  group 'root'
-  mode 00755
-  content <<-EOD
-    # Increase the file descriptor limit to support WAS
-    ulimit -n 20480
-  EOD
-  action :create
+websphere_package :was do
+  service_repository true
+  install_fixes :all
+  action :install
 end
 
-file '/etc/security/limits.d/websphere.conf' do
-  owner 'root'
-  group 'root'
-  mode 00755
-  content <<-EOD
-    # Increase the limits for the number of open files for the pam_limits
-    # module to support WAS
-    * soft nofile 20480
-    * hard nofile 20480
-  EOD
-  action :create
-end
-
-[:appclient, :plg, :was, :wct].each do |pkg|
-  websphere_package pkg do
-    install_fixes :all
-    action :install
-  end
-end
-
-was_dir = lazypath(node[:was][:dir])
+was_dir = lazy_eval(node[:was][:dir])
 
 template ::File.join(was_dir, 'properties/wasprofile.properties') do
   owner     node[:wpf][:user][:name]
   group     node[:wpf][:user][:group]
   mode      00644
   variables was: node[:was]
+  action :create
 end

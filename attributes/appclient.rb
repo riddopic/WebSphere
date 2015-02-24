@@ -22,7 +22,7 @@
 
 include_attribute 'websphere::default'
 
-# ============ Application Client for WebSphere Application Server =============
+# =========== Application Client for IBM WebSphere Application Server ==========
 #
 default[:appclient] = {
   # The Uniq IBM product ID for Application Client.
@@ -56,19 +56,26 @@ default[:appclient] = {
   # package available in the repository is version 1.0.1. When you install the
   # package, the installed version of the package is rolled back to version
   # 1.0.1.
-  version: nil,
+  version: '8.5.5004.20141119_1746',
 
   # The profile attribute is required and typically is unique to the offering.
   # If modifying or updating an existing installation, the profile attribute
   # must match the profile ID of the targeted installation of WebSphere
   # Application Server.
-  profile: 'Application Client for IBM WebSphere Application Server V8.5',
+  profile: 'Application Client for IBM WebSphere Application Server',
 
   # The features attribute is optional. Offerings always have at least one
   # feature; a required core feature which is installed regardless of whether
   # it is explicitly specified. If other feature names are provided, then only
   # those features will be installed. Features must be comma delimited without
   # spaces.
+  #
+  # Available features are:
+  #   * developerkit        : IBM 32-bit WebSphere SDK for Java
+  #   * embeddablecontainer : Embeddable EJB container
+  #   * samples             : Samples
+  #   * standalonethinclient.resourceadapter.runtime : Stand-alone thin clients
+  #     and resource adapters
   features: 'javaee.thinclient.core.feature,javaruntime,developerkit,samples,'\
             'standalonethinclient.resourceadapter.runtime,embeddablecontainer',
 
@@ -83,7 +90,7 @@ default[:appclient] = {
   fixes: :all,
 
   # The installation directory for Application Client.
-  dir: lazy { ::File.join( node[:wpf][:base], 'WebSphere/AppClient') },
+  dir: lazy { ::File.join(node[:wpf][:base], 'WebSphere/AppClient') },
 
   data: [
     # Include data keys for product specific profile properties.

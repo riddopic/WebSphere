@@ -26,6 +26,22 @@ The cookbook also creates a user account to manage the components, and creates
 and configures all the components that are required for a running WebSphere
 Application Server instance.
 
+## Quick Start Guide (YMMV, TLDR RTFM IMO)
+
+This cookbook comes with a Kitchen file so that you can quickly provision a
+machine locally, providing your system has been setup correctly with ChefDK, Vagrant, VirtualBox or VMware then simply `kitchen converge` an instance of your liking:
+
+    $ kitchen list
+
+      Instance            Driver   Provisioner  Last Action
+      default-centos-6    Vagrant  ChefZero     <Not Created>
+      repoman-centos-6    Vagrant  ChefZero     <Not Created>
+      portal-centos-6     Vagrant  ChefZero     <Not Created>
+      hardened-centos-6   Vagrant  ChefZero     <Not Created>
+
+To launch a machine run the command `kitchen converge INSTANCE`. Replace the
+name `INSTANCE` with the actual desired instance.
+
 ## Requirements
 
 Before trying to use the cookbook make sure you have a supported system. If you
@@ -69,8 +85,8 @@ the specific version numbers):
   round base protection. Require for local development only, for simulating a
   restricted production machine instance.
 * [ssh-hardening](https://supermarket.chef.io/cookbooks/ssh-hardening) - This
-  cookbook provides secure ssh-client and ssh-server configurations. Require for
-  local development only, for simulating a restricted production machine
+  cookbook provides secure ssh-client and ssh-server configurations. Require
+  for local development only, for simulating a restricted production machine
   instance.
 
 #### Limitations
@@ -129,9 +145,14 @@ VirtualBox or VMware.
 
 ## Usage ٩(͡๏̯͡๏)۶
 
-The cookbook is designed to be attribute driven. If you wish to customize your installation the recommended method would be to create a role for you specific needs and override attributes as required within the role.
+The cookbook is designed to be attribute driven. If you wish to customize your
+installation the recommended method would be to create a role for you specific
+needs and override attributes as required within the role.
 
-The cookbook contains five recipes, one for setting up the basic system, one for working with the repositories, and finally the remaining three are to install the various WebSphere components. These recipes can be installed individually together:
+The cookbook contains five recipes, one for setting up the basic system, one
+for working with the repositories, and finally the remaining three are to
+install the various WebSphere components. These recipes can be installed
+individually together:
 
   * `websphere::ihs`: Installs the WebSphere HTTP Server.
 
@@ -141,18 +162,24 @@ The cookbook contains five recipes, one for setting up the basic system, one for
 
   * `websphere::wps`: Installs the WebSphere Portal Server.
 
-  * `websphere::pkgutil`: Installs the Packaging Utilities which are required to
-    manipulate the IBM repositories, for example to update the local repository
-    with the latest patches or to remove old product versions.
+  * `websphere::pkgutil`: Installs the Packaging Utilities which are required
+    to manipulate the IBM repositories, for example to update the local
+	repository with the latest patches or to remove old product versions.
 
-  * `websphere::install`: Installs the IBM Installation Manager. This is a
+  * `websphere::iim`: Installs the IBM Installation Manager. This is a
     required component which is automatically included into the run list.
 
 ## Attributes
 
-Attributes are under several different namespaces, the `wpf` (WebSphere Family Products) namespace is where general attributes reside. Each sub-components or product will also have a uniq namespace, for example `ihs` for the HTTP server, `wps` for the WebSphere Portal Server, etc.
+Attributes are under several different namespaces, the `wpf` (WebSphere Family
+Products) namespace is where general attributes reside. Each sub-components or
+product will also have a uniq namespace, for example `ihs` for the HTTP
+server, `wps` for the WebSphere Portal Server, etc.
 
-The following attributes affect the behavior of how the cookbook performs an installation, or are used in the recipes for various settings that require flexibility. Attributes have default values set, where possible or appropriate, the default values from IBM are used.
+The following attributes affect the behavior of how the cookbook performs an
+installation, or are used in the recipes for various settings that require
+flexibility. Attributes have default values set, where possible or
+appropriate, the default values from IBM are used.
 
 ### General attributes:
 
@@ -174,10 +201,10 @@ attributes are located in their respective attributes file.
 
   The Agent Data Location directory, which is sometimes referred to as the
   appDataLocation, is critical to the healthy functioning of the Installation
-  Manager. After the directory is created, it cannot be moved. If the Agent Data
-  Location directory becomes corrupt, all product installations that are tracked
-  by the metadata in the Agent Data Location directory become unserviceable and
-  need to be reinstalled if service is needed.
+  Manager. After the directory is created, it cannot be moved. If the Agent
+  Data Location directory becomes corrupt, all product installations that are
+  tracked by the metadata in the Agent Data Location directory become
+  unserviceable and need to be reinstalled if service is needed.
 
 * `node[:wpf][:shared_dir]`: [String] Shared Resources Directory, this is used
   for two purposes:
@@ -213,8 +240,8 @@ attributes are located in their respective attributes file.
   specified. Default is to use a system account.
 
 * `node[:wpf][:user][:uid]`: [Integer] If `system` is set to false then
-  you can select a `UserID` for the account. Default is nil and a system account
-  is used.
+  you can select a `UserID` for the account. Default is nil and a system
+  account is used.
 
 * `node[:wpf][:user][:gid]`: [Integer] If `system` is set to false then
   you can select a `GroupID` for the account. Default is nil and a system
@@ -223,9 +250,10 @@ attributes are located in their respective attributes file.
 The cookbook supports using the IBM repository for installation, however this
 requires a valid IBM Passport Advantage account or a valid account that has the
 entitlements to install the software. Alternatively you can specify a locally
-maintained repository that contains the software entitlements and use the remote
-IBM repository to fetch the latest hot-fixes and patches. Or, should you so
-chose, you can use only the local repository (recommended). Finally, the cookbook also supports installing from the IBM ZIP file disk images.
+maintained repository that contains the software entitlements and use the
+remote IBM repository to fetch the latest hot-fixes and patches. Or, should
+you so chose, you can use only the local repository (recommended). Finally,
+the cookbook also supports installing from the IBM ZIP file disk images.
 
 * `node[:wpf][:online_repo]`: [Array, String] Specify the location of the IBM
   live online product repository. This location is regularly updated with hot-
@@ -289,8 +317,8 @@ generated XML response files.
   overrides the preferences that were previously set.
 
 * `node[:wpf][::preferences]`: A list of preferences that define the
-  behavior during installation. These values are created as part of the response
-  file.
+  behavior during installation. These values are created as part of the
+  response file.
 
   * `com.ibm.cic.common.core.preferences.eclipseCache`: This key specifies the
     location of the shared resources directory. The shared resource directory
@@ -309,7 +337,8 @@ generated XML response files.
 
   * `offering.service.repositories.areUsed`: When this key is set to true,
     service repositories are searched when products are installed or updated.
-    Change this key to false to disable the function. The default value is true.
+    Change this key to false to disable the function. The default value is
+	true.
 
   * `com.ibm.cic.common.core.preferences.ssl.nonsecureMode`: When this key is
     set to true, Nonsecure SSL Mode is enabled and is set as permanent by
@@ -328,26 +357,27 @@ generated XML response files.
 
   * `http.ntlm.auth.enableIntegrated.win32`: Needs documentation.
 
-  * `com.ibm.cic.common.core.preferences.preserveDownloadedArtifacts`: When this
-    key is set to `true`, the files that are required to roll the package back
-    to a previous version are stored on your computer. When this key is set to
-    `false`, files that are required for a rollback or an update are not stored.
+  * `com.ibm.cic.common.core.preferences.preserveDownloadedArtifacts`: When
+    this key is set to `true`, the files that are required to roll the package
+	back to a previous version are stored on your computer. When this key is
+	set to `false`, files that are required for a rollback or an update are
+	not stored.
     If you do not store these files, you must connect to your original
     repository or media to roll back a package. When the preference is changed
     from `true` to `false`, the stored files are deleted the next time that you
     install, update, modify, roll back, or uninstall a package.
 
-  * `com.ibm.cic.common.core.preferences.keepFetchedFiles`: When this key is set
-    to `true`, if an error occurs during the installation or the update process,
-    the files that are downloaded are not deleted. The next time you download
-    these files, the time to download the files decreases because some of the
-    files are downloaded already. When this key is set to `false`, files that
-    are downloaded are deleted if an error occurs.
+  * `com.ibm.cic.common.core.preferences.keepFetchedFiles`: When this key is
+    set to `true`, if an error occurs during the installation or the update
+	process, the files that are downloaded are not deleted. The next time you
+	download these files, the time to download the files decreases because
+	some of the files are downloaded already. When this key is set to `false`,
+	files that are downloaded are deleted if an error occurs.
 
   * `PassportAdvantageIsEnabled`: The default value is false.
 
-  * `com.ibm.cic.common.core.preferences.searchForUpdates`: When this key is set
-    to `true`, a search for updates occurs first when you run a silent
+  * `com.ibm.cic.common.core.preferences.searchForUpdates`: When this key is
+    set to `true`, a search for updates occurs first when you run a silent
     installation. The default value is `false`.
 
     When the key is set to `false` and the IBM product that you are installing
@@ -366,7 +396,9 @@ generated XML response files.
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Application Client for WebSphere Application Server Attributes
 
-The Application Client provides a variety of stand-alone thin clients, as embeddable JAR files, Java EE clients, ActiveX to EJB Bridge and Pluggable Application Client. These include:
+The Application Client provides a variety of stand-alone thin clients, as
+embeddable JAR files, Java EE clients, ActiveX to EJB Bridge and Pluggable
+Application Client. These include:
 
 * IBM Thin Client for Java API for XML-based Web Services (JAX-WS)
 * IBM Thin Client for Java API for XML-based RPC (JAX-RPC)
@@ -384,15 +416,16 @@ the Application Client.
 
 * `node[:appclient][:repositories]`: [Array, String] The location for a local
   online product repository. This can be a local copy on the machine, or on an
-  internal web or NFS server. Information on how to create your own local online
-  product repository can be found later in this document. Default is `nil`.
+  internal web or NFS server. Information on how to create your own local
+  online product repository can be found later in this document. Default is
+  `nil`.
 
 * `node[:appclient][:modify]`: [TrueClass, FalseClass] Use the install and
-  uninstall commands to inform Installation Manager of the installation packages
-  to install or uninstall. A value of `false` indicates not to modify an
-  existing install by adding or removing features. A `true` value indicates to
-  modify an existing install by adding or removing features. The default value
-  is `false`.
+  uninstall commands to inform Installation Manager of the installation
+  packages to install or uninstall. A value of `false` indicates not to modify
+  an existing install by adding or removing features. A `true` value indicates
+  to modify an existing install by adding or removing features. The default
+  value is `false`.
 
 * `node[:appclient][:version]`: [String] The version attribute is optional. If
   a version number is provided, then the offering will be installed or
@@ -402,12 +435,13 @@ the Application Client.
   repositories. The version number can be found in the repository.xml file in
   the repositories. This attribute has no default value.
 
-  **Note:** In some cases, a package might be rolled back to an earlier version.
-  This roll back can happen if the version specified is earlier than the
-  installed version or if a version is not specified. For example, you have
-  version 1.0.2 of a package that is installed and the latest version of the
-  package available in the repository is version 1.0.1. When you install the
-  package, the installed version of the package is rolled back to version 1.0.1.
+  **Note:** In some cases, a package might be rolled back to an earlier
+  version. This roll back can happen if the version specified is earlier than
+   the installed version or if a version is not specified. For example, you
+   have version 1.0.2 of a package that is installed and the latest version of
+   the package available in the repository is version 1.0.1. When you install
+   the package, the installed version of the package is rolled back to version
+   1.0.1.
 
 * `node[:appclient][:profile]`: [String] The profile attribute is required and
   typically is unique to the offering. If modifying or updating an existing
@@ -450,8 +484,8 @@ Additionally the namespace `[:appclient][:data]` is used at installation time,
 these key/value pairs correspond to the hash values created in the installation
 XML file.
 
-  * `user.import.profile`: [TrueClass, FalseClass] Include data keys for product
-    specific profile properties. Default is `false`.
+  * `user.import.profile`: [TrueClass, FalseClass] Include data keys for
+    product specific profile properties. Default is `false`.
 
   * `user.select.64bit.image,com.ibm.websphere.WCT.v85`: [String] The platform
     architecture, **note:** this cookbook only supports 64bit architecture.
@@ -469,8 +503,8 @@ XML file.
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### IBM HTTP Server Attributes
 
-The IBM HTTP Server is based on Apache HTTP Server 2.2.8, with additional fixes.
-The Apache Web server can be built with many different capabilities and
+The IBM HTTP Server is based on Apache HTTP Server 2.2.8, with additional
+fixes. The Apache Web server can be built with many different capabilities and
 configuration options. IBM HTTP Server includes a set of features from the
 available options. The namespace `[:ihs]` is used for any specific HTTP server
 attributes.
@@ -481,29 +515,32 @@ attributes.
 
 * `node[:appclient][:repositories]`: [Array, String] The location for a local
   online product repository. This can be a local copy on the machine, or on an
-  internal web or NFS server. Information on how to create your own local online
-  product repository can be found later in this document. Default is `nil`.
+  internal web or NFS server. Information on how to create your own local
+  online product repository can be found later in this document. Default is
+  `nil`.
 
 * `node[:ihs][:modify]`: [TrueClass, FalseClass] Use the install and uninstall
   commands to inform Installation Manager of the installation packages to
   install or uninstall. A value of `false` indicates not to modify an existing
   install by adding or removing features. A `true` value indicates to modify an
-  existing install by adding or removing features. The default value is `false`.
+  existing install by adding or removing features. The default value is
+  `false`.
 
 * `node[:ihs][:version]`: [String] The version attribute is optional. If a
-  version number is provided, then the offering will be installed or uninstalled
-  at the version level specified as long as it is available in the repositories.
-  If the version attribute is not provided, then the default behavior is to
-  install or uninstall the latest version available in the repositories. The
-  version number can be found in the repository.xml file in the repositories.
-  This attribute has no default value.
+  version number is provided, then the offering will be installed or
+  uninstalled at the version level specified as long as it is available in the
+  repositories. If the version attribute is not provided, then the default
+  behavior is to install or uninstall the latest version available in the
+  repositories. The version number can be found in the repository.xml file in
+  the repositories. This attribute has no default value.
 
-  **Note:** In some cases, a package might be rolled back to an earlier version.
-  This roll back can happen if the version specified is earlier than the
-  installed version or if a version is not specified. For example, you have
-  version 1.0.2 of a package that is installed and the latest version of the
-  package available in the repository is version 1.0.1. When you install the
-  package, the installed version of the package is rolled back to version 1.0.1.
+  **Note:** In some cases, a package might be rolled back to an earlier
+  version. This roll back can happen if the version specified is earlier than
+  the installed version or if a version is not specified. For example, you
+  have version 1.0.2 of a package that is installed and the latest version of
+  the package available in the repository is version 1.0.1. When you install
+  the package, the installed version of the package is rolled back to version
+  1.0.1.
 
 * `node[:ihs][:profile]`: [String] The profile attribute is required and
   typically is unique to the offering. If modifying or updating an existing
@@ -534,8 +571,8 @@ Additionally the namespace `[:ihs][:data]` is used at installation time, these
 key/value pairs correspond to the hash values created in the installation XML
 file.
 
-  * `user.import.profile`: [TrueClass, FalseClass] Include data keys for product
-    specific profile properties. Default is `false`.
+  * `user.import.profile`: [TrueClass, FalseClass] Include data keys for
+    product specific profile properties. Default is `false`.
 
   * `cic.selector.os`: [String] Specifies the operating system. Default value
     is `linux`.
@@ -554,7 +591,8 @@ file.
     with installing as a non-root or non-administrative user. Valid values for
     `user.ihs.allowNonRootSilentInstall` are true, accepts the limitations.
     Will install the product. If set to false, it indicates you do not accept
-    the limitations and the install will not occur. The default value is `true`.
+    the limitations and the install will not occur. The default value is
+	`true`.
 
   * `cic.selector.nl`: [String] Specifies the language pack to be installed
     using ISO-639 language codes. The default value is `en`.
@@ -568,10 +606,10 @@ wide range of IBM Software product installations.
 * `node[:iim][:id]`: [String] The Uniq IBM product ID for Installation Manager,
   default value is `com.ibm.cic.agent`.
 
-* `node[:iim][:repositories]`: [Array, String] Specify the repositories that are
-  used during the installation. Use a URL or UNC path to specify the remote
-  repositories. Or use directory paths to specify the local repositories. The
-  default value is `nil`.
+* `node[:iim][:repositories]`: [Array, String] Specify the repositories that
+  are used during the installation. Use a URL or UNC path to specify the
+  remote repositories. Or use directory paths to specify the local
+  repositories. The default value is `nil`.
 
 * `node[:iim][:modify]`: Use the install and uninstall commands to inform
   Installation Manager of the installation packages to install or uninstall. A
@@ -579,24 +617,27 @@ wide range of IBM Software product installations.
   removing features. A `true` value indicates to modify an existing install by
   adding or removing features. The default value is `false`.
 
-* `node[:iim][:version]`: The version attribute is optional. If a version number
-  is provided, then the offering will be installed or uninstalled at the version
-  level specified as long as it is available in the repositories. If the version
-  attribute is not provided, then the default behavior is to install or
-  uninstall the latest version available in the repositories. The version number
-  can be found in the repository.xml file in the repositories.
+* `node[:iim][:version]`: [String] The version attribute is optional. If a
+  version number is provided, then the offering will be installed or
+  uninstalled at the version level specified as long as it is available in the
+  repositories. If the version attribute is not provided, then the default
+  behavior is to install or uninstall the latest version available in the
+  repositories. The version number can be found in the repository.xml file in
+  the repositories. This attribute has no default value.
 
-  **Note:** In some cases, a package might be rolled back to an earlier version.
-  This roll back can happen if the version specified is earlier than the
-  installed version or if a version is not specified. For example, you have
-  version 1.0.2 of a package that is installed and the latest version of the
-  package available in the repository is version 1.0.1. When you install the
-  package, the installed version of the package is rolled back to version 1.0.1.
+  **Note:** In some cases, a package might be rolled back to an earlier
+  version. This roll back can happen if the version specified is earlier than
+  the installed version or if a version is not specified. For example, you
+  have version 1.0.2 of a package that is installed and the latest version of
+  the package available in the repository is version 1.0.1. When you install
+  the package, the installed version of the package is rolled back to version
+  1.0.1.
 
 * `node[:iim][:profile]`: The profile attribute is required and typically is
-  unique to the offering. If modifying or updating an existing installation, the
-  profile attribute must match the profile ID of the targeted installation of
-  WebSphere Application Server. The default value is `IBM Installation Manager`.
+  unique to the offering. If modifying or updating an existing installation,
+  the profile attribute must match the profile ID of the targeted installation
+  of WebSphere Application Server. The default value is `IBM Installation
+  Manager`.
 
 * `node[:iim][:features]`: The features attribute is optional. Offerings always
   have at least one feature; a required core feature which is installed
@@ -655,10 +696,10 @@ wide range of IBM Software product installations.
 ### IBM Packaging Utility Attributes
 
 You can use the IBM Packaging Utility to create custom or “enterprise” IBM
-Installation Manager repositories that contain multiple products and maintenance
-levels that fit your needs. You can control the content of your enterprise
-repository, which then can serve as the central repository to which your
-organization connects to perform product installations and updates.
+Installation Manager repositories that contain multiple products and
+maintenance levels that fit your needs. You can control the content of your
+enterprise repository, which then can serve as the central repository to which
+your organization connects to perform product installations and updates.
 
 IBM Packaging Utility essentially copies from a set of source IBM Installation
 Manager repositories to a target repository and eliminates duplicate artifacts,
@@ -672,30 +713,32 @@ longer needed.
 
 * `node[:pkgutil][:repositories]`: [Array, String] The location for a local
   online product repository. This can be a local copy on the machine, or on an
-  internal web or NFS server. Information on how to create your own local online
-  product repository can be found later in this document. Default is `nil`.
+  internal web or NFS server. Information on how to create your own local
+  online product repository can be found later in this document. Default is
+  `nil`.
 
 * `node[:pkgutil][:modify]`: [TrueClass, FalseClass] Use the install and
-  uninstall commands to inform Installation Manager of the installation packages
-  to install or uninstall. A value of `false` indicates not to modify an
-  existing install by adding or removing features. A `true` value indicates to
-  modify an existing install by adding or removing features. The default value
-  is `false`.
+  uninstall commands to inform Installation Manager of the installation
+  packages to install or uninstall. A value of `false` indicates not to modify
+  an existing install by adding or removing features. A `true` value indicates
+  to modify an existing install by adding or removing features. The default
+  value is `false`.
 
 * `node[:pkgutil][:version]`: [String] The version attribute is optional. If a
-  version number is provided, then the offering will be installed or uninstalled
-  at the version level specified as long as it is available in the repositories.
-  If the version attribute is not provided, then the default behavior is to
-  install or uninstall the latest version available in the repositories. The
-  version number can be found in the repository.xml file in the repositories.
-  This attribute has no default value.
+  version number is provided, then the offering will be installed or
+  uninstalled at the version level specified as long as it is available in the
+  repositories. If the version attribute is not provided, then the default
+  behavior is to install or uninstall the latest version available in the
+  repositories. The version number can be found in the repository.xml file in
+  the repositories. This attribute has no default value.
 
-  **Note:** In some cases, a package might be rolled back to an earlier version.
-  This roll back can happen if the version specified is earlier than the
-  installed version or if a version is not specified. For example, you have
-  version 1.0.2 of a package that is installed and the latest version of the
-  package available in the repository is version 1.0.1. When you install the
-  package, the installed version of the package is rolled back to version 1.0.1.
+  **Note:** In some cases, a package might be rolled back to an earlier
+  version. This roll back can happen if the version specified is earlier than
+  the installed version or if a version is not specified. For example, you
+  have version 1.0.2 of a package that is installed and the latest version of
+  the package available in the repository is version 1.0.1. When you install
+  the package, the installed version of the package is rolled back to version
+  1.0.1.
 
 * `node[:pkgutil][:profile]`: [String] The profile attribute is required and
   typically is unique to the offering. If modifying or updating an existing
@@ -726,8 +769,8 @@ Additionally the namespace `[:pkgutil][:data]` is used at installation time,
 these key/value pairs correspond to the hash values created in the installation
 XML file.
 
-  * `user.import.profile`: [TrueClass, FalseClass] Include data keys for product
-    specific profile properties. Default is `false`.
+  * `user.import.profile`: [TrueClass, FalseClass] Include data keys for
+    product specific profile properties. Default is `false`.
 
   * `cic.selector.os`: [String] Specifies the operating system. Default value
     is `linux`.
@@ -753,30 +796,33 @@ Application server.
   `com.ibm.websphere.PLG.v85`. **Note:** You should not change this attribute.
 
 * `node[:plg][:repositories]`: [Array, String] The location for a local online
-  product repository. This can be a local copy on the machine, or on an internal
-  web or NFS server. Information on how to create your own local online product
-  repository can be found later in this document. Default is `nil`.
+  product repository. This can be a local copy on the machine, or on an
+  internal web or NFS server. Information on how to create your own local
+  online product repository can be found later in this document. Default is
+  `nil`.
 
 * `node[:plg][:modify]`: [TrueClass, FalseClass] Use the install and uninstall
   commands to inform Installation Manager of the installation packages to
   install or uninstall. A value of `false` indicates not to modify an existing
   install by adding or removing features. A `true` value indicates to modify an
-  existing install by adding or removing features. The default value is `false`.
+  existing install by adding or removing features. The default value is
+  `false`.
 
 * `node[:plg][:version]`: [String] The version attribute is optional. If a
-  version number is provided, then the offering will be installed or uninstalled
-  at the version level specified as long as it is available in the repositories.
-  If the version attribute is not provided, then the default behavior is to
-  install or uninstall the latest version available in the repositories. The
-  version number can be found in the repository.xml file in the repositories.
-  This attribute has no default value.
+  version number is provided, then the offering will be installed or
+  uninstalled at the version level specified as long as it is available in the
+  repositories. If the version attribute is not provided, then the default
+  behavior is to install or uninstall the latest version available in the
+  repositories. The version number can be found in the repository.xml file in
+  the repositories. This attribute has no default value.
 
-  **Note:** In some cases, a package might be rolled back to an earlier version.
-  This roll back can happen if the version specified is earlier than the
-  installed version or if a version is not specified. For example, you have
-  version 1.0.2 of a package that is installed and the latest version of the
-  package available in the repository is version 1.0.1. When you install the
-  package, the installed version of the package is rolled back to version 1.0.1.
+  **Note:** In some cases, a package might be rolled back to an earlier
+  version. This roll back can happen if the version specified is earlier than
+  the installed version or if a version is not specified. For example, you
+  have version 1.0.2 of a package that is installed and the latest version of
+  the package available in the repository is version 1.0.1. When you install
+  the package, the installed version of the package is rolled back to version
+  1.0.1.
 
 * `node[:plg][:profile]`: [String] The profile attribute is required and
   typically is unique to the offering. If modifying or updating an existing
@@ -807,8 +853,8 @@ Additionally the namespace `[:plg][:data]` is used at installation time, these
 key/value pairs correspond to the hash values created in the installation XML
 file.
 
-  * `user.import.profile`: [TrueClass, FalseClass] Include data keys for product
-    specific profile properties. Default is `false`.
+  * `user.import.profile`: [TrueClass, FalseClass] Include data keys for
+    product specific profile properties. Default is `false`.
 
   * `cic.selector.nl`: [String] Specifies the language pack to be installed
     using ISO-639 language codes. The default value is `en`.
@@ -819,33 +865,37 @@ file.
 The IBM [WebSphere Application Server][] Network Deployment 8.5.5.
 
 * `node[:was][:id]`: [String] The Uniq IBM product ID for WebSphere Application
-  Server. Default value is `com.ibm.websphere.ND.v85`. **Note:** You should not change this attribute.
+  Server. Default value is `com.ibm.websphere.ND.v85`. **Note:** You should
+  not change this attribute.
 
 * `node[:was][:repositories]`: [Array, String] The location for a local online
-  product repository. This can be a local copy on the machine, or on an internal
-  web or NFS server. Information on how to create your own local online product
-  repository can be found later in this document. Default is `nil`.
+  product repository. This can be a local copy on the machine, or on an
+  internal web or NFS server. Information on how to create your own local
+  online product repository can be found later in this document. Default is
+  `nil`.
 
 * `node[:was][:modify]`: [TrueClass, FalseClass] Use the install and uninstall
   commands to inform Installation Manager of the installation packages to
   install or uninstall. A value of `false` indicates not to modify an existing
   install by adding or removing features. A `true` value indicates to modify an
-  existing install by adding or removing features. The default value is `false`.
+  existing install by adding or removing features. The default value is
+  `false`.
 
 * `node[:was][:version]`: [String] The version attribute is optional. If a
-  version number is provided, then the offering will be installed or uninstalled
-  at the version level specified as long as it is available in the repositories.
-  If the version attribute is not provided, then the default behavior is to
-  install or uninstall the latest version available in the repositories. The
-  version number can be found in the repository.xml file in the repositories.
-  This attribute has no default value.
+  version number is provided, then the offering will be installed or
+  uninstalled at the version level specified as long as it is available in the
+  repositories. If the version attribute is not provided, then the default
+  behavior is to install or uninstall the latest version available in the
+  repositories. The version number can be found in the repository.xml file in
+  the repositories. This attribute has no default value.
 
-  **Note:** In some cases, a package might be rolled back to an earlier version.
-  This roll back can happen if the version specified is earlier than the
-  installed version or if a version is not specified. For example, you have
-  version 1.0.2 of a package that is installed and the latest version of the
-  package available in the repository is version 1.0.1. When you install the
-  package, the installed version of the package is rolled back to version 1.0.1.
+  **Note:** In some cases, a package might be rolled back to an earlier
+  version. This roll back can happen if the version specified is earlier than
+  the installed version or if a version is not specified. For example, you
+  have version 1.0.2 of a package that is installed and the latest version of
+  the package available in the repository is version 1.0.1. When you install
+  the package, the installed version of the package is rolled back to version
+  1.0.1.
 
 * `node[:was][:profile]`: [String] The profile attribute is required and
   typically is unique to the offering. If modifying or updating an existing
@@ -876,8 +926,8 @@ Additionally the namespace `[:was][:data]` is used at installation time, these
 key/value pairs correspond to the hash values created in the installation XML
 file.
 
-  * `user.import.profile`: [TrueClass, FalseClass] Include data keys for product
-    specific profile properties. Default is `false`.
+  * `user.import.profile`: [TrueClass, FalseClass] Include data keys for
+    product specific profile properties. Default is `false`.
 
   * `cic.selector.os`: [String] Specifies the operating system. Default value
     is `linux`.
@@ -891,14 +941,15 @@ file.
   * `cic.selector.nl`: [String] Specifies the language pack to be installed
     using ISO-639 language codes. The default value is `en`.
 
-The following attributes apply to the runtime, effecting the operations and use of the WebSphere Application Server;
+The following attributes apply to the runtime, effecting the operations and
+use of the WebSphere Application Server;
 
   * `node[:was][:cmt_log_home]`: [String] The log home property determines the
     directory that would hold log files produced by the `wasprofile` tool. The
     default path is: `<install location>/logs/manageprofiles`
 
-  * `node[:was][:log_name_prefix]`: [String] The prefix for all `wasprofile` log
-    file names. The default is `wasprofile`.
+  * `node[:was][:log_name_prefix]`: [String] The prefix for all `wasprofile`
+    log file names. The default is `wasprofile`.
 
   * `node[:was][:pmt_log_name_prefix]`: [String] The prefix for all ` pmt gui`
     log file names. The default is `pmt`.
@@ -916,8 +967,8 @@ The following attributes apply to the runtime, effecting the operations and use 
     verbosity of log files produced by the `pmt tool`. The available range is
     from `0` to `7`. The default log level is `3`.
 
-  * `node[:was][:maskable_action_arguments]`: [Array] Any action arguments whose
-    values should be masked from the logging for security reasons.
+  * `node[:was][:maskable_action_arguments]`: [Array] Any action arguments
+    whose values should be masked from the logging for security reasons.
 
   * `node[:was][:maskable_action_arguments]`: [String] The default profile path
     property determines the default path for all profiles. The default path is
@@ -956,9 +1007,9 @@ The following attributes apply to the runtime, effecting the operations and use 
     permission based on the umask setting of the system. The default is `true`.
 
   * `node[:was][:cmt_pi_logs]`: [String, Integer] Specify if post installer
-    should clean up its logs. This will cleanup logs for each product located in
-    `PROFILE_HOME/properties/service/productDir`. One of the following cleanup
-    criteria can be used/specified:
+    should clean up its logs. This will cleanup logs for each product located
+	in `PROFILE_HOME/properties/service/productDir`. One of the following
+	cleanup criteria can be used/specified:
 
     * Specify the number of logs to keep from 0-999. EG. `WS_CMT_PI_LOGS=10`.
 
@@ -978,38 +1029,41 @@ The following attributes apply to the runtime, effecting the operations and use 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### WebSphere Customization Toolbox Attributes                       <`)))><
 
-The WebSphere Customization Toolbox include tools for managing, configuring, and
-migrating various parts of your WebSphere Application Server environment.
+The WebSphere Customization Toolbox include tools for managing, configuring,
+and migrating various parts of your WebSphere Application Server environment.
 
 * `node[:wct][:id]`: [String] The Uniq IBM product ID for the Web Server Plug-
   ins for WebSphere Application Server. Default value is
   `com.ibm.websphere.WCT.v85`. **Note:** You should not change this attribute.
 
 * `node[:wct][:repositories]`: [Array, String] The location for a local online
-  product repository. This can be a local copy on the machine, or on an internal
-  web or NFS server. Information on how to create your own local online product
-  repository can be found later in this document. Default is `nil`.
+  product repository. This can be a local copy on the machine, or on an
+  internal web or NFS server. Information on how to create your own local
+  online product repository can be found later in this document. Default is
+  `nil`.
 
 * `node[:wct][:modify]`: [TrueClass, FalseClass] Use the install and uninstall
   commands to inform Installation Manager of the installation packages to
   install or uninstall. A value of `false` indicates not to modify an existing
   install by adding or removing features. A `true` value indicates to modify an
-  existing install by adding or removing features. The default value is `false`.
+  existing install by adding or removing features. The default value is
+  `false`.
 
 * `node[:wct][:version]`: [String] The version attribute is optional. If a
-  version number is provided, then the offering will be installed or uninstalled
-  at the version level specified as long as it is available in the repositories.
-  If the version attribute is not provided, then the default behavior is to
-  install or uninstall the latest version available in the repositories. The
-  version number can be found in the repository.xml file in the repositories.
-  This attribute has no default value.
+  version number is provided, then the offering will be installed or
+  uninstalled at the version level specified as long as it is available in the
+  repositories. If the version attribute is not provided, then the default
+  behavior is to install or uninstall the latest version available in the
+  repositories. The version number can be found in the repository.xml file in
+  the repositories. This attribute has no default value.
 
-  **Note:** In some cases, a package might be rolled back to an earlier version.
-  This roll back can happen if the version specified is earlier than the
-  installed version or if a version is not specified. For example, you have
-  version 1.0.2 of a package that is installed and the latest version of the
-  package available in the repository is version 1.0.1. When you install the
-  package, the installed version of the package is rolled back to version 1.0.1.
+  **Note:** In some cases, a package might be rolled back to an earlier
+  version. This roll back can happen if the version specified is earlier than
+  the installed version or if a version is not specified. For example, you
+  have version 1.0.2 of a package that is installed and the latest version of
+  the package available in the repository is version 1.0.1. When you install
+  the package, the installed version of the package is rolled back to version
+  1.0.1.
 
 * `node[:wct][:profile]`: [String] The profile attribute is required and
   typically is unique to the offering. If modifying or updating an existing
@@ -1047,9 +1101,9 @@ file.
 
 This cookbook includes HWRPs for managing:
 
-  * `Chef::Provider::WebspherePackage`: The `websphere_package` resource handles
-    the installation of the various WebSphere products and components,
-    supporting a range of installation options from multiple sources.
+  * `Chef::Provider::WebspherePackage`: The `websphere_package` resource
+    handles the installation of the various WebSphere products and components,
+	supporting a range of installation options from multiple sources.
 
   * `Chef::Provider::WebsphereProfile`: The `websphere_profile` resource is an
     idempotent provider what allows access to the WebSphere profile settings in
@@ -1068,7 +1122,8 @@ the packages that you installed using `websphere_package` provider.
 
 #### Syntax
 
-The syntax for using the `websphere_package` resource in a recipe is as follows:
+The syntax for using the `websphere_package` resource in a recipe is as
+follows:
 
     websphere_package 'name' do
       attribute 'value' # see attributes section below
@@ -1085,8 +1140,8 @@ Where:
     `namespace` of the product to be installed/uninstalled;
   * `attribute` is zero (or more) of the attributes that are available for this
     resource;
-  * `:action` identifies which steps the chef-client will take to bring the node
-    into the desired state.
+  * `:action` identifies which steps the chef-client will take to bring the
+    node into the desired state.
 
 For example:
 
@@ -1104,8 +1159,8 @@ For example:
 
   * `namespace`: This is the only required attribute. The Chef attribute
     namespace that corresponds to where package specific settings are located.
-    For example, the IBM HTTP Server namespace is `ihs`, this corresponds to the
-    node attributes under `node[:ihs]`.
+    For example, the IBM HTTP Server namespace is `ihs`, this corresponds to
+	the node attributes under `node[:ihs]`.
 
   * `id`: The uniq IBM product ID.
 
@@ -1118,9 +1173,9 @@ For example:
 
   * `features`: Each WebSphere package offerings can have multiple features but
     always have at least one; a required core feature which is installed
-    regardless of whether it is explicitly specified. If other feature names are
-    provided, then only those features will be installed. Features must be
-    comma delimited without spaces.
+    regardless of whether it is explicitly specified. If other feature names
+	are provided, then only those features will be installed. Features must be
+	comma delimited without spaces.
 
   * `profile`: The profile attribute is unique to the offering. If modifying or
     updating an existing installation, the profile attribute must match the
@@ -1158,9 +1213,9 @@ For example:
 
     * It might be used at installation time to stage the payload before it is
       installed into its target folder. In this scenario, filesum checks are
-      performed on the transferred data to ensure that it is intact. By default,
-      this content remains cached in the Shared Resources Directory after
-      installation so that it can be used for future updates or rollback.
+      performed on the transferred data to ensure that it is intact. By
+	  default, this content remains cached in the Shared Resources Directory
+	  after installation so that it can be used for future updates or rollback.
 
   * `passaport_advt`: If the PassportAdvantage repository is enabled.
 
@@ -1208,9 +1263,9 @@ For example:
 #### Examples
 
 The following examples demonstrate various approaches for using resources in
-recipes. If you want to see examples of how Chef uses resources in recipes, take
-a closer look at the cookbooks that Chef authors and maintains: https://
-github.com/opscode-cookbooks.
+recipes. If you want to see examples of how Chef uses resources in recipes,
+take a closer look at the cookbooks that Chef authors and maintains:
+https://github.com/opscode-cookbooks.
 
 ##### Install from files
 
@@ -1218,9 +1273,9 @@ github.com/opscode-cookbooks.
       install_fixes :none
       install_from  :files
       install_files [
-        { name: 'offering.disk1.zip', source: '/tmp', checksum: c9af97d4d953e },
-        { name: 'offering.disk2.zip', source: '/tmp', checksum: ac7ce2d22883d },
-        { name: 'offering.disk3.zip', source: '/tmp', checksum: f4b32d2cd01ea }
+        { name: 'offering.disk1.zip', source: '/tmp', checksum: c9af974d953e },
+        { name: 'offering.disk2.zip', source: '/tmp', checksum: ac7e2d22883d },
+        { name: 'offering.disk3.zip', source: '/tmp', checksum: f4b3d2cd01ea }
       ]
       action :install
     end
@@ -1230,7 +1285,7 @@ github.com/opscode-cookbooks.
     websphere_package :ihs do
       install_fixes :all
       repositories  'http://repo.mudbox.dev/ibm/repositorymanager'
-      version        '8.5.5003.20140730_1249'
+      version       '8.5.5003.20140730_1249'
       dir           '/applications/IBM/IHS/v8.5.5'
       base_dir      '/applications/IBM'
       action :install
@@ -1255,7 +1310,8 @@ updating the product because a single set of core product files is maintained.
 
 #### Syntax
 
-The syntax for using the `websphere_profile` resource in a recipe is as follows:
+The syntax for using the `websphere_profile` resource in a recipe is as
+follows:
 
     websphere_profile 'name' do
       attribute 'value' # see attributes section below
@@ -1271,8 +1327,8 @@ Where:
     is not specified as part of a recipe, `name` is also the  `profile_name`;
   * `attribute` is zero (or more) of the attributes that are available for this
     resource;
-  * `:action` identifies which steps the chef-client will take to bring the node
-    into the desired state.
+  * `:action` identifies which steps the chef-client will take to bring the
+    node into the desired state.
 
 For example:
 
@@ -1410,9 +1466,10 @@ For example:
     personal certificate is the default personal certificate of the server.
 
     When you import a personal certificate as the default personal certificate,
-    import the root certificate that signed the personal certificate. Otherwise,
-    the `manageprofiles` command adds the public key of the personal certificate
-    to the trust.p12 file and creates a root signing certificate.
+    import the root certificate that signed the personal certificate.
+	Otherwise, the `manageprofiles` command adds the public key of the
+	personal certificate to the trust.p12 file and creates a root signing
+	certificate.
 
     The `import_personal_cert_ks` parameter is mutually exclusive with the
     `personal_cert_db` parameter. If you do not specifically create or import a
@@ -1510,12 +1567,12 @@ For example:
 
     The `wasprofile.properties` file includes the following properties:
 
-    * `WS_CMT_PI_MODPERMS`: This property specifies if the post installer should
-      modify the permissions of any files it creates. Valid values are true or
-      false. Any other value defaults to false. Removing this property from the
-      file also causes it to default to false. When set to false, any files
-      created by the post installer have permission based on the umask setting
-      of the system.
+    * `WS_CMT_PI_MODPERMS`: This property specifies if the post installer
+	  should modify the permissions of any files it creates. Valid values are
+	  true or false. Any other value defaults to false. Removing this property
+	  from the file also causes it to default to false. When set to false, any
+	  files created by the post installer have permission based on the umask
+	  setting of the system.
 
       The value for this parameter must be a valid path for the target system
       and must not be currently in use. You must also have permissions to write
@@ -1586,8 +1643,8 @@ For example:
         Note: This is a different than when you specify values on a command
         line.
 
-      * When you specify a single value that contains a comma character, such as
-        the distinguished names for the `personalCertDN` and `signingCertDN`
+      * When you specify a single value that contains a comma character, such
+	    as the distinguished names for the `personalCertDN` and `signingCertDN`
         parameters, use a double-backslash before the comma character. For
         example, here is how to specify the `signingCertDN` value with a
         distinguished name:
@@ -1601,20 +1658,21 @@ For example:
 
           `omitAction=deployAdminConsole,defaultAppDeployAndConfig`
 
-      * Do not specify a blank line in a response file. This can cause an error.
+      * Do not specify a blank line in a response file. This can cause an
+	    error.
 
-  * `server_name`: Specifies the name of the server. Specify this parameter only
-    for the default and secureproxy templates. If you do not specify this
-    parameter when using the default or secureproxy templates, the default
-    server name is server1 for the default profile, and proxy1 for the secure
-    proxy profile.
+  * `server_name`: Specifies the name of the server. Specify this parameter
+    only for the default and secureproxy templates. If you do not specify this
+	parameter when using the default or secureproxy templates, the default
+	server name is server1 for the default profile, and proxy1 for the secure
+	proxy profile.
 
   * `server_type`: Specifies the type of management profile. Specify
-    `ADMIN_AGENT` for an administrative agent server. This parameter is required
-    when you create a management profile.
+    `ADMIN_AGENT` for an administrative agent server. This parameter is
+	required when you create a management profile.
 
-  * `service_user_name`: Specify the user ID that is used during the creation of
-    the Linux service so that the Linux service runs from this user ID. The
+  * `service_user_name`: Specify the user ID that is used during the creation
+    of the Linux service so that the Linux service runs from this user ID. The
     Linux service runs whenever the user ID is logged on.
 
   * `set_default_name`: Sets the default profile to one of the existing
@@ -1631,8 +1689,8 @@ For example:
 
   * `signing_cert_validity_period`: An optional parameter that specifies the
     amount of time in years that the root signing certificate is valid. If you
-    do not specify this parameter with the `signing_cert_dn` parameter, the root
-    signing certificate is valid for 15 years.
+    do not specify this parameter with the `signing_cert_dn` parameter, the
+	root signing certificate is valid for 15 years.
 
   * `starting_port`: Specifies the starting port number for generating and
     assigning all ports for the profile. Port values are assigned sequentially
@@ -1641,21 +1699,21 @@ For example:
     determines the port assignments to avoid port conflicts.
 
     During profile creation, the manageprofiles command uses an automatically
-    generated set of recommended ports if you do not specify the `starting_port`
-    parameter, the `default_ports` parameter or the `ports_file` parameter. The
-    recommended port values can be different than the default port values based
-    on the availability of the default ports.
+    generated set of recommended ports if you do not specify the
+	`starting_port` parameter, the `default_ports` parameter or the
+	`ports_file` parameter. The recommended port values can be different than
+	the default port values based on the availability of the default ports.
 
     Do not use this parameter with the `default_ports` or `ports_file`
     parameters or if you are using the managed profile template.
 
   * `template_path`: Specifies the directory path to the template files in the
     installation root directory. Within the `profileTemplates` directory are
-    various directories that correspond to different profile types and that vary
-    with the type of product installed. The profile directories are the paths
-    that you indicate while using the `template_path` option. You can specify
-    profile templates that lie outside the installation root, if you happen to
-    have any.
+    various directories that correspond to different profile types and that
+	vary with the type of product installed. The profile directories are the
+	paths that you indicate while using the `template_path` option. You can
+	specify profile templates that lie outside the installation root, if you
+	happen to have any.
 
     You can specify a relative path for the `template_path` parameter if the
     profile templates are relative to the `app_server_root/profileTemplates`
@@ -1717,22 +1775,22 @@ For example:
 #### Examples
 
 The following examples demonstrate various approaches for using resources in
-recipes. If you want to see examples of how Chef uses resources in recipes, take
-a closer look at the cookbooks that Chef authors and maintains: https://
-github.com/opscode-cookbooks.
+recipes. If you want to see examples of how Chef uses resources in recipes,
+take a closer look at the cookbooks that Chef authors and maintains:
+https://github.com/opscode-cookbooks.
 
 ##### A Profile
 
     websphere_profile 'Dmgr01' do
       enable_admin_security true
-      server_type     'DEPLOYMENT_MANAGER'
-      profile_path    '/opt/IBM/WebSphere/AppServer/profiles/Dmgr01'
-      template_path   '/opt/IBM/WebSphere/AppServer/profileTemplates/management'
-      node_name       'Cell01Manager'
-      cell_name       'Cell01Manager'
-      host_name        node[:fqdn]
-      admin_username  'wasadm'
-      admin_password  'wasadm'
+      server_type    'DEPLOYMENT_MANAGER'
+      profile_path   '/opt/IBM/WebSphere/AppServer/profiles/Dmgr01'
+      template_path  '/opt/IBM/WebSphere/AppServer/profileTemplates/management'
+      node_name      'Cell01Manager'
+      cell_name      'Cell01Manager'
+      host_name       node[:fqdn]
+      admin_username 'wasadm'
+      admin_password 'wasadm'
       action [:create, :start]
     end
 
@@ -1778,8 +1836,8 @@ limitations under the License.
 ```
             .oooO
             (   )   Oooo.
-+------------\ (----(   )------------------------------------------------------+
-              \_)    ) /                           A HEALTHY COMPUTING DIVISION
++------------\ (----(   )-----------------------------------------------------+
+              \_)    ) /                          A HEALTHY COMPUTING DIVISION
                     (_/
 
 ```

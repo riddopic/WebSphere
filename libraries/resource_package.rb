@@ -62,7 +62,7 @@ class Chef::Resource::WebspherePackage < Chef::Resource
   #
   # @return [Chef::Provider::WebspherePackage]
   # @api public
-  actions :install, :uninstall
+  actions :install, :uninstall, :update
 
   # Sets the default action
   #
@@ -78,7 +78,7 @@ class Chef::Resource::WebspherePackage < Chef::Resource
   attribute :installed,
             kind_of: [TrueClass, FalseClass]
 
-  # The ID of the WebSphere package to act on, corresponds to the attribute key
+  # ID of the WebSphere package to act on, corresponds to the attribute key
   #
   # @param [String, Symbol] namespace
   # @return [String, Symbol]
@@ -105,11 +105,11 @@ class Chef::Resource::WebspherePackage < Chef::Resource
             kind_of: String,
             default: lazy { node[namespace][:version] }
 
-  # Each WebSphere package offerings can have multiple features but always have
-  # at least one; a required core feature which is installed regardless of
-  # whether it is explicitly specified. If other feature names are provided,
-  # then only those features will be installed. Features must be comma
-  # delimited without spaces
+  # Each WebSphere package offerings can have multiple features but always
+  # have at least one; a required core feature which is installed regardless
+  # of whether it is explicitly specified. If other feature names are
+  # provided, then only those features will be installed. Features must be
+  # comma delimited without spaces
   #
   # @param [String] features
   # @return [String]
@@ -215,7 +215,18 @@ class Chef::Resource::WebspherePackage < Chef::Resource
   # @api public
   attribute :repositories,
             kind_of: String,
-            default: lazy { node[:wpf][:local_repository] }
+            default: lazy { retrieve_repositories }
+
+  # If you want to allow the WebSphere products to update and you trust IBM, if
+  # you do then when you tell a WebSphere offering to update it will search the
+  # offering service repositry for updates also.
+  #
+  # @param [TrueClass, FalseClass] service_repository
+  # @return [TrueClass, FalseClass]
+  # @api public
+  attribute :service_repository,
+            kind_of: [TrueClass, FalseClass],
+            default: true
 
   # A list of Hashes containing the name, source and checksums of the files to
   # use inplace of a repository, not required when `install_from` is set to
@@ -237,23 +248,32 @@ class Chef::Resource::WebspherePackage < Chef::Resource
             equal_to: [:none, :recommended, :all],
             default: lazy { node[namespace][:fixes] }
 
-  # Defines master password file
+  # Defines the path to the master password file
   #
   # @param [String] master_passwd
   # @return [String]
   # @api public
   attribute :master_passwd,
             kind_of: String,
-            default: lazy { node[:wpf][:credential][:master_passwd] }
+            default: lazy { ::File.join(eclipse_dir, 'tools/.mPF') }
 
-  # Defines secure storage file
+  # Defines the path to the secure storage file
   #
   # @param [String] secure_storage
   # @return [String]
   # @api public
   attribute :secure_storage,
             kind_of: String,
-            default: lazy { node[:wpf][:credential][:secure_storage] }
+            default: lazy { ::File.join(eclipse_dir, 'tools/.sSF') }
+
+  # Specify any additional offering IDS to include in the response file.
+  #
+  # @param [Array, Symbol] offering_ids
+  # @return [Array, Symbol]
+  # @api public
+  attribute :offering_ids,
+            kind_of: [Array, Symbol]
+  alias_method :additional_offering, :offering_ids
 
   # Specify a preference value or a comma-delimited list of preference values
   # to be used
@@ -312,9 +332,11 @@ class Chef::Resource::WebspherePackage < Chef::Resource
   # @return [String, Symbol]
   # @api public
   attribute :admin,
-    kind_of: Symbol,
-    equal_to: [:admin, :nonadmin],
-    default: lazy { (node[:wpf][:user][:name] == 'root') ? :admin : :nonadmin }
+            kind_of: Symbol,
+            equal_to: [:admin, :nonadmin],
+            default: lazy {
+              (node[:wpf][:user][:name] == 'root') ? :admin : :nonadmin
+            }
 
   # Show verbose progress from installation
   #
@@ -334,4 +356,14 @@ class Chef::Resource::WebspherePackage < Chef::Resource
   attribute :response_file,
             kind_of: [String],
             default: lazy { ::File.join(base_dir, "#{namespace}.xml") }
+
+  private #   P R O P R I E T À   P R I V A T A   Vietato L'accesso
+
+  def retrieve_repositories
+    if node[namespace][:repositories].nil?
+      repository_for(id)
+    else
+      node[namespace][:repositories]
+    end
+  end
 end

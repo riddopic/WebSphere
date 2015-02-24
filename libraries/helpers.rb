@@ -21,9 +21,11 @@
 #
 
 require 'tmpdir'
-require 'thread'
-require 'securerandom'
+require 'thread'       unless defined?(Thread)
+require 'securerandom' unless defined?(SecureRandom)
 
+# Include hooks to extend with class and instance methods.
+#
 module WebSphere
   # A set of helper methods shared by all resources and providers.
   #
@@ -33,25 +35,74 @@ module WebSphere
     #
     # @param block [Block]
     #
+    # @api public
     def with_tmp_dir(&block)
       Dir.mktmpdir(SecureRandom.hex(3)) do |tmp_dir|
         Dir.chdir(tmp_dir, &block)
       end
     end
 
-    # Takes a lazy path and returns a less lazy one
+    # Throws water in the face of a lazy attribute, returns the unlazy value,
+    # good for nothing long-haird hippy
     #
-    # @param [Chef::DelayedEvaluator, Proc] path
+    # @param [Chef::DelayedEvaluator, Proc] var
     # @return [String]
     # @api private
-    def lazypath(path)
-      if path && path.is_a?(Chef::DelayedEvaluator)
-        path = path.dup
-        path = instance_eval(&path.call)
+    def lazy_eval(var)
+      if var && var.is_a?(Chef::DelayedEvaluator)
+        var = var.dup
+        var = instance_eval(&var.call)
       end
-      path
+      var
     rescue
-      path.call
+      var.call
+    end
+
+    # Return the repository manager URL based on the service offering name, the
+    # preference is to return a local repository unless the local repository
+    # attribute is nil, if so we point back to IBM's service repository. No
+    # validation is done of the URLs, add it to the todo list.
+    #
+    # @note: For you to use the IBM repository you will need an account that is
+    # entitled to the product offerings or a Passaport Advantage account.
+    #
+    # @note: IBM Installation Manager repository URLs follow this pattern:
+    # http://www.ibm.com/software/repositorymanager/<offering_name>
+    #
+    # @note: This location does not contain a web page that you can access
+    # using a web browser.
+    #
+    # @param [String] offering
+    #   the IBM offering name or product ID, i.e. `com.ibm.websphere.ND.v85`
+    #
+    # @param [Symbol] location
+    #   specify `:local` to return the value from `node[:wpf][:local][:repo]`
+    #   specify `:online` to return the value from `node[:wpf][:online][:repo]`
+    #   when nothing is specified it will return the local repo if it has been
+    #   sepcified, else it returns the online repo
+    #
+    # @return [String, URI::HTTP]
+    #   the URL for the product offering
+    #
+    # @api private
+    def repository_for(offering, location = nil)
+      case location
+      when :local || :online
+        repos = uri_join(node[:wpf][location][:repo], offering)
+      else # nil
+        loc = node[:wpf][:local][:repo].nil? ? :online : :local
+        repos = uri_join(node[:wpf][loc][:repo], offering)
+      end
+      repos
+    end
+
+    # Provide a common Monitor to all providers for locking.
+    #
+    # @return [Class<Monitor>]
+    #
+    # @api private
+    def lock
+      @lock ||= Monitor.new
     end
 
     # Wait the given number of seconds for the block operation to complete.
@@ -106,7 +157,7 @@ module WebSphere
 
     def hash_each(resource, specs, notifications = [], actions = [])
       specs.each do |name, spec|
-        reify resource, spec.merge({name: name}), notifications, actions
+        reify resource, spec.merge(name: name), notifications, actions
       end
     end
 

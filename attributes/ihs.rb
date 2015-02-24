@@ -22,7 +22,7 @@
 
 include_attribute 'websphere::default'
 
-# ============================== IBM HTTP Server ===============================
+# ============== IBM HTTP Server for WebSphere Application Server ==============
 #
 default[:ihs] = {
   # The Uniq IBM product ID for IBM HTTP Server .
@@ -56,19 +56,19 @@ default[:ihs] = {
   # package available in the repository is version 1.0.1. When you install the
   # package, the installed version of the package is rolled back to version
   # 1.0.1.
-  version: nil,
+  version: '8.5.0.20120501_1108',
 
   # The profile attribute is required and typically is unique to the offering.
   # If modifying or updating an existing installation, the profile attribute
   # must match the profile ID of the targeted installation.
-  profile: 'IBM HTTP Server V8.5',
+  profile: 'IBM HTTP Server for WebSphere Application Server',
 
   # The features attribute is optional. Offerings always have at least one
   # feature; a required core feature which is installed regardless of
   # whether it is explicitly specified. If other feature names are
   # provided, then only those features will be installed. Features must be
   # comma delimited without spaces.
-  features: 'core.feature,arch.64bit',
+  features: 'core.feature,arch.64bit', # arch.32bit
 
   # The installFixes attribute indicates whether fixes available in
   # repositories are installed with the product. By default, all available
@@ -84,27 +84,27 @@ default[:ihs] = {
   init: 'ihs',
 
   # The installation directory for IBM HTTP Server
-  dir: lazy { ::File.join( node[:wpf][:base], 'WebSphere/HTTPServer') },
+  dir: lazy { ::File.join(node[:wpf][:base], 'WebSphere/HTTPServer') },
 
   data: [
     # Include data keys for product specific profile properties.
-    { key:   'user.import.profile',                value: false  },
+    { key:   'user.import.profile',                value: false   },
     # Specifies the operating system.
-    { key:   'cic.selector.os',                    value: 'linux'},
+    { key:   'cic.selector.os',                    value: 'linux' },
     # Specifies the type of window system.
-    { key:   'cic.selector.ws',                    value: 'gtk'  },
+    { key:   'cic.selector.ws',                    value: 'gtk'   },
     # Specifies the architecture to install: x86 or x86_64.
-    { key:   'cic.selector.arch',                  value: 'x86'  },
+    { key:   'cic.selector.arch',                  value: 'x86'   },
     # Your guess is as good as mine.
-    { key:   'user.ihs.httpPort',                  value: 80     },
+    { key:   'user.ihs.httpPort',                  value: 80      },
     # This option indicates whether you accept the limitations associated with
     # installing as a non-root user. The following installation actions cannot
     # be performed with installing as a non-root or non-administrative user.
-    { key:   'user.ihs.allowNonRootSilentInstall', value: true   },
-    { key:   'user.ihs.http.server.service.name',  value: 'none' },
-    { key:   'user.ihs.installHttpService',        value: false  },
+    { key:   'user.ihs.allowNonRootSilentInstall', value: true    },
+    { key:   'user.ihs.http.server.service.name',  value: 'none'  },
+    { key:   'user.ihs.installHttpService',        value: false   },
     # Specifies the language pack to be installed using ISO-639 language codes.
-    { key:   'cic.selector.nl',                    value: 'en'   }
+    { key:   'cic.selector.nl',                    value: 'en'    }
   ]
 }
 

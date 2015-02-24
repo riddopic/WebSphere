@@ -22,7 +22,7 @@
 
 include_attribute 'websphere::default'
 
-# =========== Web Server Plug-ins for WebSphere Application Server =============
+# ========== Web Server Plug-ins for IBM WebSphere Application Server ==========
 #
 default[:plg] = {
   # The Uniq IBM product ID for Web Server Plug-ins.
@@ -56,19 +56,23 @@ default[:plg] = {
   # package available in the repository is version 1.0.1. When you install the
   # package, the installed version of the package is rolled back to version
   # 1.0.1.
-  version: nil,
+  version: '8.5.0.20120501_1108',
 
   # The profile attribute is required and typically is unique to the offering.
   # If modifying or updating an existing installation, the profile attribute
   # must match the profile ID of the targeted installation of WebSphere
   # Application Server.
-  profile: 'Web Server Plug-ins for IBM WebSphere Application Server V8.5',
+  profile: 'Web Server Plug-ins for IBM WebSphere Application Server',
 
   # The features attribute is optional. Offerings always have at least one
   # feature; a required core feature which is installed regardless of whether
   # it is explicitly specified. If other feature names are provided, then only
   # those features will be installed. Features must be comma delimited without
   # spaces.
+  #
+  # Available features are:
+  #   * com.ibm.jre.6_32bit : IBM 64-bit WebSphere Runtime Environment for Java
+  #   * com.ibm.jre.6_64bit : IBM 64-bit WebSphere Runtime Environment for Java
   features: 'core.feature,com.ibm.jre.6_64bit',
 
   # The installFixes attribute indicates whether fixes available in repositories
@@ -82,7 +86,7 @@ default[:plg] = {
   fixes: :all,
 
   # The installation directory for Web Server Plug-ins.
-  dir: lazy { ::File.join( node[:wpf][:base], 'WebSphere/Plugins') },
+  dir: lazy { ::File.join(node[:wpf][:base], 'WebSphere/Plugins') },
 
   data: [
     # Include data keys for product specific profile properties.

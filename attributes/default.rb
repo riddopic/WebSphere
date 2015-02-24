@@ -20,9 +20,6 @@
 # limitations under the License.
 #
 
-# Name of a bag where you keep your data and some secrets among other things.
-default[:wpf][:data_bag] = nil
-
 # The base directory where all WebSphere products will reside. The default
 # value is '/opt/IBM'. Note: When installing with a non-root account software
 # will be installed in /opt/IBM/IBM/PackageName.
@@ -59,12 +56,12 @@ default[:wpf][:user] = {
 
 # IBM WebSphere Live Update Repositories. Including this repository ensures
 # your system is always built with the most up-to-date patches and hot fixes.
-default[:wpf][:online_repo] = 'http://www.ibm.com/software/repositorymanager'
+default[:wpf][:online][:repo] = 'http://www.ibm.com/software/repositorymanager'
 
-# Local repository of WebSphere.
-default[:wpf][:local_repository] = nil
+# Local repository of WebSphere, you will need to override this in a role.
+default[:wpf][:local][:repo]  = nil
 
-default[:wpf][:credential] = {
+default[:wpf][:authorize] = {
   # Note: If you use the IBM service repositories, you can specify the
   # http://www.ibm.com/software/repositorymanager/entitled/repository.xml
   # value for the `url` attribute. This value is a generic service repository
@@ -73,17 +70,18 @@ default[:wpf][:credential] = {
 
   # IBM user name and password. To register for an IBM user name and password,
   # go to: http://www.ibm.com/account/profile
-  # @note: This is only needed if you intend to access the live repositories.
+  #
+  # This is only needed if you intend to access the live repositories.
   username: nil,
   password: nil,
 
   # The location of the master password file IIM should use to access the secure
   # storage file, this attribute is optional.
-  master_passwd:  ::File.join(node[:wpf][:user][:home], '.mpf'),
+  master_passwd: nil,
 
   # The location of the secure storage file IIM should use to access the
   # repoistory, this attribute is optional.
-  secure_storage: ::File.join(node[:wpf][:user][:home], '.ssf')
+  secure_storage: nil
 }
 
 # =========================== Response File Settings ===========================

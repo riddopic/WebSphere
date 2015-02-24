@@ -20,52 +20,12 @@
 # limitations under the License.
 #
 
-single_include 'websphere::install'
-
-file '/etc/profile.d/websphere.sh' do
-  owner 'root'
-  group 'root'
-  mode 00755
-  content <<-EOD
-    # Increase the file descriptor limit to support WAS
-    ulimit -n 20480
-  EOD
-  action :create
-end
-
-file '/etc/security/limits.d/websphere.conf' do
-  owner 'root'
-  group 'root'
-  mode 00755
-  content <<-EOD
-    # Increase the limits for the number of open files for the pam_limits
-    # module to support WAS
-    * soft nofile 20480
-    * hard nofile 20480
-  EOD
-  action :create
-end
-
-# Temp
-node.set[:was][:version]  = '8.0.9.20140530_2152'
-node.set[:was][:features] = 'core.feature,ejbdeploy,thinclient,' \
-                            'embeddablecontainer,samples,com.ibm.sdk.6_32bit'
-
-websphere_package :was do
-  install_fixes :all
-  action :install
-end
-
-was_dir = lazypath(node[:was][:dir])
-
-template ::File.join(was_dir, 'properties/wasprofile.properties') do
-  owner     node[:wpf][:user][:name]
-  group     node[:wpf][:user][:group]
-  mode      00644
-  variables was: node[:was]
-end
+single_include 'websphere::iim'
+single_include 'websphere::was'
 
 websphere_package :wps do
+  service_repository true
   install_fixes :all
+  output :debug
   action :install
 end

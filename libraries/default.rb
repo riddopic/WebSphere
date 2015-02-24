@@ -37,15 +37,6 @@ module WebSphere
     include WebSphere::XML
     include WebSphere::CliHelpers
 
-    # Provide a common Monitor to all providers for locking.
-    #
-    # @return [Class<Monitor>]
-    #
-    # @api private
-    def lock
-      @@lock ||= Monitor.new
-    end
-
     # Wraps shell_out in a monitor for thread safety.
     # @api private
     __shell_out__ = instance_method(:shell_out!)

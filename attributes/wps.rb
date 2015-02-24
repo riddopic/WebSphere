@@ -56,13 +56,13 @@ default[:wps] = {
   # package available in the repository is version 1.0.1. When you install the
   # package, the installed version of the package is rolled back to version
   # 1.0.1.
-  version: nil,
+  version: '8.0.1.20130123_1736',
 
   # The profile attribute is required and typically is unique to the offering.
   # If modifying or updating an existing installation, the profile attribute
   # must match the profile ID of the targeted installation of WebSphere
   # Application Server.
-  profile: 'IBM WebSphere Portal Server V8',
+  profile: 'IBM WebSphere Portal Server',
 
   # The features attribute is optional. Offerings always have at least one
   # feature; a required core feature which is installed regardless of whether
@@ -82,7 +82,7 @@ default[:wps] = {
   fixes: :all,
 
   # The installation directory for IBM WebSphere Portal Server.
-  dir: lazy { ::File.join( node[:wpf][:base], 'WebSphere/Portal') },
+  dir: lazy { ::File.join(node[:wpf][:base], 'WebSphere/Portal') },
 
   data: [
     # Include data keys for product specific profile properties.

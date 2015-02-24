@@ -86,8 +86,8 @@ class Chef::Resource::WebsphereProfile < Chef::Resource
   attribute :running,
             kind_of: [TrueClass, FalseClass]
 
-  # Specify the password for the administrative security user ID specified with
-  # the `admin_username` parameter
+  # Specify the password for the administrative security user ID specified
+  # with the `admin_username` parameter
   #
   # @param [String] admin_password
   # @return [String]
@@ -103,9 +103,10 @@ class Chef::Resource::WebsphereProfile < Chef::Resource
   attribute :admin_username,
             kind_of: String
 
-  # Specifies the performance-tuning setting that most closely matches the type
-  # of environment in which the application server will run. This parameter is
-  # only valid for the default profile template. Valid settings are:
+  # Specifies the performance-tuning setting that most closely matches the
+  # type of environment in which the application server will run. This
+  # parameter is only valid for the default profile template. Valid settings
+  # are:
   #
   # * `:standard`: the standard settings are the standard out-of-the-box
   #   default configuration settings that are optimized for general-purpose
@@ -544,7 +545,9 @@ class Chef::Resource::WebsphereProfile < Chef::Resource
   # @api public
   attribute :profile_path,
             kind_of: String,
-    default: lazy { ::File.join(lazypath(node[:was][:dir]), 'profiles', profile_name) }
+            default: lazy {
+              ::File.join(lazy_eval(node[:was][:dir]), 'profiles', profile_name)
+            }
 
   # Accesses all API functions from the command line using the manageprofiles
   # command. The command line interface can be driven by a response file that
