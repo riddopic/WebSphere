@@ -20,8 +20,8 @@
 # limitations under the License.
 #
 
-single_include 'websphere::iim'
-single_include 'websphere::was'
+include_recipe 'websphere::iim'
+include_recipe 'websphere::was'
 
 websphere_package :wps do
   service_repository true

@@ -15,12 +15,13 @@ Style/ClassAndModuleChildren:
   - compact
 
 Style/SingleSpaceBeforeFirstArg:
-  Description: Checks that exactly one space is used between a method name and the first
-    argument for method calls without parentheses.
+  Description: Checks that exactly one space is used between a method name and
+               the first argument for method calls without parentheses.
   Enabled: false
 
 Style/AlignParameters:
-  Description: Align the parameters of a method call if they span more than one line.
+  Description: Align the parameters of a method call if they span more than one
+               line.
   StyleGuide: https://github.com/bbatsov/ruby-style-guide#no-double-indent
   Enabled: false
   EnforcedStyle: with_first_parameter
@@ -34,8 +35,8 @@ Style/LeadingCommentSpace:
   Enabled: false
 
 Metrics/AbcSize:
-  Description: A calculated magnitude based on number of assignments, branches, and
-    conditions.
+  Description: A calculated magnitude based on number of assignments, branches,
+               and conditions.
   Enabled: false
   Max: 15
 
@@ -96,13 +97,14 @@ Metrics/ParameterLists:
   CountKeywordArgs: true
 
 Style/Blocks:
-  Description: Avoid using {...} for multi-line blocks (multiline chaining is always
-    ugly). Prefer {...} over do...end for single-line blocks.
+  Description: Avoid using {...} for multi-line blocks (multiline chaining is
+               always ugly). Prefer {...} over do...end for single-line blocks.
   StyleGuide: https://github.com/bbatsov/ruby-style-guide#single-line-blocks
   Enabled: false
 
 Style/AlignArray:
-  Description: Align the elements of an array literal if they span more than one line.
+  Description: Align the elements of an array literal if they span more than one
+               line.
   StyleGuide: https://github.com/bbatsov/ruby-style-guide#align-multiline-arrays
   Enabled: false
 

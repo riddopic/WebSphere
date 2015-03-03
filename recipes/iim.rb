@@ -20,7 +20,7 @@
 # limitations under the License.
 #
 
-single_include 'garcon::default'
+include_recipe 'garcon::default'
 
 g = Chef::Resource::Group.new(node[:wpf][:user][:group], run_context)
 node[:wpf][:user][:system] ? (g.system true) : (g.gid node[:wpf][:user][:gid])
@@ -45,9 +45,7 @@ concurrent 'WebSphere Installation Manager' do
 
       %w(gtk2-engines.i686 gtk2.i686 libgcc.i686 glibc.i686 libXtst.i686
          libcanberra-gtk2.i686 PackageKit-gtk-module.i686).each do |pkg|
-        yum_package pkg do
-          arch i686
-        end
+        package pkg
       end
     end
   end
@@ -101,6 +99,6 @@ repository_auth node[:wpf][:authorize][:url] do
   password        node[:wpf][:authorize][:password]
   master_passwd   node[:wpf][:authorize][:master_passwd]
   secure_storage  node[:wpf][:authorize][:secure_storage]
-  not_if { node[:wpf][:authorize][:username].nil? }
+  not_if        { node[:wpf][:authorize][:username].nil? }
   action :store
 end

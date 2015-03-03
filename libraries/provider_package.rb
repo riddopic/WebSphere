@@ -75,7 +75,7 @@ class Chef::Provider::WebspherePackage < Chef::Provider
     if @current_resource.installed
       Chef::Log.debug "#{new_resource.id_ver} already installed"
     else
-      converge_by "Installed #{new_resource.profile} : #{new_resource.id_ver}" do
+      converge_by "Install #{new_resource.profile} : #{new_resource.id_ver}" do
         imcl install_by(new_resource.install_from).join(' '),
               new_resource._?(:dir,   '-iD'),
               new_resource._?(:admin, '-aR')
@@ -233,8 +233,8 @@ class Chef::Provider::WebspherePackage < Chef::Provider
   #   when the file exists returns the Object#call, else undefined
   #
   # @api private
-  def valid?(arg)
-    ::File.exist?(arg.split.last) ? arg : nil
+  def valid?(*arg)
+    ::File.exist?(arg.last) ? arg : nil
   end
 
   # Generates response file from template
