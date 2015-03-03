@@ -12,4 +12,4 @@ group :integration do
   cookbook 'ssh-hardening', '>= 1.0.3'
 end
 
-cookbook 'garcon', git: 'https://github.com/riddopic/garcon.git'
+cookbook 'garcon', github: 'riddopic/garcon', tag: '0.8.5'
