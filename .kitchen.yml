@@ -35,15 +35,6 @@ suites:
         passwordless: true
         include_sudoers_d: true
         users: ['wasadm', 'kitchen', 'vagrant']
-    wpf:
-      local:
-        repo: http://10.8.132.23/ibm/repositorymanager
-    iim:
-      files:
-        standalone:
-          source: http://10.8.132.23/ibm
-        with_pkgutil:
-          source: http://10.8.132.23/ibm
 
 - name: repoman
   run_list:
@@ -72,15 +63,6 @@ suites:
         passwordless: true
         include_sudoers_d: true
         users: ['wasadm', 'kitchen', 'vagrant']
-    wpf:
-      local:
-        repo: http://10.8.132.23/ibm/repositorymanager
-    iim:
-      files:
-        standalone:
-          source: http://10.8.132.23/ibm
-        with_pkgutil:
-          source: http://10.8.132.23/ibm
 
 - name: hardened
   run_list:
@@ -110,12 +92,3 @@ suites:
         passwordless: true
         include_sudoers_d: true
         users: ['wasadm', 'kitchen', 'vagrant']
-    wpf:
-      local:
-        repo: http://10.8.132.23/ibm/repositorymanager
-    iim:
-      files:
-        standalone:
-          source: http://10.8.132.23/ibm
-        with_pkgutil:
-          source: http://10.8.132.23/ibm
