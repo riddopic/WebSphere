@@ -34,7 +34,7 @@ end
 group :plugins do
   gem 'vagrant-berkshelf'
   gem 'vagrant-cachier'
-  gem 'vagrant-chef-zero'
+  gem 'vagrant-chef-zero', '>= 2.0.0'
   gem 'vagrant-omnibus'
 end
 
